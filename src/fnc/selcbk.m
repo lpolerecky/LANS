@@ -1,0 +1,6 @@
+function selcbk(source,eventdata)
+disp(source);
+disp([eventdata.EventName,'  ',... 
+     get(eventdata.OldValue,'String'),'  ', ...
+     get(eventdata.NewValue,'String')]);
+disp(get(get(source,'SelectedObject'),'String'));

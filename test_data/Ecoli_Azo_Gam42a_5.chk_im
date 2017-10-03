@@ -1,0 +1,23 @@
+		Nanosims MPI \ IMAGE \ Sample :  
+
+						15.08.11 17:10
+Stage Position   : x=8096   um  y=-16463 um  z=1300   um
+Raw data file    : /export/home/ims/data/Vagner_2011/Birgit_Lubos/Ecoli_Azo_Gam42a/Ecoli_Azo_Gam42a_5.im
+Frame:1,1-256,256 / Raster:20.0um
+Tuning Mode: Multicollection
+Regulation Mode: NMR
+Check every (fr.): 0
+Secondary Ion Beam Centering : OFF
+
+Primary Current before acq :   25260 pA / after acq :   25220 pA
+
+
+Mass# Species        Mass  Det.   Tc(s)   BField    Radius  Peak# RefPeak# Method
+   1  12C           12.019 Tr2  131.072  1054.802   423.231                                
+   2  13C           13.023 Tr3  131.072  1054.802   440.556                                
+   3  19F           19.026 Tr4  131.072  1054.802   532.499                                
+   4  12C 14N       26.077 Tr5  131.072  1054.802   623.409                                
+   5                 0.000 SE   131.072  1054.802     0.000                                
+   6  32S           32.094 Det7 131.072  1054.802   691.607                                
+
+
