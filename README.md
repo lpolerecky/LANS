@@ -47,7 +47,9 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
 
 ## Running LANS
 
-Start Matlab and set Matlab's working directory to the folder where you unzipped LANS. Finally, type **lookatnanosims** in the Matlab console and press enter. That's it.
+Before running LANS for the first time, it is recommended to read carefully the first couple of lines in the files `lookatnanosims.m` and `paths.m` to check that your system settings are in order.
+
+Start Matlab and set Matlab's working directory to the folder where you unzipped LANS. Type **lookatnanosims** in the Matlab console and press enter. That's it.
 
 ## Citation
 
@@ -59,4 +61,4 @@ Note that LANS is under continuous development, with bugs fixed and new features
 
 ## Contact
 
-[E-mail] (mailto:l.polerecky@uu.nl) the mail developer (LP) if you experience problems or if you would like to have new features added to the program.
+[E-mail](mailto:l.polerecky@uu.nl) the main developer (LP) if you experience problems or if you would like to have new features added to the program.
