@@ -1,0 +1,23 @@
+function f=my_figure(f)
+% make the figure in the center of the screen by default
+if(ishandle(f))
+    % activate the figure
+    f=figure(f);
+else
+    FigPos=get(0,'DefaultFigurePosition');
+    FigWidth = FigPos(3);
+    FigHeight = FigPos(4);
+    FigPos(3) = FigWidth*1;
+    FigPos(4) = FigHeight*1;
+    ScreenUnits=get(0,'Units');
+    set(0,'Units','pixels');
+    ScreenSize=get(0,'ScreenSize');
+    set(0,'Units',ScreenUnits);
+    FigPos(1)=1/2*(ScreenSize(3)-FigWidth);
+    FigPos(2)=2/3*(ScreenSize(4)-FigHeight);
+    fpos=FigPos;
+    % activate the figure and place it in the middle of screen
+    f=figure(f);
+    set(f,'Renderer','painters');
+    set(f,'Position',fpos,'ToolBar','figure','MenuBar','None');
+end;
