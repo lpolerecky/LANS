@@ -16,7 +16,7 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
 - **Accumulation** of planes, with **drift-correction** applied
 - Definition of **regions of interest (ROIs)**
   - manual and semi-automated
-  - based on NanoSIMS images, or on an imported **external** image (e.g., FISH, TEM, SEM) with **alignment** done within LANS
+  - based on NanoSIMS images, or on an imported **external** image (e.g., FISH, TEM, SEM, AFM) with **alignment** done within LANS
   - ROI **classification** (manual & automated)
   - watershed segmentation of ROIs
 - **Quantification** of isotopic and elemental **ratios**
