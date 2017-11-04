@@ -21,7 +21,7 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
   - watershed segmentation of ROIs
 - **Quantification** of isotopic and elemental **ratios**
 - **Display and export** of results in **text** and **graphics** formats
-  - images (various colormaps)
+  - images (various colormaps, ROI outlines can be included)
   - lateral and depth profiles
   - histograms
   - scatter plots (color-coded based on ROI classification)
@@ -35,16 +35,28 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
 
 ## Installation instructions
 
-Download the latest stable version of the program, manuals, and test-data.
+- Install **Matlab**. You will need the **core** Matlab and the **image processing and statistical toolboxes**. Presently, LANS requires **Matlab 2013b**. The use of newer Matlab versions is not recommended due to a major overhaul of graphics since Matlab 2014a.
+- Install **LaTeX**. This is required to support export of graphical output as tagged PDF. 
+  - required executables: `epstopdf` and `pdflatex`
+  - required packages `graphicx`, `geometry` and `hyperref`
+  - LaTeX distributions: TeX live package (linux), MikTeX (Windows), MacTex (MacOS)
+- Install a program for **decompressing zip files**
+  - 7-Zip is recommended for Windows.
+  - Linux and MacOS systems have it by default.
+- Download the latest stable version of LANS from the **src** folder in this GitHub repository. Unzip it in a folder of your choice. 
 
-To start the program, open Matlab and set the Matlab's working directory to the folder where you cloned the 'LAN' directory. In Matlab console type lookatnanosims. That's it.
+## Running LANS
 
-Note: To ensure that `LANS` can export results into PDF, you must have LaTeX working on your computer (required executables include `epstopdf` and `pdflatex`, required packages include `graphicx`, `geometry` and `hyperref`). On Linux computers, this should be straight forward by simply installing the TeX live package for your Linux distribution. Windows users should install the MikTeX package, while MacOS users should install the MacTeX distribution. In case something does not work, you may need to inspect your system and edit the file `paths.m` in the LANS working directory to set the pathways to the LaTeX binaries accordingly.
+Start Matlab and set Matlab's working directory to the folder where you unzipped LANS. Finally, type **lookatnanosims** in the Matlab console and press enter. That's it.
 
 ## Citation
 
+Please include the following citation if you used LANS in your work. 
+
 L. Polerecky, B. Adam, J. Milucka, N. Musat, T. Vagner, M. M. M. Kuypers (2012). Look@NanoSIMS – a tool for the analysis of nanoSIMS data in environmental microbiology. Environmental Microbiology 14 (4): 1009–1023 ([doi:10.1111/j.1462-2920.2011.02681.x](http://onlinelibrary.wiley.com/doi/10.1111/j.1462-2920.2011.02681.x/abstract))
 
-The first author will highly appreciate the acknowledgement in your paper for the hard work that he has put into the development and improvement of the program over the years.
+Note that LANS is under continuous development, with bugs fixed and new features added every couple of months. This costs a lot of time, effort and energy. Thus, a little extra "thanks to LP" in the acknowledgement section of your paper will be highly appreciated.
 
-[E-mail](mailto:l.polerecky@uu.nl) us if you experience problems or if you would like to have new features added to the program.
+## Contact
+
+[E-mail] (mailto:l.polerecky@uu.nl) the mail developer (LP) if you experience problems or if you would like to have new features added to the program.
