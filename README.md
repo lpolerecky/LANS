@@ -2,28 +2,38 @@
 
 ## Summary
 
-Look@NanoSIMS (abbreviated as LANS) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS data produced by the Cameca 50L instrument. Because LANS is developed in Matlab, you will need Matlab (core plus the image processing and statistical toolboxes) to run it. Additionally, you will need to have a LaTeX distribution installed on your computer to enable useful features such as export of images and graphs as PDF documents.
+Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS data produced by the Cameca NanoSIMS 50L instrument. Because LANS is developed in Matlab and makes use of pdflatex, you will need Matlab (proprietary software) and LaTeX (free software) installed on your computer to run it.
 
-## Basic features
+## Features
 
-These features are available since the 1st release of the program in 2011, and are described in details in the manual
-
-- Display of planes for detected masses
-- Drift-corrected accumulation of planes
-- Manual and semi-automated defition of ROIs (regions of interest)
-- Definition of ROIs based on an external image (e.g. FISH or TEM) is also possible
-- ROI classification (manual & automated)
-- Quantification of elemental and isotopic composition
-  - images
-  - lateral profiles
-  - depth profiles (in ROIs)
+- **Loading** of secondary ion counts (SIC) image data (Cameca *.im files)
+  - all planes and masses
+  - in blocks
+  - selected planes and masses
+  - merging of multiple *.im files into one
+  - dead-time and QSA corrections applicable
+  - support of zip-compressed input data (*.im.zip files)
+- **Accumulation** of planes, with **drift-correction** applied
+- Definition of **regions of interest (ROIs)**
+  - manual and semi-automated
+  - based on NanoSIMS images, or on an imported **external** image (e.g., FISH, TEM, SEM) with **alignment** done within LANS
+  - ROI **classification** (manual & automated)
+  - watershed segmentation of ROIs
+- **Quantification** of isotopic and elemental **ratios**
+- **Display and export** of results in **text** and **graphics** formats
+  - images (various colormaps)
+  - lateral and depth profiles
   - histograms
-  - scatter plots
-- RGB composition
-- Statistical comparison of ROIs and ROI classes from one or multiple datasets
-- Dead-time and QSA corrections
+  - scatter plots (color-coded based on ROI classification)
+  - overlays of nanoSIMS images in an RGB image
+  - overlays of nanoSIMS and external images in an RGB image or a 3D surface plot
+- **Statistical analysis** of data in ROIs 
+  - comparison of ROIs
+  - comparison of ROI classes
+  - comparison of treatments or experimental time-points
+- Tools for **processing and statistical analysis of multiple** nanoSIMS datasets
 
-## Download & Install
+## Installation instructions
 
 Download the latest stable version of the program, manuals, and test-data.
 
