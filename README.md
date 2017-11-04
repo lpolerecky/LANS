@@ -1,8 +1,8 @@
 # Look@NanoSIMS
 
-## Rationale
+## Summary
 
-Look@NanoSIMS, abbreviated `LANS`, is a Matlab-based program with a graphical user interface for the analysis of NanoSIMS data produced by the Cameca 50L instrument. Although depending on Matlab, which is a proprietary software, `LANS` itself is a [free software](http://www.gnu.org/philosophy/free-sw.html).
+Look@NanoSIMS (abbreviated as LANS) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS data produced by the Cameca 50L instrument. Because LANS is developed in Matlab, you will need Matlab (core plus the image processing and statistical toolboxes) to run it. Additionally, you will need to have a LaTeX distribution installed on your computer to enable useful features such as export of images and graphs as PDF documents.
 
 ## Basic features
 
