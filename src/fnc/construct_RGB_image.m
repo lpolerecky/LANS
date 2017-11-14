@@ -46,13 +46,20 @@ if c1
         
         % fill R channel
         if i1>0
+            ch_scale = p_scale{i1};
             if opt1(7) 
                 RR=R{i1};                 
-                rgb7(:,:,1)=(RR-p_scale{i1}(1))/(p_scale{i1}(2)-p_scale{i1}(1));                                
+                if ischar(ch_scale) % this happens when user gives [auto]
+                    ch_scale = find_image_scale(RR, 0, 0);
+                end;
+                rgb7(:,:,1)=(RR-ch_scale(1))/diff(ch_scale);                                
             end;
             if opt1(8)
                 RR=Raim{i1}; 
-                rgb8(:,:,1)=(RR-p_scale{i1}(1))/(p_scale{i1}(2)-p_scale{i1}(1));
+                if ischar(ch_scale) % this happens when user gives [auto]
+                    ch_scale = find_image_scale(RR, 0, 0);
+                end;
+                rgb8(:,:,1)=(RR-ch_scale(1))/diff(ch_scale);
             end;                   
             rgb_true(:,:,1) = RR;
         else
@@ -63,13 +70,20 @@ if c1
         
         % fill G channel
         if i2>0
+            ch_scale = p_scale{i2};
             if opt1(7)
                 RR=R{i2};
-                rgb7(:,:,2)=(RR-p_scale{i2}(1))/(p_scale{i2}(2)-p_scale{i2}(1));
+                if ischar(ch_scale) % this happens when user gives [auto]
+                    ch_scale = find_image_scale(RR, 0, 0);
+                end;
+                rgb7(:,:,2)=(RR-ch_scale(1))/diff(ch_scale);
             end;
             if opt1(8) 
                 RR=Raim{i2}; 
-                rgb8(:,:,2)=(RR-p_scale{i2}(1))/(p_scale{i2}(2)-p_scale{i2}(1));
+                if ischar(ch_scale) % this happens when user gives [auto]
+                    ch_scale = find_image_scale(RR, 0, 0);
+                end;
+                rgb8(:,:,2)=(RR-ch_scale(1))/diff(ch_scale);
             end;
             rgb_true(:,:,2) = RR;                
         else
@@ -80,12 +94,19 @@ if c1
         
         % fill B channel
         if i3>0
+            ch_scale = p_scale{i3};
             if opt1(7)
                 RR=R{i3}; 
-                rgb7(:,:,3)=(RR-p_scale{i3}(1))/(p_scale{i3}(2)-p_scale{i3}(1));
+                if ischar(ch_scale) % this happens when user gives [auto]
+                    ch_scale = find_image_scale(RR, 0, 0);
+                end;
+                rgb7(:,:,3)=(RR-ch_scale(1))/diff(ch_scale);
             end;
             if opt1(8)
                 RR=Raim{i3}; 
+                if ischar(ch_scale) % this happens when user gives [auto]
+                    ch_scale = find_image_scale(RR, 0, 0);
+                end;
                 rgb8(:,:,3)=(RR-p_scale{i3}(1))/(p_scale{i3}(2)-p_scale{i3}(1));
             end;
             rgb_true(:,:,3) = RR;

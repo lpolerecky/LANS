@@ -249,7 +249,9 @@ imagesc(im,[mins, maxs]);
 set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',10);
 b=colorbar('FontSize',10);
 %set(b,'OuterPosition',[0.105 0.005 0.8 0.0467]);
-colormap(clut);
+%colormap(clut);
+global additional_settings;
+colormap(get_colormap(additional_settings.colormap));
 
 
 % --- Executes on button press in checkbox1.

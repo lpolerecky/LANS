@@ -236,10 +236,11 @@ for x=1:a
         end;
     end;
 end;
+
 if 0
-figure;
-imagesc(maskimg); colorbar; colormap(clut(256));
-a=0;
+    figure;
+    imagesc(maskimg); colorbar; colormap(clut(256));
+    a=0;
 end;
 
 if strcmp(get(handles.auto_class_update,'checked'),'on') & ~isempty(handles.cellfile)
@@ -530,10 +531,10 @@ else
 end;
 
 function myprecallback(obj,evd)
-disp('A zoom is about to occur.');
+%disp('A zoom is about to occur.');
 
 function mypostcallback(obj,evd)
-newLim = evd.Axes.XLim;
+newLim = get(evd.Axes,'XLim');
 fprintf(1,'The new X-Limits are [%.2f %.2f]\n',newLim);
 %msgbox(sprintf('The new X-Limits are [%.2f %.2f].',newLim));
 % this does not work as intended, so I give up on this
@@ -1520,7 +1521,7 @@ if(~isempty(Maskimg))
         fout=[p delimiter f '.png'];
         % convert indexed image to rgb, otherwise saving as png will fail
         % if number of ROIs>256
-        rgb=ind2rgb(uint16(Maskimg+1),clut(max(Maskimg(:))+1));
+        rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))+1));
         imwrite(rgb,fout);
         fprintf(1,'ROIs exported as %s\n',fout);
     end;
@@ -1552,7 +1553,7 @@ if(~isempty(Maskimg))
         fout=[p delimiter f '.png'];
         % convert indexed image to rgb, otherwise saving as png will fail
         % if number of ROIs>256
-        rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))));
+        rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))+1));
         imwrite(rgb,fout);
         fprintf(1,'ROIs exported as %s\n',fout);
         CELLSFILE=f;
@@ -1583,7 +1584,10 @@ cf = handles.cellfile;
 if ~isempty(cf)
     [unique_classes,cc,cid,cnum,ss]=load_cell_classes(cf);
 else
-    unique_classes=[];
+    unique_classes='i';
+    cnum = setdiff(unique(handles.maskimg(:)),0);
+    cid = char(unique_classes*ones(size(cnum)));
+    %unique_classes=[];
 end;
 
 if(~isempty(oldcells))
@@ -1600,23 +1604,63 @@ if(~isempty(oldcells))
     mim = handles.maskimg;
     b=[];
     if ~isempty(unique_classes)
+
         %fprintf(1,'Enter letters of the ROI classes that you want to display?\n');
         %fprintf(1,'Make a choice from one or more of these (%s) or enter empty for all.\n',unique_classes(:)');
         %a=input('Choice: ','s');
         %if isempty(a), a=unique_classes(:)'; end;
         
-        x=inputdlg('Enter ROI classes','ROI classes to be displayed',1,{char(unique_classes(:))'});
-        if isempty(x)
-            a = unique_classes(:)';
+        if strcmp(char(unique_classes(:)),'i')
+            uc = '';
         else
-            a = x{1};
+            uc = char(unique_classes(:))';
         end;
         
-        ind=[];
-        for ii=1:length(a)
-            class=a(ii);
-            ind = [ind; find(cid==class)];
+        x=inputdlg('Enter ROI classes or ROI IDs, separated by space. Empty for all.','ROI ID''s or ROI classes to be displayed',1,{uc});
+        if isempty(x)
+            a = num2str(cnum');
+        else
+            a = x{1};
+            if isempty(a)
+                a = num2str(cnum');
+            end;
         end;
+        
+        b = strsplit(a,' ');
+        
+        % gather ID's of ROIs that will be displayed
+        ind = [];
+        for ii=1:length(b)
+            [bnum, bstat] = str2num(b{ii});
+            % in case b{ii} was 'i', which is an imaginary unit, correct
+            % the output of str2num
+            if strcmp(b{ii},'i')
+                bnum = [];
+                bstat = 0;
+            end;            
+            if bstat
+                % b{ii} contains numbers
+                ind = [ind; bnum(:)];
+            else
+                % b{ii} contains letters
+                for jj=1:length(b{ii})
+                    ind = [ind; find(cid==b{ii}(jj))];
+                end;
+            end;
+        end;
+        ind = unique(ind);
+        
+%         if isempty(str2num(a)) | strcmp(a,'i')
+%             % user entered letters
+%             ind=[];
+%             for ii=1:length(a)
+%                 class=a(ii);
+%                 ind = [ind; find(cid==class)];
+%             end;
+%         else
+%             % user entered ID numbers of ROIs
+%             ind = str2num(a);
+%         end;
         
         % remove pixels with ROIs whose class was not selected
         b = setdiff(cnum,ind);
@@ -1626,6 +1670,7 @@ if(~isempty(oldcells))
                 mim(ind) = zeros(size(ind));
             end;
         end;
+        
     end;
     
     % display the rois

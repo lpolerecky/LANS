@@ -292,7 +292,11 @@ f2=my_figure(fig);
 subplot(1,1,1); 
 hold off;
 for j=1:nf
-    fprintf(1,'Adding data-set %d: %s [%s %s]\n',j,fname{j},all{1}{ind1},all{1}{ind2});
+    fprintf(1,'Adding data-set %d: %s [%s %s] (treatment %d)\n',j,fname{j},all{1}{ind1},all{1}{ind2},tmnt(j));
+    tmnts = find(all_treatments==tmnt(j));
+    if isempty(tmnts)
+        fprintf(1,'WARNING: skipped, because treatment %d is not specified in the Symbol scheme.\n',tmnt(j));
+    end;
     add_to_plot2d(dx{j},dy{j},ct{j},p1,p2,find(all_treatments==tmnt(j)),all{j}{ind1},all{j}{ind2},...
         s.graphtitle,xscale,yscale,logscalex,logscaley,s.disp_errorbars,...
         fname{j},cellid{j},tmnt(j));
@@ -333,10 +337,10 @@ for j=1:nf
     fn = [pathstr delimiter name delimiter pdffile{j}];
     print_figure(f2{j},fn,additional_settings.print_factors(2));
     %fprintf(1,'EPS output generated in %s\n',fn);
-    mepstopdf(fn,'epstopdf',1,1,1);
-    fn = regexprep(fn,'eps','pdf');
+    mepstopdf(fn,'epstopdf',1,1,0);
+    fn = regexprep(fn,'\.eps','\.pdf');
     fn = regexprep(fn,'\','/');
-    pdffile{j} = regexprep(pdffile{j},'eps','pdf');    
+    pdffile{j} = regexprep(pdffile{j},'\.eps','\.pdf');    
     pdffile{j} = regexprep(pdffile{j},'\','/');    
     %invoke the datacursormode so that we can set the UpdateFcn
     hdt = datacursormode;

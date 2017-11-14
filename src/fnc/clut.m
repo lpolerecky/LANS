@@ -76,9 +76,7 @@ rgb = flipud([255    6    4
     0    0    0
     %255 255 255
 ])/255;
-
-%rgb=1-rgb;
-    
+   
 if nc~=64
     % extrapolate above values for nc colors
     x1=[1:size(rgb,1)]';

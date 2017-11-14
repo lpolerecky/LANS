@@ -54,6 +54,13 @@ end;
 
 h.shift_columns_rows = shift_columns_rows;
 
+% remember the raster size
+if isfield(handles,'text46')
+    h.raster_size = str2num(get(handles.text46,'string'));
+else
+    h.raster_size = 10;
+end;
+
 % save preferences
 if(~isempty(fname))
     save(fname,'h','-v6');

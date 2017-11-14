@@ -17,7 +17,9 @@ if(size(maskmass,3)==1)
     if(bw)
         colormap(gray);
     else
-        colormap(clut);
+        global additional_settings;
+        colormap(get_colormap(additional_settings.colormap));
+        %colormap(clut);
     end;
 else
     mm=max(maskmass(:));

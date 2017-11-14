@@ -129,22 +129,24 @@ if length(m)>1
     surf(x,y,ext_im,rgb_im);
 else
     surf(x,y,ext_im,rgb_im(:,:,1));
-    cmi=get(handles.popupmenu1,'value');
-    switch cmi
-        case 1, colormap(clut);
-        case 2, colormap(jet);
-        case 3, colormap(hsv);
-        case 4, colormap(hot);
-        case 5, colormap(cool);
-        case 6, colormap(spring);
-        case 7, colormap(summer);
-        case 8, colormap(autumn);
-        case 9, colormap(winter);
-        case 10, colormap(gray);
-        case 11, colormap(bone);
-        case 12, colormap(copper);
-        case 13, colormap(pink);            
-    end;
+    global additional_settings;
+    colormap(get_colormap(additional_settings.colormap));
+%    cmi=get(handles.popupmenu1,'value');
+%    switch cmi
+%        case 1, colormap(clut);
+%        case 2, colormap(jet);
+%        case 3, colormap(hsv);
+%        case 4, colormap(hot);
+%        case 5, colormap(cool);
+%        case 6, colormap(spring);
+%         case 7, colormap(summer);
+%         case 8, colormap(autumn);
+%         case 9, colormap(winter);
+%         case 10, colormap(gray);
+%         case 11, colormap(bone);
+%         case 12, colormap(copper);
+%         case 13, colormap(pink);            
+%     end;
 end;
 % it is important to set the shading to flat to reduce the size of the
 % output. setting it to interp does not make the output so much better

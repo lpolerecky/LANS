@@ -80,6 +80,11 @@ log_user_info('start');
 % Choose default command line output for LookAtNanoSIMS
 handles.output = hObject;
 
+set(handles.checkbox63,'TooltipString',...
+    sprintf('Check if you want to modify the intensity of the hue in the ratio images.\nHI=intensity of the displayed ratio''s hue.'));
+set(handles.edit65,'TooltipString',...
+    sprintf('If empty, HI is calculated from the denominator in the ratio expression.\nAlternatively, use ID of one of the loaded masses (1-8) to calculate HI from it.\nHI is calculated as HI=(mass-min)/(max-min), and set to 1 when mass>max and to 0 when mass<min.\nThus, you can modify HI by modifying the scale of the corresponding mass.'));
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -2299,13 +2304,14 @@ function process_accumulated_data_Callback(hObject, eventdata, handles)
 % hObject    handle to process_accumulated_data (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles=load_cameca_image(handles,1);
-h = Load_Display_Preferences_Callback(hObject, eventdata, handles);
-if ~isempty(handles.p.im)
-    handles.p.accu_im = handles.p.im;
-    handles.p.planes_aligned = 1;
-    display_all_masses_Callback(hObject, eventdata, handles);
-end;
+handles=load_cameca_image(handles,2);
+%h = Load_Display_Preferences_Callback(hObject, eventdata, handles);
+%if ~isempty(handles.p.im)
+%    handles.p.accu_im = handles.p.im;
+%    handles.p.planes_aligned = 1;
+display_all_masses_Callback(hObject, eventdata, handles);
+%end;
+
 guidata(hObject, handles);
 a=0;
 

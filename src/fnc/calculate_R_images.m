@@ -1,4 +1,4 @@
-function [R,Ra,Raim,oall] = calculate_R_images(p, opt4, export_flag, zero_low_counts, mask_kernel)
+function [R,Ra,Raim,oall,Rconf] = calculate_R_images(p, opt4, export_flag, zero_low_counts, mask_kernel, sm)
 % calculate ratio images (R), as well as the accumulated values in the
 % cells (Ra), and the corresponding image (Raim)
 
@@ -18,6 +18,12 @@ if nargin>4
     mk = mask_kernel;
 else
     mk = 1;
+end;
+
+if nargin>5
+    sic_mass = sm;
+else
+    sic_mass = [];
 end;
 
 % default output is empty
@@ -60,6 +66,8 @@ Nim = length(p.accu_im);
 % calculating ratios in each cell
 if ef    
     [m2, dm2]=accumulate_masses_in_cells(p.accu_im,p.Maskimg,p.im,p.images);
+%else
+%    fprintf(1,'Warning: ASCII data not exported, scatter plots cannot be made.\n');
 end;
 
 % calculate cell positions, sizes and shapes. this will be used later when
@@ -118,10 +126,10 @@ for ii=1:Nm
             cell_sizes = ones(size(m{1}));
             % set the 'LWratio' to ones, just in case it is present in the formula
             LWratio = ones(size(m{1}));
-            eval(formula);
+            eval(formula);            
             warning('on');            
 
-            if zlc
+            if zlc & 0
                 % set values to zero in pixels where the ion counts are outside of 
                 % the range specified in the 'scale' field for the corresponding mass
                 ind0 = [];
@@ -131,6 +139,16 @@ for ii=1:Nm
                 end;
                 ind0 = unique(ind0);
                 r(ind0) = zeros(size(ind0));
+            end;
+            
+            if zlc
+                if isempty(sic_mass)
+                    Rconf{ii} = get_ratio_confidence(formula,m,p.imscale);
+                else
+                    Rconf{ii} = get_ratio_confidence(sprintf('1./m{%d};',sic_mass),m,p.imscale);
+                end;
+            else
+                Rconf{ii} = ones(size(r));
             end;
             
             % substitute inf and nan values by 0's in r, which exist if the
@@ -170,6 +188,7 @@ for ii=1:Nm
             
             fprintf(1,'*** WARNING: EXPRESSION %s CANNOT BE CALCULATED!\nPOSSIBLY ONE OF THE MASSES IS MISSING.\n',p.special{ii});
             R{ii} = [];
+            Rconf{ii} = [];
             Ra{ii} = [];
             Raim{ii} = [];
             oall{ii} = [];

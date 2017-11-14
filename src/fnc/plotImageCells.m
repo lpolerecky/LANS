@@ -1,5 +1,5 @@
 function [CELLS,f,a,b]=plotImageCells(f,IM,CELLS,fdir,mass_,outline_color,imscale,...
-    opt1,opt3,export_flag,scale,title_,cellfile,images,planes)
+    opt1,opt3,export_flag,scale,title_,cellfile,images,planes,imconf)
 % Plot image IM, together with the cell outline (CELLS, if non-empty), as a
 % nicely formatted image. 
 % Optionally, calculate histograms of the pixel values in the classified
@@ -123,6 +123,12 @@ else
     xyscale=50;
 end;
 
+if nargin>15
+    conf = imconf;
+else
+    conf = ones(size(IM,1),size(IM,2));
+end;
+
 % if debugging, smooth image
 %IM=medfilt2(IM,[3 3]);
 %IM=wiener2(IM,[3 3]);
@@ -202,10 +208,18 @@ if o1(6)
             IM(:,:,ii)=tmp;
         end;
         a=imagesc(IM);
+        xt_auto = [];
+        xtl_auto = [];
+        colmap = get_colormap(additional_settings.colormap);
     else
         % display image with the specified scale (fac is 1 or 1e3)
         if mi==0 & ma==-Inf, ma=1, end;
-        a=imagesc(IM*fac,fac*[mi ma]);
+        if o3==0            
+            cmap=additional_settings.colormap;
+        elseif o3==1
+            cmap=2;
+        end;
+        [a xt_auto xtl_auto colmap] = imagesc_conf(IM*fac, fac*mi, fac*ma, conf, cmap, additional_settings.color_bar_pos);
     end;
     
     % 'dataaspectratio',[1 1 1],
@@ -259,6 +273,7 @@ if o1(6)
         if ~strcmp(mass_,'cells')
             if additional_settings.color_bar_pos==2
                 sfac=size(IM,1)/size(IM,2);
+                xylim='x';
                 if sfac<=1
                     set(gca,'Position',[0.1 0.11+0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
                     b=colorbar('location','SouthOutside');                                              
@@ -270,6 +285,7 @@ if o1(6)
                 end;                          
             elseif additional_settings.color_bar_pos==1
                 sfac=size(IM,1)/size(IM,2);
+                xylim='y';
                 if sfac<=1
                     set(gca,'Position',[0.04 0.11 + 0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
                     b=colorbar('location','EastOutside');
@@ -285,11 +301,63 @@ if o1(6)
                 set(b,'FontSize',defFontSize);
             end;
         end;
+        % set the correct colormap
         if(min(IM(:))==max(IM(:)) | o3)
-            colormap(gray);
+            colormap(get_colormap(2));
         else
-            colormap(clut);            
+            %colormap(get_colormap(additional_settings.colormap));
+            colormap(colmap);
         end;   
+        % arrange the colorbar xticks/labels nicely, but only if conf is
+        % not applicable
+        if prod(conf(:))~=1 & ~strcmp(mass_,'cells')
+            % current lim of the colorbar
+            xl=get(b,[xylim 'lim']);            
+            % calculate desired ticks positions
+%             dy = (ma-mi)/5;
+%             if dy<0
+%                 precis = -ceil(log10(dy));
+%                 dy = round(dy*10^precis)/10^precis;
+%             else
+%                 precis = -floor(log10(dy));
+%                 dy = round(dy*10^precis)/10^precis;
+%             end;
+%             yt = fliplr([ma:-dy:(mi-dy)]);
+%             ind = find(yt>=mi & yt<=ma);
+%             yt = yt(ind);
+%             if min(yt)-mi>(dy/2), yt=[mi yt]; end;
+            
+            yt = xt_auto;
+            ytp = (yt/fac-mi)/(ma-mi);
+            xtnew = ytp*diff(xl)+xl(1);
+            set(b,[xylim 'tick'],xtnew);
+            % center all ticklabels, to ensure that the locations and
+            % strings match well (only relevant for xticklabels)
+            if xylim=='x'
+                    for kk=1:size(xtl_auto,1)
+                    sk = xtl_auto(kk,:);
+                    indsp=findstr(sk,' ');
+                    if length(indsp)>0
+                        numsp=ceil(length(indsp)/2);
+                        sknew=[' '*ones(1,numsp) sk(1:indsp(numsp))];
+                        xtl_auto(kk,1:length(sknew)) = sknew;
+                    end;
+                end;
+            end;
+            set(b,[xylim,'ticklabel'],xtl_auto);
+            
+            
+%             if 0
+%                 xtl = ['xtl = num2str(yt'',''%.' num2str(precis) 'f'');'];
+%                 eval(xtl);
+%             else
+%                 xtl = num2str(yt'*fac);
+%                 if size(xtl,2)>4
+%                     xtl = num2str(round(yt'*10)/10*fac);
+%                 end;
+%             end;
+%             set(b,[xylim 'ticklabel'],xtl);
+        end;
     else
         set(gca,'dataaspectratio',[1 1 1]);
     end;    
@@ -316,8 +384,11 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,'cell'))
     
     % generate the histograms
     
-	%f1=my_figure(f.Number+10);  % in Matlab 2015b
-    f1=my_figure(f+10);
+    if matversion >= 2015
+        f1=my_figure(f.Number+10);  % in Matlab 2015 or higher
+    else
+        f1=my_figure(f+10);
+    end;
     hold off; 
     
     if(exist(fncells)==2)

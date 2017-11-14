@@ -2,7 +2,7 @@
 
 ## Summary
 
-Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS image data produced by the Cameca NanoSIMS 50L instrument. It is distributed as a Matlab code, thus you will need Matlab (proprietary software) installed on your system to be able to run LANS.
+Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS data produced by the Cameca NanoSIMS 50L instrument. Because LANS is developed in Matlab and makes use of pdflatex, you will need Matlab (proprietary software) and LaTeX (free software) installed on your computer to run it.
 
 ## Features
 
@@ -13,7 +13,6 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
   - merging of multiple *.im files into one
   - dead-time and QSA corrections applicable
   - support of zip-compressed input data (*.im.zip files)
-	- Matlab files (*.mat) produced by processing with LANS, without the need of the original *.im file.
 - **Accumulation** of planes, with **drift-correction** applied
 - Definition of **regions of interest (ROIs)**
   - manual and semi-automated
@@ -36,14 +35,14 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
 
 ## Installation instructions
 
-- Install **Matlab**. You will need the **core** Matlab and the **image processing and statistical toolboxes**. Presently, LANS requires **Matlab 2013b**. The use of newer Matlab versions is not recommended because some of the features introduced by the release of Matlab 2014a (a major overhaul of graphics) have not been fully implemented/updated in LANS.
+- Install **Matlab**. You will need the **core** Matlab and the **image processing and statistical toolboxes**. Presently, LANS requires **Matlab 2013b**. The use of newer Matlab versions is not recommended due to a major overhaul of graphics since Matlab 2014a.
 - Install **LaTeX**. This is required to support export of graphical output as tagged PDF. 
   - required executables: `epstopdf` and `pdflatex`
   - required packages `graphicx`, `geometry` and `hyperref`
-  - use LaTeX distributions: TeX live package (linux), MikTeX (Windows), MacTex (MacOS)
+  - LaTeX distributions: TeX live package (linux), MikTeX (Windows), MacTex (MacOS)
 - Install a program for **decompressing zip files**
-  - 7-Zip (freeware) is recommended for Windows.
-  - Linux and MacOS systems have it by default (unzip).
+  - 7-Zip is recommended for Windows.
+  - Linux and MacOS systems have it by default.
 - Download the latest stable version of LANS from the **src** folder in this GitHub repository. Unzip it in a folder of your choice. 
 
 ## Running LANS

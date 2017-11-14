@@ -39,7 +39,7 @@ if opt1(9)
             plot3d=0;
             x=R{i1}; xl=p.special{i1}; xs=p.special_scale{i1};
             y=R{i2}; yl=p.special{i2}; ys=p.special_scale{i2};
-            if ~isempty(x) & ~isempty(y)
+            if ~isempty(x) & ~isempty(y) & ~isempty(oall)
                 if(opt1(8))
                     dx=oall{i1}(:,5); 
                     dy=oall{i2}(:,5); 
@@ -54,7 +54,7 @@ if opt1(9)
             plot3d=0;
             x=R{i1}; xl=p.special{i1}; xs=p.special_scale{i1};
             y=R{i3}; yl=p.special{i3}; ys=p.special_scale{i3};
-            if ~isempty(x) & ~isempty(y)
+            if ~isempty(x) & ~isempty(y) & ~isempty(oall)
                 if(opt1(8))
                     dx=oall{i1}(:,5); 
                     dy=oall{i3}(:,5); 
@@ -69,7 +69,7 @@ if opt1(9)
             plot3d=0;
             x=R{i2}; xl=p.special{i2}; xs=p.special_scale{i2};
             y=R{i3}; yl=p.special{i3}; ys=p.special_scale{i3};
-            if ~isempty(x) & ~isempty(y)
+            if ~isempty(x) & ~isempty(y) & ~isempty(oall)
                 if(opt1(8))
                     dx=oall{i2}(:,5); 
                     dy=oall{i3}(:,5); 
@@ -480,15 +480,18 @@ if opt1(9)
     
     else
         
-        fprintf(1,'*** Error: x-y-z graph could not be plotted. Check the definition of ');
+        fprintf(1,'*** Error: x-y-z graph could not be plotted. Check');
         if isempty(x)
-            fprintf(1,'x');
+            fprintf(1,' the definition of x');
         end;
         if isempty(y)
-            fprintf(1,'y');
+            fprintf(1,' the definition of y');
         end;
         if plot3d & isempty(z)
-            fprintf(1,'z');
+            fprintf(1,' the definition of z');
+        end;
+        if isempty(oall)
+            fprintf(1,' the Export ASCII data checkbox');
         end;
         fprintf(1,'.\n');
         
