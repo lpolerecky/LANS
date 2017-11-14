@@ -25,6 +25,8 @@ else
     uss=1;
 end;
 
+sic_mass = str2num(get(handles.edit65,'string'));
+
 % export ascii flag
 eaf = opt1(10);
 
@@ -61,7 +63,7 @@ if opt1(3) | opt1(6) | eaf | opt1(5) | opt1(9) | opt1(13) | opt1(12) | opt1(14)
         end;
         
         % calculate the ratio images and also the ratio values in ROIs
-        [R,Ra,Raim,o] = calculate_R_images(p, opt4, eaf, opt1(16));
+        [R,Ra,Raim,o,Rconf] = calculate_R_images(p, opt4, eaf, opt1(16), 1, sic_mass);
 
         % display ratio images and export data if requested
         for ii=1:length(R)
@@ -78,7 +80,7 @@ if opt1(3) | opt1(6) | eaf | opt1(5) | opt1(9) | opt1(13) | opt1(12) | opt1(14)
                 
                 plotImageCells(10+ii,R{ii},p.Maskimg,p.fdir,p.special{ii},...
                     [my_get(handles.edit62,'string'),'-'],p.special_scale{ii},...
-                    opt1,opt3(ii), ef, p.scale, tit, cellfile, p.images{1},p.planes);
+                    opt1,opt3(ii), ef, p.scale, tit, cellfile, p.images{1},p.planes,Rconf{ii});
                 
                 % export image as EPS
                 if opt1(6) & opt1(11)

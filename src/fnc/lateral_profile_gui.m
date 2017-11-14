@@ -102,7 +102,8 @@ if jj>0
     set(handles.popupmenu1,'value',1);
     set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',defFontSize);
     b=colorbar('FontSize',defFontSize);
-    colormap(clut);
+    %colormap(clut);
+    colormap(get_colormap(additional_settings.colormap));
 end;
     
 % Update handles structure
@@ -130,7 +131,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % define profile using a mouse
-[h,pos]=add_line(handles.axes1);
+[h,pos]=add_lans_line(handles.axes1);
 pos=round(pos);
 handles.pos = pos;
 fprintf(1,'Line defined: from [%d %d] to [%d %d]\n',pos(1,:),pos(2,:));
@@ -586,7 +587,8 @@ imagesc(handles.images{jj},handles.scales{jj});
 title(handles.ratios{jj});
 set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',defFontSize);
 b=colorbar('FontSize',10);
-colormap(clut);
+%colormap(clut);
+colormap(get_colormap(additional_settings.colormap));
 
 % add the profile, if it exists
 pos(1,1) = str2num(get(handles.edit2,'string'));

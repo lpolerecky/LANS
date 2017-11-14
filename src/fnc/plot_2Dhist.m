@@ -21,7 +21,8 @@ end;
 xlabel(xl,'FontSize',additional_settings.defFontSize); 
 ylabel(yl,'FontSize',additional_settings.defFontSize);
 set(gca,'FontSize',additional_settings.defFontSize);
-colormap(clut(32));
+%colormap(clut(32));
+colormap(get_colormap(additional_settings.colormap));
 %cb=colorbar('FontSize',additional_settings.defFontSize);
 %axes(cb);
 %ylabel('log_{10}(counts)','FontSize',additional_settings.defFontSize)

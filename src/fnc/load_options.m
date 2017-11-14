@@ -15,7 +15,7 @@ opt1=[my_get(handles.checkbox12,'value'),... % 1 include cell outline in final
     my_get(handles.checkbox61,'value'),...   % 13 display depth profiles 
     my_get(handles.checkbox62,'value'),...   % 14 display lateral profiles
     my_get(handles.checkbox64,'value'),...   % 15 include graph title
-    my_get(handles.checkbox63,'value')];     % 16 zero values in pixels with low counts
+    my_get(handles.checkbox63,'value')];     % 16 Apply SIC moduation on rato images
 
 if(flag==1)
     

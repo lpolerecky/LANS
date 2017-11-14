@@ -1,5 +1,5 @@
 function fig=display_stacks_rgb(f1,xstacks,ystacks,zstacks,xs,ys,q,h,w,l,dx,dy,fname,mass)
-fig=figure(f1);
+fig=my_figure(f1);
 % move the new figure to the middle of the screen, if newly created, but
 % don't move it any more once it has been filled with stuff
 if isempty(get(fig,'children'))

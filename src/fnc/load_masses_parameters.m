@@ -30,7 +30,7 @@ jj=0;
 for ii=1:8
     
     % fill mass name;
-    % edit fields with the masses are edit3:edit9 and edit53
+    % edit fields with the masses are edit3:edit9 and edit74
     if ii<8, k=ii+2; else, k=74; end;
     s=['s=my_get(handles.edit',num2str(k),',''string'');'];
     eval(s);
@@ -41,14 +41,17 @@ for ii=1:8
         p.mass{jj} = s;
         
         % fill range of images:
-        % edit fields with the image range are edit12:edit18 and edit54
+        % edit fields with the image range are edit12:edit18 and edit75
         if ii<8, k=ii+11; else, k=75; end;
+        % from 13-10-2017 only the first edit field (edit12) will be used
+        % to check for the range of planes
+        k=12;
         s=['s=my_get(handles.edit',num2str(k),',''string'');'];
         eval(s);
         p.images{jj}=str2num(s);
         
         % fill image scale:
-        % edit fields with the image scale are edit33:edit18 and edit55
+        % edit fields with the image scale are edit33:edit39 and edit76
         if ii<8, k=ii+32; else, k=76; end;
         s=['s=my_get(handles.edit',num2str(k),',''string'');'];
         eval(s);
@@ -83,8 +86,11 @@ if uss
             % fill expression scale string:
             s=['s=my_get(handles.edit',num2str(k2),',''string'');'];
             eval(s);
-            p.special_scale{jj}=str2num(s);
-            
+            if ~isempty(str2num(s))
+                p.special_scale{jj}=str2num(s);
+            else
+                p.special_scale{jj}=s;
+            end;
         end;
         
     end;

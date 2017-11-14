@@ -217,5 +217,7 @@ maxs=str2num(get(handles.edit2,'string'));
 imagesc(im,[mins, maxs]);
 set(handles.axes1,'xtick',[],'ytick',[],'dataaspectratio',[1 1 1]);
 colorbar('EastOutside');
-colormap(clut);
+%colormap(clut);
+global additional_settings;
+colormap(get_colormap(additional_settings.colormap));
 
