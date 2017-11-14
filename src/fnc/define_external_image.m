@@ -28,7 +28,8 @@ if isfield(p,'fdir')
                 imagesc(ext_im);
                 set(gca,'dataaspectratio',[1 1 1]);
                 colorbar;
-                colormap(clut);
+                global additional_settings;
+                colormap(get_colormap(additional_settings.colormap));
             else
                 image(ext_im);
                 set(gca,'dataaspectratio',[1 1 1]);

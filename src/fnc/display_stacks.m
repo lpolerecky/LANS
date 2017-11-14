@@ -89,4 +89,6 @@ ylim([0 l]);
 set(gca,'TickDir','out','xticklabel',[],'yticklabel',[], ...
     'DataAspectRatio',[max([xDARy yDARy]), yDARx 1],'FontSize',8)
 
-colormap(clut);
+%colormap(clut);
+global additional_settings;
+colormap(get_colormap(additional_settings.colormap));

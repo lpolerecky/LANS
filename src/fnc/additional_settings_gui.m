@@ -328,6 +328,9 @@ end;
 if isfield(h.additional_settings,'display_trend_lines')
     set(h.checkbox11,'Value',h.additional_settings.display_trend_lines);
 end;
+if isfield(h.additional_settings,'colormap')
+    set(h.popupmenu1,'Value',h.additional_settings.colormap);
+end;
 
 
 function h=get_values(h)
@@ -443,6 +446,12 @@ if isfield(h,'checkbox11')
     d.display_trend_lines = get(h.checkbox11,'value');
 else
     d.display_trend_lines = 1;
+end;
+
+if isfield(h,'popupmenu1')
+    d.colormap = get(h.popupmenu1,'value');
+else
+    d.colormap = 1;
 end;
 
 h.additional_settings = d;

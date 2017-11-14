@@ -59,6 +59,11 @@ if(nargin>3)
     immasses = varargin{3};
     fdir = varargin{4};
     name_prefix = varargin{5};
+    if length(varargin)>5
+        imagestack_conf = varargin{6};
+    else
+        imagestack_conf = 1;
+    end;
     nom=min([length(imagestack), 6]);
     for ii=1:nom
         if(isempty(imscales{ii}))
@@ -66,6 +71,7 @@ if(nargin>3)
         end;
     end;
     handles.imagestack = imagestack;
+    handles.imagestack_conf = imagestack_conf;
     handles.imscales = imscales;
     handles.immasses = immasses;
     handles.fdir = fdir;
@@ -74,7 +80,7 @@ if(nargin>3)
     handles.fid = handles.figure1;
     set(handles.popupmenu2,'value',1);
     set(handles.text3,'string',num2str(size(handles.imagestack{1},3)));
-    display_images(imagestack,imscales,immasses,1,handles,hObject,1);
+    display_images(imagestack,imscales,immasses,1,handles,hObject,1, imagestack_conf);
 end;
 
 if name_prefix == 'm'
@@ -155,17 +161,17 @@ if(n<1)
     n=1;
 end;
 set(handles.text1,'string',num2str(n));
-display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0);
+display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
 a=0;
 
 function fid=pushbutton7_Callback(hObject, eventdata, handles)
 set(handles.text1,'string','1');
-fid=display_images(handles.imagestack,handles.imscales,handles.immasses,1,handles,hObject,0);
+fid=display_images(handles.imagestack,handles.imscales,handles.immasses,1,handles,hObject,0,handles.imagestack_conf);
 
 function pushbutton9_Callback(hObject, eventdata, handles)
 nmax=str2num(get(handles.text3,'String'));
 set(handles.text1,'string',num2str(nmax));
-display_images(handles.imagestack,handles.imscales,handles.immasses,nmax,handles,hObject,0);
+display_images(handles.imagestack,handles.imscales,handles.immasses,nmax,handles,hObject,0,handles.imagestack_conf);
 
 % --- Executes on button press in pushbutton5.
 function fid=pushbutton5_Callback(hObject, eventdata, handles)
@@ -181,7 +187,7 @@ if(n<1)
     n=1;
 end;
 set(handles.text1,'string',num2str(n));
-fid=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0);
+fid=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
 a=0;
 
 % --- Executes on button press in pushbutton1.
@@ -206,9 +212,9 @@ function checkbox2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 nmax=str2num(get(handles.text3,'String'));
 n=str2num(get(handles.text1,'String'));
-fid=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0);
+fid=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
 
-function fid=display_images(im,scales,masses,n,handles,hObject,sr)
+function fid=display_images(im,scales,masses,n,handles,hObject,sr,im_conf)
 
 fid=handles.figure1;
 if(sr)
@@ -231,9 +237,14 @@ for ii=1:min([length(im) 8])
     if scales{ii}(1)==scales{ii}(2)
         scales{ii}(2)=scales{ii}(1)+1;
     end;
-    a=im{ii}(:,:,n);
-    s=scales{ii};
-    t=masses{ii};
+    a = im{ii}(:,:,n);
+    if iscell(im_conf)
+        a_conf = im_conf{ii}(:,:,n);
+    else
+        a_conf = ones(size(a));
+    end;
+    s = scales{ii};
+    t = masses{ii};
     % if log-scale requested, adjust the scale so that 0 will become 1
     if get(handles.checkbox2,'value')==1
         if s(1)==0
@@ -244,10 +255,14 @@ for ii=1:min([length(im) 8])
                 s(1)=1e-4;
             end;
         end;
-        imagesc(log10(double(a)), log10(double(s)));
+        %imagesc(log10(double(a)), log10(double(s)));
+        cmap = get(handles.popupmenu2,'value');
+        imagesc_conf(log10(double(a)), log10(double(s(1))), log10(double(s(2))), a_conf, cmap);
         title(['log(', t, ')'], 'FontSize',10,'fontweight','normal');
     else
-        imagesc(a, s);
+        %imagesc(a, s);
+        cmap = get(handles.popupmenu2,'value');
+        imagesc_conf(a, s(1), s(2), a_conf, cmap);
         title(t,'FontSize',10,'fontweight','normal');
     end;
     if(sr)
@@ -260,16 +275,6 @@ for ii=1:min([length(im) 8])
     %b=colorbar('location','SouthOutside','FontSize',8);
     %set(b,'OuterPosition',[0.105 0.005 0.8 0.0467]);
 end;
-switch get(handles.popupmenu2,'value')
-    case 1, cmap=clut;
-    case 2, cmap=gray;
-    case 3, cmap=jet;
-    case 4, cmap=hot;
-    case 5, cmap=bone;
-    case 6, cmap=pink;
-    otherwise, cmap=clut;
-end;
-colormap(cmap);
 
 % display masses in a separate window that will be then exported as PNG
 if handles.flag
@@ -285,6 +290,7 @@ if handles.flag
     w=size(im{1},2);    
     h=size(im{1},1);    
     immat=zeros(jmax*h,noc*w);
+    immat_conf=zeros(jmax*h,noc*w);
     
     % assemble images into a big matrix
     k=0;
@@ -293,6 +299,7 @@ if handles.flag
             k=k+1;
             if k<=nim
                 a=double(im{k}(:,:,n));
+                a_conf = double(im_conf{k}(:,:,n));
                 s=double(scales{k});
                 if get(handles.checkbox2,'value')==1
                     if s(1)==0
@@ -312,14 +319,17 @@ if handles.flag
                 ind=find(ims>size(clut,1));
                 if ~isempty(ind), ims(ind)=size(clut,1)*ones(size(ind)); end;
                 immat((jj-1)*h+[1:h],(ii-1)*w+[1:w])=ims;
+                immat_conf((jj-1)*h+[1:h],(ii-1)*w+[1:w])=a_conf;
             end;
         end;
     end;
     % display the assembled image
     f31=my_figure(31);
     fpos=get(f31,'position');
-    imagesc(immat);
-    colormap(cmap);
+    a = imagesc_conf(immat, min(immat(:)), max(immat(:)), immat_conf, cmap);
+    %imagesc(immat);
+    %colormap(cmap);
+    
     set(gca,'xtick',[],'ytick',[],'box','off');
     % add mass names and scale
     k=0;
@@ -376,7 +386,7 @@ end
 
 function popupmenu2_Callback(hObject,eventdata,handles)
 i=str2num(get(handles.text1,'String'));
-display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0);
+display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
 
 
 function pushbutton10_Callback(hObject, eventdata, handles)
@@ -412,7 +422,7 @@ if get(handles.checkbox3,'value')==1
         i=str2num(get(handles.text1,'String'));
     end;
     % export last frame and jump to the start
-    fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0);
+    fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
     if get(handles.checkbox2,'value')==1
         fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
     else
@@ -424,7 +434,7 @@ if get(handles.checkbox3,'value')==1
 else
     % export the currently shown frame
     i=str2num(get(handles.text1,'String'));
-    fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0);
+    fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
     if get(handles.checkbox2,'value')==1
         fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
     else

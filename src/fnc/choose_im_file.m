@@ -18,16 +18,23 @@ workdir=fixdir(workdir);
 
 % select file(s)
 
-if multiple
-    [FileName,newdir,newext] = uigetfile({'*.im', 'Cameca IM file'; ...
-        '*.im.zip','Compressed Cameca IM file (*.im.zip)'}, ...
-        'Select *.IM or *.IM.zip file (+Ctrl for multiple)', workdir, ...
-        'MultiSelect', 'on');
-else
-    [FileName,newdir,newext] = uigetfile({'*.im', 'Cameca IM file'; ...
+if multiple==0
+    [FileName,newdir,newext] = uigetfile({'*.im', 'Cameca IM file (*.im)'; ...
         '*.im.zip','Compressed Cameca IM file (*.im.zip)'}, ...
         'Select *.IM or *.IM.zip file', workdir, ...
         'MultiSelect', 'off');
+elseif multiple==1
+    [FileName,newdir,newext] = uigetfile({'*.im', 'Cameca IM file (*.im)'; ...
+        '*.im.zip','Compressed Cameca IM file (*.im.zip)'}, ...
+        'Select *.IM or *.IM.zip file (+Ctrl for multiple)', workdir, ...
+        'MultiSelect', 'on');
+elseif multiple==2 % this is used when loading the accumulated data, without the need to have the original im data 
+    [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS preferences file (*.mat)'}, ...
+        'Select LANS preferences file', workdir, ...
+        'MultiSelect', 'off');
+    [newdir fname]=fileparts(newdir(1:end-1));
+    [newdir]= [newdir filesep];
+    FileName = [fname filesep FileName];
 end;
 
 % parse the selected filenames
@@ -39,7 +46,11 @@ if ~iscell(FileName)
        fn = approve_imfile([newdir FileName]);
        if ~isempty(fn) 
            imfile{1} = fn;
-           dname{1} = get_outdirectory(fn,newext);
+           if multiple~=2
+               dname{1} = get_outdirectory(fn,newext);
+           else
+               dname{1} = newdir;
+           end;
        end;
     end;
         

@@ -4,7 +4,7 @@ if nargin<2
    load_accumulated = 0;
 end;
 
-[imfile dname] = choose_im_file(handles, 0);
+[imfile dname] = choose_im_file(handles, load_accumulated);
 
 if isempty(imfile)
     p = [];
@@ -18,13 +18,13 @@ else
     end;
     
     % read the raw data
-    p = read_cameca_image(imfile{1}, ask_for_planes, load_accumulated);
-    
-    % apply dead-time correction
+    p = read_cameca_image(imfile{1}, ask_for_planes, load_accumulated, handles);        
+        
     if ~load_accumulated
+        % apply dead-time correction
         p.im = apply_dtc(p.im, handles.dtc, p.dwell_time);
     end;
-    
+        
     % set as not aligned
     p.planes_aligned = 0;
     

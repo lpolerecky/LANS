@@ -25,13 +25,13 @@ Maskimg=CELLS;
 
 % text-based interaction
 if 0
-disp('Available methods:')
-disp('1: add by drawing of ROIs');
-disp('2: add by manual selection of cell centers and thresholding');
-disp('3: add by dividing cells with a line');
-disp('4: remove by selecting undesired cells');
+    disp('Available methods:')
+    disp('1: add by drawing of ROIs');
+    disp('2: add by manual selection of cell centers and thresholding');
+    disp('3: add by dividing cells with a line');
+    disp('4: remove by selecting undesired cells');
 
-method = input('Which method should be used? ');
+    method = input('Which method should be used? ');
 end;
 
 if(method==1)
@@ -86,7 +86,8 @@ if(method==5)
     fn=figure(50); 
     hold off; 
     imagesc(Maskimg,ps);
-    colormap(clut);
+    global additional_settings;
+    colormap(get_colormap(additional_settings.colormap));
     figure(fn); hold on;
     cp=plot(c(:,1),c(:,2),'ro');
     happy=0;

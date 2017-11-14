@@ -1,4 +1,4 @@
-function [h, position]=add_line(s)
+function [h, position]=add_lans_line(s)
 fprintf(1,'Add LINE using the mouse. DOUBLE-CLICK on the LINE to finalize its definition.\n');
 h = imline(s);
 addNewPositionCallback(h,@(p) title(mat2str([min(p) max(p)],3)));

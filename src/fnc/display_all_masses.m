@@ -3,11 +3,12 @@ function display_all_masses(handles)
 p=handles.p;
 fontsize = 8;
 font_gap = 1;
+global additional_settings;
 
 nmasses = length(p.mass);
 nscales = length(p.imscale);
-if nmasses>nscales
-    global additional_settings;
+
+if nmasses>nscales    
     for ii=1:(nmasses-nscales)
         %p.imscale{nscales+ii} = quantile(p.accu_im{nscales+ii}(:),additional_settings.autoscale_quantiles);
         p.imscale{nscales+ii} = round(find_image_scale(p.accu_im{nscales+ii}(:)));
@@ -45,7 +46,8 @@ else
     
     
     % assemble images into a big matrix
-    def_cmat = clut(64);
+    def_cmat = get_colormap(additional_settings.colormap);    
+    %def_cmat = clut(64);
     k=0;
     for jj=1:jmax
         for ii=1:noc
@@ -83,7 +85,8 @@ else
     im=im2;
     % display the assembled image
     imagesc(im);
-    colormap(def_cmat);
+    %colormap(def_cmat);
+    %colormap(get_colormap(additional_settings.colormap));
     set(gca,'xtick',[],'ytick',[],'box','off');
     % add mass names and scale
     k=0;
@@ -110,20 +113,20 @@ else
         end;
     end;
     
+    % export figure as PNG
+    fout=[p.filename '.png'];
+    global additional_settings;
+    pf = additional_settings.print_factors(1);
+    w=7;
+    set(f31,'PaperPosition',[0.25 0.5 pf*1.3*w pf*w]);
+    set(f31,'Position',[fpos(1:2) 200*[noc size(im,1)/h]]);
+    set(f31,'toolbar','none');
+    set(gca,'position',[0.0 0.0 1 1]);
+    set(gca,'DataAspectRatio',[1 1 1]);
+    set(f31,'PaperPositionMode','auto')
+    print(f31,fout,'-dpng');
+    fprintf(1,'Summary figure exported to %s\n',fout);
+
+    a=0;
+
 end;
-
-% export figure as PNG
-fout=[p.filename '.png'];
-global additional_settings;
-pf = additional_settings.print_factors(1);
-w=7;
-set(f31,'PaperPosition',[0.25 0.5 pf*1.3*w pf*w]);
-set(f31,'Position',[fpos(1:2) 200*[noc size(im,1)/h]]);
-set(f31,'toolbar','none');
-set(gca,'position',[0.0 0.0 1 1]);
-set(gca,'DataAspectRatio',[1 1 1]);
-set(f31,'PaperPositionMode','auto')
-print(f31,fout,'-dpng');
-fprintf(1,'Summary figure exported to %s\n',fout);
-
-a=0;

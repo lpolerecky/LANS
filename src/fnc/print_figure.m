@@ -1,5 +1,11 @@
 function print_figure(f,fname,print_factor)
 
+[a b c]=fileparts(fname);
+if ~exist(a)
+    mkdir(a);
+    fprintf(1,'Output folder created: %s\n',a);
+end;
+
 set(f,'PaperPosition',[0.25 2.5 print_factor*5 print_factor*5]);
 
 if matversion>=2015

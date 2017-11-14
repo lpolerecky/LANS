@@ -93,6 +93,10 @@ if(exist(fname)==2)
         s.shift_columns_rows = [0 0 0 0];
     end;
     
+    if isfield(h,'raster_size')
+        set(s.text46,'string',num2str(h.raster_size));
+    end;
+    
     % additional settings (implemented in version 03-09-2012)
     global additional_settings;
     if strcmp(name,'nanosimsini')       
@@ -113,10 +117,13 @@ if(exist(fname)==2)
                 q.compress_pdf = 1;            
                 q.always_display_rois = 0;
                 q.title_length = 40;
-                q.defFontSize = 16;
+                q.defFontSize = 12;
                 q.include_scale_text = 1;
                 q.scale_bar_length = 3;
-                q.autoscale_quantiles = [0.001 0.999];                    
+                q.autoscale_quantiles = [0.001 0.999];    
+                q.display_error_bars = 1;
+                q.display_trend_lines = 1;
+                q.colormap = 1;
                 additional_settings = q;
             else
                 if length(additional_settings.print_factors)<6
@@ -155,6 +162,16 @@ if(exist(fname)==2)
                 if ~isfield(h.additional_settings,'autoscale_quantiles')
                     additional_settings.autoscale_quantiles = [0.001 0.999];
                 end;
+                if ~isfield(h.additional_settings,'display_error_bars')
+                    additional_settings.display_error_bars = 1;
+                end;
+                if ~isfield(h.additional_settings,'display_trend_lines')
+                    additional_settings.display_trend_lines = 1;
+                end;
+                if ~isfield(h.additional_settings,'colormap')
+                    additional_settings.colormap = 1;
+                end;
+
             end;
         else
             % these are default values tested on my computer
@@ -171,10 +188,13 @@ if(exist(fname)==2)
             q.compress_pdf = 1;            
             q.always_display_rois = 0;
             q.title_length = 40;
-            q.defFontSize = 16;
+            q.defFontSize = 12;
             q.include_scale_text = 1;
             q.scale_bar_length = 3;
             q.autoscale_quantiles = [0.001 0.999];
+            q.display_error_bars = 1;
+            q.display_trend_lines = 1;
+            q.colormap = 1;            
             additional_settings = q;
         end;
     end;
