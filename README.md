@@ -47,15 +47,15 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
   - required packages `graphicx`, `geometry` and `hyperref`
   - use LaTeX distributions: TeX live package (Linux), MikTeX (Windows), MacTex (MacOS)
 - Install a program for **decompressing zip files**
-  - 7-Zip (freeware) is recommended for Windows.
-  - Linux and MacOS systems have it by default (unzip).
+  - `7-Zip` (freeware) is recommended for Windows.
+  - Linux and MacOS systems have it by default (`unzip`).
 - Download the latest stable version of LANS from the **download** folder in this GitHub repository, and unzip it in a folder of your choice. 
 
 ## Running LANS
 
 Before running LANS for the **first time**, it is recommended to read carefully the files `lookatnanosims.m` and `paths.m` to check system-specific settings.
 
-Start Matlab and set Matlab's working directory to the folder where you unzipped LANS. In the Matlab console, type `pwd` and then `ls`, both followed by pressing the Enter key, to check that you are in the correct directory and to ensure that the `lookatnanosims.m` is present. Finally, type **lookatnanosims** and press the Enter key. That's it. This should start the graphical user interface (GUI) of the LANS program.
+Start Matlab and set Matlab's working directory to the folder where you unzipped LANS. In the Matlab console, type `pwd` and then `ls`, both followed by pressing the Enter key, to check that you are in the correct directory and to ensure that the file `lookatnanosims.m` is present. Finally, type `lookatnanosims` and press the Enter key. That's it. This should start the graphical user interface (GUI) of the LANS program.
 
 ## Citation
 
