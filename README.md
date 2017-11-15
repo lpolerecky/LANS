@@ -49,7 +49,7 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
 - Install a program for **decompressing zip files**
   - `7-Zip` (freeware) is recommended for Windows.
   - Linux and MacOS systems have it by default (`unzip`).
-- Download the latest stable version of LANS from the **download** folder in this GitHub repository, and unzip it in a folder of your choice. 
+- **Download** the latest stable version of LANS from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0), and unzip it in a folder of your choice. 
 
 ## Running LANS
 
