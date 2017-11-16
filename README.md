@@ -4,7 +4,7 @@
 
 Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS image data produced by the Cameca NanoSIMS 50L instrument. It is distributed as a Matlab code, thus requires Matlab (proprietary software) installed on your system to run.
 
-The software was written by Lubos Polerecky (LP) with input from his colleagues at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Presently, LP keeps maintaining and further developing the software at Utrecht University, The Netherlands, with input from hist colleagues and other users from institutions around the world.
+The software was written by Lubos Polerecky (LP) with input from his colleagues at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Presently, LP keeps maintaining and further developing the software at Utrecht University, The Netherlands, with input from his colleagues and other users from institutions around the world.
 
 ## Features
 
@@ -55,4 +55,4 @@ Note that LANS is under **continuous development**, with bugs fixed and new feat
 
 ## Contact
 
-[E-mail](mailto:l.polerecky (at-sign) uu.nl) LP if you experience problems, find bugs, or if you would like to have new features added to, or participate in the development of, the software.
+E-mail LP at `l (dot) polerecky (at-sign) uu (dot) nl` if you experience problems, find bugs, or if you would like to have new features added to, or participate in the development of, the software.
