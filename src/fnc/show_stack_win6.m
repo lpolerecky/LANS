@@ -290,7 +290,7 @@ if handles.flag
     w=size(im{1},2);    
     h=size(im{1},1);    
     immat=zeros(jmax*h,noc*w);
-    immat_conf=zeros(jmax*h,noc*w);
+    immat_conf=ones(jmax*h,noc*w);
     
     % assemble images into a big matrix
     k=0;
@@ -299,7 +299,11 @@ if handles.flag
             k=k+1;
             if k<=nim
                 a=double(im{k}(:,:,n));
-                a_conf = double(im_conf{k}(:,:,n));
+                if iscell(im_conf)
+                    a_conf = double(im_conf{k}(:,:,n));
+                else
+                    a_conf = ones(size(a));
+                end;
                 s=double(scales{k});
                 if get(handles.checkbox2,'value')==1
                     if s(1)==0

@@ -1,6 +1,12 @@
 function [a xt xtl cmap] = imagesc_conf(IM, mi, ma, HI, colmap, colorbarpos)
 % display image with the hue intensity modified by HI correction
 
+if nargin>5
+    cbpos = colorbarpos;
+else
+    cbpos = 0;
+end;
+
 cmap = get_colormap(colmap);
 
 % display the image as normal, to find out the colorbar scaling
@@ -9,17 +15,27 @@ cmap = get_colormap(colmap);
     % when no correction for the SI counts is requested
 a=imagesc(IM,[mi ma]);
 colormap(cmap);
-if colorbarpos==2
-    cb = colorbar('location','southoutside');
-    xylim = 'x';
+
+if cbpos ~= 0
+    
+    if cbpos==2
+        cb = colorbar('location','southoutside');
+        xylim = 'x';
+    else
+        cb = colorbar('location','eastoutside');
+        xylim = 'y';
+    end;
+    xt=get(cb,[xylim 'tick']);
+    xtl=get(cb,[xylim 'ticklabel']);
+    delete(cb);
+          
 else
-    cb = colorbar('location','eastoutside');
-    xylim = 'y';
+    
+    xt=[];
+    xtl=[];
+    
 end;
-xt=get(cb,[xylim 'tick']);
-xtl=get(cb,[xylim 'ticklabel']);
-delete(cb);
-            
+
 % apply HI correction, if requested
 if prod(HI(:))~=1
     % first, cut out the darkest colors from the colormap
