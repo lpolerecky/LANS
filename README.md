@@ -4,6 +4,8 @@
 
 Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS image data produced by the Cameca NanoSIMS 50L instrument. It is distributed as a Matlab code, thus requires Matlab (proprietary software) installed on your system to run.
 
+The software was written by Lubos Polerecky (LP) with input from his colleagues at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Presently, LP keeps maintaining and further developing the software at Utrecht University, The Netherlands, with input from hist colleagues and other users from institutions around the world.
+
 ## Features
 
 - **Loading** of secondary ion counts (SIC) image data (Cameca *.im files)
@@ -39,23 +41,9 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
   - depth profiles in ROIs
   - automated reprocessing of previously processed datasets
 
-## Installation instructions
+## How to install, run and use LANS
 
-- Install **Matlab**. You will need the **core** Matlab and the **image processing and statistical toolboxes**. Presently, LANS requires **Matlab 2013b**. The use of a newer Matlab version is not recommended because some of the features introduced by the release of Matlab 2014a (a major overhaul of graphics) have not been fully implemented/updated in LANS.
-- Install **LaTeX**. This is required to support export of graphical output as tagged PDF documents. 
-  - required executables: `epstopdf` and `pdflatex`
-  - required packages `graphicx`, `geometry` and `hyperref`
-  - use LaTeX distributions: TeX live package (Linux), MikTeX (Windows), MacTex (MacOS)
-- Install a program for **decompressing zip files**
-  - `7-Zip` (freeware) is recommended for Windows.
-  - Linux and MacOS systems have it by default (`unzip`).
-- **Download** the latest stable version of LANS from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0), and unzip it in a folder of your choice. 
-
-## Running LANS
-
-Before running LANS for the **first time**, it is recommended to read carefully the files `lookatnanosims.m` and `paths.m` to check system-specific settings.
-
-Start Matlab and set Matlab's working directory to the folder where you unzipped LANS. In the Matlab console, type `pwd` and then `ls`, both followed by pressing the Enter key, to check that you are in the correct directory and to ensure that the file `lookatnanosims.m` is present. Finally, type `lookatnanosims` and press the Enter key. That's it. This should start the graphical user interface (GUI) of the LANS program.
+Instructions for installing, running and using LANS are documented on [this dedicated website](http://nanosims.geo.uu.nl) maintained by LP.
 
 ## Citation
 
@@ -67,4 +55,4 @@ Note that LANS is under **continuous development**, with bugs fixed and new feat
 
 ## Contact
 
-[E-mail](mailto:l.polerecky@uu.nl) the main developer (LP) if you experience problems, or if you would like to have new features added to, or participate in the development of, the program.
+[E-mail](mailto:l.polerecky (at-sign) uu.nl) LP if you experience problems, find bugs, or if you would like to have new features added to, or participate in the development of, the software.
