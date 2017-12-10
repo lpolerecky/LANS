@@ -43,7 +43,7 @@ The software was written by Lubos Polerecky (LP) with input from his colleagues 
 
 ## How to install, run and use LANS
 
-Instructions for installing, running and using LANS are documented on [this dedicated website](http://nanosims.geo.uu.nl) maintained by LP.
+Instructions for installing, running and using LANS are documented on [this dedicated website](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans) maintained by LP.
 
 ## Citation
 

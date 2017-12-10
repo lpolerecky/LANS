@@ -6,9 +6,15 @@ rgb7=[];
 rgb8=[];
 
 % find the indices of the images that will be combined into RGB
-i1=str2num(my_get(handles.edit59,'string'));
-i2=str2num(my_get(handles.edit60,'string'));
-i3=str2num(my_get(handles.edit61,'string'));
+if iscell(handles)
+    i1 = handles{1};
+    i2 = handles{2};
+    i3 = handles{3};
+else    
+    i1=str2num(my_get(handles.edit59,'string'));
+    i2=str2num(my_get(handles.edit60,'string'));
+    i3=str2num(my_get(handles.edit61,'string'));
+end;
 xl=[]; yl=[]; zl=[]; xs=[]; ys=[]; zs=[];
 
 % check whether the settings for the RGB display/calculation match with

@@ -802,7 +802,12 @@ function generate_pdf_xyz_separately_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 s=get_processing_settings(handles);
-output_to_pdf_xyz(s);
+if hObject == handles.generate_pdf_xyz_separately
+    output_to_pdf_xyz(s);
+end;
+if hObject == handles.generate_pdf_xyz_rgb
+    output_to_pdf_rgb(s);
+end;
 
 function plotstests2pdf_Callback(hObject, eventdata, handles)
 s=get_processing_settings(handles);

@@ -336,6 +336,7 @@ if o1(6)
             if xylim=='x'
                     for kk=1:size(xtl_auto,1)
                     sk = xtl_auto(kk,:);
+                    if iscell(sk), sk=sk{1}; end;
                     indsp=findstr(sk,' ');
                     if length(indsp)>0
                         numsp=ceil(length(indsp)/2);
