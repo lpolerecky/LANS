@@ -97,7 +97,7 @@ if opt1(3) | opt1(6) | opt1(10) | opt1(5) | opt1(13) | opt1(14)
             [rgb7, rgb8, xl, yl, zl] = ...
                 construct_RGB_image(handles,p.mass,p.imscale,p.Maskimg,p.accu_im,p.accu_im,opt1);
             
-            display_RGB_image(rgb7, rgb8, p, opt1, tit, xl, yl, zl,handles);
+            display_RGB_image(rgb7, rgb8, p, opt1, tit, xl, yl, zl,get(handles.edit62,'string'));
             
         end;
         

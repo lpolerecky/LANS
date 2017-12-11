@@ -4,16 +4,17 @@ p1 = load_masses_parameters(handles);
 k=identifyMass(p1.mass,p1.alignment_mass);
 
 % view the alignment mass and select which images should be deselected
-switch k,
-    case 2, images=str2num(get(handles.edit13,'string'));
-    case 3, images=str2num(get(handles.edit14,'string'));
-    case 4, images=str2num(get(handles.edit15,'string'));
-    case 5, images=str2num(get(handles.edit16,'string'));
-    case 6, images=str2num(get(handles.edit17,'string'));
-    case 7, images=str2num(get(handles.edit18,'string'));
-    case 8, images=str2num(get(handles.edit75,'string'));
-    otherwise, images=str2num(get(handles.edit12,'string'));
-end;
+% switch k,
+%     case 2, images=str2num(get(handles.edit13,'string'));
+%     case 3, images=str2num(get(handles.edit14,'string'));
+%     case 4, images=str2num(get(handles.edit15,'string'));
+%     case 5, images=str2num(get(handles.edit16,'string'));
+%     case 6, images=str2num(get(handles.edit17,'string'));
+%     case 7, images=str2num(get(handles.edit18,'string'));
+%     case 8, images=str2num(get(handles.edit75,'string'));
+%     otherwise, 
+      images=str2num(get(handles.edit12,'string'));
+% end;
 all_images=[1:size(handles.p.im{1},3)];
 if(isempty(images))
     images=all_images;

@@ -1,11 +1,9 @@
-function display_RGB_image(rgb7, rgb8, p, opt1, tit, xl, yl, zl,h)
+function [rgb7_fname, rgb8_fname] = display_RGB_image(rgb7, rgb8, p, opt1, tit, xl, yl, zl, cw)
 % display the rgb image, with some simple formating, and export it as eps
 % and 16-bit tif
-if matversion==2015
-defFontSize=10;
-else
-defFontSize=14;
-end;
+
+rgb7_fname=[];
+rgb8_fname=[];
 
 global additional_settings;
 
@@ -25,24 +23,21 @@ if(~isempty(rgb7) | ~isempty(rgb8))
             set(gca,'DataAspectRatio',[1 1 1],'xtick',[],'ytick',[]);
             % include title, if requested
             if opt1(15)
+                xlab=['R=',xl,'; G=',yl,'; B=',zl];
                 if(~isempty(tit))
-                    tit2=[tit];
-                    xlab=['R=',xl,'; G=',yl,'; B=',zl];
-                    if(length(tit2)>38)
-                        tit2=['...',tit2([(length(tit2)-38):length(tit2)])];
+                    tit2=[tit];                    
+                    if(length(tit)>additional_settings.title_length)
+                        tit=['...',tit([(length(tit)-additional_settings.title_length):length(tit)])];
                     end;
-                    xlabel(tit2,'interpreter','none','fontweight','normal','FontSize',additional_settings.defFontSize);
-                    title(xlab,'interpreter','none','fontweight','normal','FontSize',additional_settings.defFontSize);
-                else
-                    title(['R=',xl,'; G=',yl,'; B=',zl],'interpreter','none','fontweight','normal','FontSize',additional_settings.defFontSize);
-                    %xl=xlabel('');
-                    %delete(xl);
+                    title(tit,'interpreter','none','fontweight','normal',...
+                        'FontSize',additional_settings.defFontSize);
                 end;
+                xlabel(xlab,'interpreter','none','fontweight','normal',...
+                    'FontSize',additional_settings.defFontSize);
             end;
             
             % add scale line
-            cw=get(h.edit62,'string');
-            if(isempty(cw))
+            if isempty(cw)
                 cw = 'w';
             end;
             add_scale_line(p.scale,rgb7(:,:,1),cw);
@@ -85,7 +80,12 @@ if(~isempty(rgb7) | ~isempty(rgb8))
                 end;
                 print_figure(mf,xyfile,additional_settings.print_factors(1));
                 %fprintf(1,'RGB image saved as %s\n', xyfile);
-                mepstopdf(xyfile,'epstopdf');
+                outfname = mepstopdf(xyfile,'epstopdf');
+                if ii==1
+                    rgb7_fname = outfname;
+                else
+                    rgb8_fname = outfname;                    
+                end;
                 xyfile=convert_string_for_texoutput([xyfile0,ext]);
                 xyfile=[xyfile, '.tif'];
                 tifdir=[p.fdir,'tif'];

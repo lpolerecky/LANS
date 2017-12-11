@@ -406,7 +406,7 @@ if opt1(9)
                     xyfile=[xyfile,'-hist2d.eps'];
                     fdir = [p.fdir,'eps'];
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
-                    print_figure(f2d,xyfile,additional_settings.print_factors(2));
+                    print_figure(f2d,xyfile,additional_settings.print_factors(2)*[6/5 1]);
                     mepstopdf(xyfile,'epstopdf');
                 end;
             end;

@@ -153,7 +153,11 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 nmax=str2num(get(handles.text3,'String'));
-n=str2num(get(handles.text1,'String'))-1;
+nstep=1;
+if hObject == handles.pushbutton12
+    nstep = round(nmax/10);
+end;
+n=str2num(get(handles.text1,'String'))-nstep;
 if(n>nmax)
     n=nmax;
 end;
@@ -179,7 +183,11 @@ function fid=pushbutton5_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 nmax=str2num(get(handles.text3,'String'));
-n=str2num(get(handles.text1,'String'))+1;
+nstep=1;
+if hObject == handles.pushbutton11
+    nstep = round(nmax/10);
+end;
+n=str2num(get(handles.text1,'String'))+nstep;
 if(n>nmax)
     n=nmax;
 end;
@@ -256,14 +264,16 @@ for ii=1:min([length(im) 8])
             end;
         end;
         %imagesc(log10(double(a)), log10(double(s)));
+        %cmap = get(handles.popupmenu2,'value');
         cmap = get(handles.popupmenu2,'value');
         imagesc_conf(log10(double(a)), log10(double(s(1))), log10(double(s(2))), a_conf, cmap);
         title(['log(', t, ')'], 'FontSize',10,'fontweight','normal');
     else
         %imagesc(a, s);
+        %cmap = get(handles.popupmenu2,'value');
         cmap = get(handles.popupmenu2,'value');
         imagesc_conf(a, s(1), s(2), a_conf, cmap);
-        title(t,'FontSize',10,'fontweight','normal');
+        title(t,'FontSize',9,'fontweight','normal');
     end;
     if(sr)
         a=im{ii};
@@ -271,7 +281,7 @@ for ii=1:min([length(im) 8])
         disp(s1);
     end;
     %set(handles.axes1,'xtick',[],'ytick',[],'dataaspectratio',[1 1 1]);
-    set(ax,'dataaspectratio',[1 1 1],'xtick',[],'ytick',[],'FontSize',12,'box','on');
+    set(ax,'dataaspectratio',[1 1 1],'xtick',[],'ytick',[],'box','on'); %,'FontSize',10);
     %b=colorbar('location','SouthOutside','FontSize',8);
     %set(b,'OuterPosition',[0.105 0.005 0.8 0.0467]);
 end;

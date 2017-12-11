@@ -25,178 +25,265 @@ global CELLSFILE;
 global MAT_EXT;
 
 if(~isempty(foutname))
-    % generate the PDF-LaTeX file for each variable
+    % export variable image to pdf and tif for each file in the metafile
     
-    fntex = [];
-    for m=1:6
-        if(length(all{1})>=m)
-            if(~isempty(all{1}{m}))
-                if(~strcmp(lower(all{1}{m}),'x') & ~strcmp(lower(all{1}{m}),'y') & ~strcmp(lower(all{1}{m}),'l2d'))
-                    ms = all{1}{m};
-                    ms=convert_string_for_texoutput(ms);
-                    if m==1
-                        fntex = ms;
-                    else
-                        fntex = [fntex '--' ms];
-                    end;
-                end;
-            end;
-        end;
-    end;
-    fntex = [foutname delimiter fntex '.tex'];        
-
-    [fdir, fn, fext] = fileparts(fntex);
-    if ~isdir(fdir)
-        mkdir(fdir);
-    end;
-
-    %fid=fopen(fntex,'w');
-    fid=1;
-    fprintf(fid,'\\documentclass[12pt,a4paper]{article}\n');
-    fprintf(fid,'\\usepackage{graphicx}\n');
-    fprintf(fid,'\\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}\n');
-    fprintf(fid,'\\usepackage[bookmarksopen=true,pdfauthor=Look@NanoSIMS,pdftitle=%s,pdfsubject=%s]{hyperref}\n',...
-        regexprep(s.metafile,'\','/'),fn);
-    fprintf(fid,'\\begin{document}\n');
-    fprintf(fid,'\\begin{center}\n');
+    rgb7_fname = [];
+    rgb8_fname = [];
+    xl = [];
+    yl = [];
+    zl = [];
+    
+    rgb_big = [];
+    rgba_big = [];
+    
     % load the mat file from the disk, redisplay it in the user-specified scale
-    % (if empty, just use the already exported EPS file) and add the code to the LaTeX file
     for j=1:nf
+        
         % load cells image first
         ctmp=[base_dir,fname{j},delimiter,cells_file];
         if(exist(ctmp)==2)
-            c=load(ctmp);
+            c=load(ctmp); fprintf(1,'ROIs loaded from %s.\n',ctmp);
         else
-            fprintf(1,'File %s does not exist. No cells defined.\n',ctmp);
-            c.Maskimg=0;
+            fprintf(1,'File %s does not exist. No ROIs defined.\n',ctmp);
+            c.Maskimg=[];
         end;
         
-        for m=1:3
-            ms = all{1}{m};
-            switch m,
-                case 1, scale=s.xscale1; lscale=s.logscale.x1;
-                case 2, scale=s.yscale1; lscale=s.logscale.y1;
-                case 3, scale=s.xscale2; lscale=s.logscale.x2;
-            end;
-
+        % load and scale the first 3 masses
+        Nrgb = min([3 length(all{1})]);
+        for m=1:Nrgb
             
+            ms = all{1}{m};
+            R{m} = [];
+            Ra{m} = [];
+            
+            % load accumulated ion counts from the mat file
             if ~strcmp(lower(ms),'size')
                 title_ = ms;
                 ms=convert_string_for_texoutput(ms);
                 mtmp=[base_dir,fname{j},delimiter,'mat',delimiter,ms,'.mat'];
-
-                % load matlab file containing the special image and re-print it
-                % with a new scale (if the scale is defined or set to
-                % auto), or use the already exported pdf file (if the scale
-                % is defined as [])
-                if(exist(mtmp))
-
-                    if isempty(strfind(scale,'auto'))
-                        scale = str2num(scale);
-                    end;
-
-                    disp(['Loading data from ',mtmp]);
-                    v=load(mtmp);
-                        
-                    h{m} = m;
-                    p_name{m} = ms;
-                    if isempty(scale)                        
-                        p_scale{m} = v.vscale;
-                    else
-                        p_scale{m} = scale;
-                    end;
-                    Maskimg = c.Maskimg;
-                    if(Maskimg==0)
-                        Maskimg=ones(size(v.IM));
-                    end;
+                if exist(mtmp)
+                    fprintf(1,'Loading data from %s ...',mtmp);
+                    v=load(mtmp); fprintf(1,'done.\n')
                     R{m} = v.IM;
-                    Raa = zeros(size(R{m}));
-                    
-                    % HERE
-                    
-                    Raim{m} = cells2image(R{m},Maskimg);
-                    opt1 = [0 0 0 0 1 0 1 1]; % set opt1 to 1 for log
-                    [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = ...
-                        construct_RGB_image(h,p_name,p_scale,Maskimg,R,Raim,opt1);
-                
-                    display_RGB_image(rgb7, rgb8, p, opt1, tit, xl, yl, zl, handles); 
-
-                    if(~isempty(scale))
-                        disp(['Loading data from ',mtmp]);
-                        v=load(mtmp);
-                        if(c.Maskimg==0)
-                            c.Maskimg=ones(size(v.IM));
-                        end;
-                        if(isfield(v,'xyscale'))
-                            xyscale=v.xyscale;
-                        else
-                            disp(['Warning: Raster not saved in the mat file. Using 50 um by default.']);
-                            xyscale=50;
-                        end;
-                        plotImageCells(10,v.IM,c.Maskimg,[base_dir,fname{j}],title_,[s.outline_color,'-'],scale,...
-                            [s.include_outline s.zero_outside 0 lscale 0 1 0 0 0 0 1 0 0 0 1],s.bw,0,...
-                            xyscale,fname{j},s.cellfile,0,0);
-                        exportImageCells(10,[base_dir,fname{j}],ms,'eps',...
-                            additional_settings.print_factors(1));                                               
-
-                        %exportImageCells(10,[base_dir,fname{j}],ms,'png');
-                    end;
-                    ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,ms];
-                    [pathstr, name, ext] = fileparts(ftmp);
-                    ext='.pdf';
-                    %ext='.png';
-                    if(exist([pathstr,delimiter,name,ext]))
-                        ftmp=[pathstr,delimiter,name];
-                    else
-                        ftmp=[pathstr,delimiter,lower(name)];
-                    end;
-                    ftmp=regexprep(ftmp,'\\','/');
                 else
-                    disp(['*** File ',mtmp,' missing!']);
-                    ftmp=[];
+                    fprintf(1,'WARNING: File %s does not exist.\nRe-run auto-process datasets from Tools menu.\n',mtmp);
                 end;
-                % add the LaTeX entry to the file
-                if(mod(j,2)==1)
-                    fprintf(fid,'%s\n','\begin{tabular}{cc}');
-                    if exist(mtmp)
-                        %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s} &\n',id{j},ftmp);
-                        fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},ftmp);
-                    else
-                        fprintf(fid,'%d: missing &\n',id{j});
-                    end;
-                else
-                    if exist(mtmp)
-                        %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s}\n',id{j},ftmp);
-                        fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},ftmp);
-                    else
-                        fprintf(fid,'%d: missing\n',id{j});
-                    end;
-                    fprintf(fid,'%s\n','\end{tabular}');
+            else
+                fprintf(1,'WARNING: size not supported.\n');
+            end;
+                  
+            % find the scale
+            switch m,
+                case 1, scale=s.xscale1; lscale=s.logscale.x1; xl = ms;
+                case 2, scale=s.yscale1; lscale=s.logscale.y1; yl = ms;
+                case 3, scale=s.xscale2; lscale=s.logscale.x2; zl = ms;
+            end;
+
+            if isempty(strfind(scale,'auto'))
+                scale = str2num(scale);
+            end;
+
+                        
+            if isempty(scale) | ~isempty(strfind(scale,'auto'))
+                scale = find_image_scale(R{m}, 0, 0);
+            end;
+            
+            % average values over ROI pixels
+            Ra{m} = zeros(size(R{m}));
+            if ~isempty(R{m}) & ~isempty(c.Maskimg)
+                rois = setdiff(unique(c.Maskimg(:)),0);
+                nrois = length(rois);                
+                for ii=1:nrois
+                    ind = find(c.Maskimg==rois(ii));
+                    Ra{m}(ind) = mean(R{m}(ind));
                 end;
             end;
-        end;        
-    end;        
-
-    % add \end{tabular} if the number of entries is odd
-    if(mod(j,2)==1)
-        fprintf(fid,'%s\n','\end{tabular}'); 
+            
+            % rescale R and Ra so that min/max = 0/1
+            R{m} = (R{m}-scale(1))/(diff(scale));
+            ind = find(R{m}<0);
+            R{m}(ind) = zeros(size(ind));
+            ind = find(R{m}>1);
+            R{m}(ind) = ones(size(ind));            
+            Ra{m} = (Ra{m}-scale(1))/(diff(scale));
+            ind = find(Ra{m}<0);
+            Ra{m}(ind) = zeros(size(ind));
+            ind = find(Ra{m}>1);
+            Ra{m}(ind) = ones(size(ind));
+            
+            % log-transform, if requested
+            if lscale
+                % the same code as in construct_RGB_image.m
+                minlog=-log10(255);
+                ind0=find(R{m}<10^minlog);
+                R{m}(ind0)=(10^minlog)*ones(size(ind0));
+                R{m} = log10(R{m});
+                % rescale from [-N 0] to [0 1]
+                R{m}=(R{m}-minlog)/(0-minlog);
+                ind0=find(Ra{m}<10^minlog);
+                Ra{m}(ind0)=(10^minlog)*ones(size(ind0));
+                Ra{m} = log10(Ra{m});
+                % rescale from [-N 0] to [0 1]
+                Ra{m}=(Ra{m}-minlog)/(0-minlog);
+            end;
+      
+        end;
+        
+        % construct the RGB images
+        rgb7 = zeros(size(R{1},1),size(R{1},2),3);
+        rgb8 = rgb7;
+        for m=1:Nrgb
+            rgb7(:,:,m)=R{m};
+            rgb8(:,:,m)=Ra{m};
+        end;
+        
+        % prepare the structures required by display_RGB_image
+        p.scale = v.xyscale;
+        p.Maskimg = c.Maskimg;
+        p.fdir = [base_dir,fname{j},delimiter];
+        tit = p.fdir;
+        opt = zeros(1,16);
+        opt([7 8 11 15])=1;
+        opt(1) = s.include_outline;
+        [rgb7_fname{j} rgb8_fname{j}] = display_RGB_image(rgb7, rgb8, p, opt, tit, xl, yl, zl, s.outline_color);
+        
+        rgb_big{j} = rgb7;
+        rgba_big{j} = rgb8;
+        
     end;
-
-    % finish the LaTeX output and close the files        
-    fprintf(fid,'%s\n','\end{center}');
-    fprintf(fid,'%s\n','\end{document}');
-    fclose(fid);
+    
 end;
 
-f10=figure(10);
-close(f10);
-pause(0.1);
+if 0
+    % close figures
+    f37=figure(37); close(f37);
+    f36=figure(36); close(f36);
+    pause(0.1);
+end;
 
-% compile the files with pdflatex
-for m=1:length(fntex)
-    fprintf(1,'LaTeX output files generated in %s\n',fntex{m});
-    mepstopdf(fntex{m},'pdflatex',0);
-    mepstopdf(fntex{m},'pdflatex',1);        
+if(~isempty(foutname))
+    % generate the PDF-LaTeX file
+    
+    for ii=1:2
+        
+        for m=1:6
+            if(length(all{1})>=m)
+                if(~isempty(all{1}{m}))
+                    if(~strcmp(lower(all{1}{m}),'x') & ~strcmp(lower(all{1}{m}),'y') & ~strcmp(lower(all{1}{m}),'l2d'))
+                        ms = all{1}{m};
+                        ms=convert_string_for_texoutput(ms);
+                        if m==1
+                            fntex = ms;
+                        else
+                            fntex = [fntex '--' ms];
+                        end;
+                    end;
+                end;
+            end;
+        end;
+
+        if ii==1
+            fntex = [foutname delimiter fntex '-rgb.tex'];
+            rgb_fname = rgb7_fname;
+        else
+            fntex = [foutname delimiter fntex '-rgba.tex'];
+            rgb_fname = rgb8_fname;
+        end;
+
+        [fdir, fn, fext] = fileparts(fntex);
+        if ~isdir(fdir)
+            mkdir(fdir);
+        end;
+
+        fid=fopen(fntex,'w');
+        %fid=1;
+        fprintf(fid,'\\documentclass[12pt,a4paper]{article}\n');
+        fprintf(fid,'\\usepackage{graphicx}\n');
+        fprintf(fid,'\\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}\n');
+        fprintf(fid,'\\usepackage[bookmarksopen=true,pdfauthor=Look@NanoSIMS,pdftitle=%s,pdfsubject=%s]{hyperref}\n',...
+            regexprep(s.metafile,'\','/'),fn);
+        fprintf(fid,'\\begin{document}\n');
+
+        fprintf(fid,'\\begin{center}\n');
+        
+        for j=1:nf
+            % add the LaTeX entry to the file
+            if(mod(j,2)==1)
+                fprintf(fid,'%s\n','\begin{tabular}{cc}');
+                if exist(rgb7_fname{j})
+                    %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s} &\n',id{j},ftmp);
+                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},rgb7_fname{j});
+                else
+                    fprintf(fid,'%d: missing &\n',id{j});
+                end;
+            else
+                if exist(rgb7_fname{j})
+                    %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s}\n',id{j},ftmp);
+                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},rgb7_fname{j});
+                else
+                    fprintf(fid,'%d: missing\n',id{j});
+                end;
+                fprintf(fid,'%s\n','\end{tabular}');
+            end;        
+        end;        
+        
+        % add \end{tabular} if the number of entries is odd
+        if(mod(j,2)==1)
+            fprintf(fid,'%s\n','\end{tabular}'); 
+        end;
+
+        fprintf(fid,'%s\n','\end{center}');
+        % finish the LaTeX output and close the files            
+        fprintf(fid,'%s\n','\end{document}');
+        fclose(fid);
+        
+        % compile the files with pdflatex
+        fprintf(1,'LaTeX output files generated in %s\n',fntex);
+        mepstopdf(fntex,'pdflatex',0);
+        mepstopdf(fntex,'pdflatex',1);
+    
+        % assemble rgb_big into a big matrix and export it as tif
+        if ii==1
+            rgb = assemble_rgb_big(nf, rgb_big);
+        else
+            rgb = assemble_rgb_big(nf, rgba_big);
+        end;
+        tif_out = [fdir delimiter fn '.tif'];
+        imwrite(uint16(rgb*(2^16-1)),tif_out);
+        fprintf(1,'16-bit RGB image saved as %s\n', tif_out);  
+        
+    end;
+end;
+
+
+function rgb = assemble_rgb_big(nf, rgb_big)
+% assemble the rgb images into a one large single image and export it as
+% tif
+rgb=[];
+nfx = round(sqrt(nf));
+nfy = ceil(nf/nfx);
+k=0;
+for ii=1:nfy
+    rgb1 = [];
+    for jj=1:nfx
+        k=k+1;
+        if k<=length(rgb_big)
+            rgb1 = [rgb1 rgb_big{k}];
+        end;
+    end;
+    if ii==1
+        rgb = rgb1;
+    else
+        if size(rgb1,2)<size(rgb,2)
+            rgb_add = zeros(size(rgb1,1),size(rgb,2));
+            rgb_add(1:size(rgb1,1),1:size(rgb1,2)) = rgb1;
+        else
+            rgb_add = rgb1;
+        end;
+        rgb = [rgb; rgb_add];
+    end;
 end;
     
 
+
+    

@@ -44,7 +44,7 @@ if f<=length(p.special)
         plot_log=opt1(4);
         include_ROI_outlines = opt1(1);
 
-        if plot_log
+        if plot_log & ~isempty(scale)
             if scale(1)==0
                 tmp_scale = find_image_scale(a(:),1,0);
                 scale(1)=tmp_scale(1);
