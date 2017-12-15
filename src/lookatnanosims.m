@@ -105,6 +105,7 @@ LANS_version = '2017-05-14';
 LANS_version = '2017-06-01';
 LANS_version = '2017-09-07';
 LANS_version = '2017-11-04';
+LANS_version = '2017-12-11-matlab2017b';
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';

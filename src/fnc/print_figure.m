@@ -6,7 +6,11 @@ if ~exist(a)
     fprintf(1,'Output folder created: %s\n',a);
 end;
 
-set(f,'PaperPosition',[0.25 2.5 print_factor*5 print_factor*5]);
+if length(print_factor)<2
+    print_factor = print_factor*[1 1];
+end;
+
+set(f,'PaperPosition',[0.25 2.5 print_factor*5]);
 
 if matversion>=2015
 	print(f,fname,'-depsc');

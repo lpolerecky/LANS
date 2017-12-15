@@ -184,7 +184,11 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 nmax=str2num(get(handles.text3,'String'));
-n=str2num(get(handles.text1,'String'))-1;
+nstep=1;
+if hObject == handles.pushbutton10
+    nstep = round(nmax/10);
+end;
+n=str2num(get(handles.text1,'String'))-nstep;
 if(n>nmax)
     n=nmax;
 end;
@@ -200,7 +204,11 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 nmax=str2num(get(handles.text3,'String'));
-n=str2num(get(handles.text1,'String'))+1;
+nstep=1;
+if hObject == handles.pushbutton9
+    nstep = round(nmax/10);
+end;
+n=str2num(get(handles.text1,'String'))+nstep;
 if(n>nmax)
     n=nmax;
 end;

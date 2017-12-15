@@ -1,4 +1,5 @@
-function mepstopdf(infile,command,tidy_up_flag, be_verbous_flag, move_pdf)
+function outfname = mepstopdf(infile,command,tidy_up_flag, be_verbous_flag, move_pdf)
+outfname = [];
 
 if(nargin>2)
     tuf=tidy_up_flag;
@@ -122,6 +123,10 @@ if(~isempty(command))
         
         if vf & exist(newfile)==2
             disp(['PDF output generated in ',newfile]);        
+        end;
+        
+        if exist(newfile)==2
+            outfname = newfile;
         end;
         
     catch exception
