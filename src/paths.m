@@ -33,6 +33,9 @@ if ismac
 	% Command for unzipping im.zip files, including the command options. 
     % Here I use unzip, which is by default available on MacOS systems.
     UNZIP_COMMAND = 'unzip -q';
+    
+    % PDF viewer (fill path to the pdf viewer on your system
+    PDF_VIEWER = '';
 
 elseif isunix
     % unix/linux users have it easy
@@ -42,6 +45,9 @@ elseif isunix
     % Command for unzipping im.zip files, including the command options. 
     % Here I use unzip, which is normally available on a unix system.
     UNZIP_COMMAND = 'unzip -q';
+    
+    % PDF viewer
+    PDF_VIEWER = 'xreader';
         
 elseif ispc
     % Windows users also have it relatively easy
@@ -55,4 +61,7 @@ elseif ispc
     % or may not be, known within the Matlab environment.
     UNZIP_COMMAND = '"c:\Program Files (x86)\7-Zip\7z.exe" e';
 
+    % PDF viewer
+    PDF_VIEWER = [];
+    
 end;

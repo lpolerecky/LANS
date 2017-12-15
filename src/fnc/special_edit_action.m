@@ -32,7 +32,7 @@ if f<=length(p.special)
             p.Maskimg = load_cells_from_disk(h,0,[CELLSFILE MAT_EXT]);
         end;
 
-        [a,b,c,d,aconf] = calculate_R_images(p, opt4, 0, opt1(16), 1, sic_mass);
+        [a,b,c,d,aconf] = calculate_R_images(p, opt4, 0, opt1(16), sic_mass);
 
         if iscell(a)
             a=a{f};

@@ -221,9 +221,9 @@ if ~isempty(foutname)
         opt4=zeros(8,1);
         opt4(1:length(p.special))=ones(1,length(p.special));                
         if isempty(p.Maskimg)
-            [R,Ra,Raim,o] = calculate_R_images(p, opt4, 0, 0);
+            [R,Ra,Raim,o] = calculate_R_images(p, opt4, 0, 0,[],[5 1]);
         else
-            [R,Ra,Raim,o] = calculate_R_images(p, opt4, 1, 0);
+            [R,Ra,Raim,o] = calculate_R_images(p, opt4, 1, 0,[],[5 1]);
         end;
         
         % export ASCII data in ROIs, if cells defined

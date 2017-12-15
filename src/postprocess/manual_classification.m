@@ -221,18 +221,21 @@ update_listboxes(handles,allcnum,allclass,cnum);
 set(handles.edit1,'string',num2str(cnum+1));
 
 function update_listboxes(handles,allcnum,allclass,cnum)
-% sort the cells first
-[allcnum,ind]=sort(allcnum);
-allclass=allclass(ind);
-set(handles.listbox1,'string', num2str(allcnum));
-set(handles.listbox2,'string', allclass);
-% highlight the cell cnum
-ind=find(allcnum==cnum);
-if(~isempty(ind))
-    set(handles.listbox1,'value',ind);
-    set(handles.listbox2,'value',ind);
+if ~isempty(allcnum)
+    % sort the cells first
+    [allcnum,ind]=sort(allcnum);
+    allclass=allclass(ind);
+    set(handles.listbox1,'string', num2str(allcnum));
+    set(handles.listbox2,'string', allclass);
+    % highlight the cell cnum
+    ind=find(allcnum==cnum);
+    if(~isempty(ind))
+        set(handles.listbox1,'value',ind);
+        set(handles.listbox2,'value',ind);
+    end;
+else
+    fprintf(1,'WARNING: classification file empty.\n');
 end;
-
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
@@ -275,15 +278,18 @@ end;
 if(exist(cellfile)==2)
     fid=fopen(cellfile,'r');
     jj=0;
+    allcnum=[];
+    allclass=[];
     while 1
         tline = fgetl(fid);
         if ~ischar(tline),   break,   end
         a=sscanf(tline,'%d %s');
         jj=jj+1;
         allcnum(jj,1) = a(1);
-        allclass(jj,1) = char(a(2));
+        allclass(jj,1) = a(2);
     end
     fclose(fid);
+    allclass=char(allclass);
     s=sprintf('Data loaded from %s',cellfile);
     disp(s);
     handles.base_dir = base_dir;

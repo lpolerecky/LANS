@@ -51,6 +51,20 @@ if scale_bar_pos>0
         oc=oc(ind);
     end;  
     
+    % find out the fontsize of the scale-bar
+    sbfs = additional_settings.title_font_size_color;
+    if length(sbfs)>1
+        ind=find(double(sbfs)>=double('0') & double(sbfs)<=double('9'));
+        sbfs=sbfs(ind);
+        if length(sbfs)>0
+            sbfs = str2num(sbfs);
+        else
+            sbfs = 12;
+        end;
+    else
+        sbfs = 12;
+    end;
+    
     % determine the location of the scale-bar
     bc=25;    
 %     switch scale_bar_pos
@@ -96,10 +110,10 @@ if scale_bar_pos>0
         end;
         text_ypos = mean(line_y) + yoff;
 
-        st=text(text_xpos,text_ypos,[num2str(sll), ' um'],...
+        st=text(text_xpos,text_ypos,['$\mathbf{' num2str(sll) '\ \mu m}$'],...
             'horizontalalignment','center',...
             'verticalalignment',va,...
-            'FontSize',defFontSize); %,'interpreter','latex'); %, 'fontweight','bold');
+            'FontSize',sbfs,'interpreter','latex'); %, 'fontweight','bold');
         
         switch oc(1)
             case 'w', set(st,'Color',[1 1 1]); 

@@ -139,7 +139,7 @@ if isfield(handles,'p')
                 % make sure that RGB channels are combined 
                 opt1(9)=0; opt1(8)=0; opt1(5)=1; opt1(7)=1;
                 
-                [R,Ra,Raim,o] = calculate_R_images(p, opt4, 0, 0, p.mask_kernel);
+                [R,Ra,Raim,o] = calculate_R_images(p, opt4, 0, 0, [], p.mask_kernel);
                 [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = ...
                     construct_RGB_image(handles,p.special,p.special_scale,p.Maskimg,R,Raim,opt1);
                 labs = {xl, yl, zl};
@@ -166,7 +166,7 @@ if isfield(handles,'p')
                 % make sure that only the k^th ratio is calculated
                 opt4 = zeros(1,8);
                 opt4(k) = 1;
-                maskmass = calculate_R_images(p, opt4, 0, 0, p.mask_kernel);
+                maskmass = calculate_R_images(p, opt4, 0, 0, [], p.mask_kernel);
                 maskmass = maskmass{k};
                 ps = p.special_scale{k};
                 [opt1,opt3,opt4]=load_options(handles,0);
@@ -205,23 +205,21 @@ if isfield(handles,'p')
             
         end;
 
-        if 1 & ~isempty(maskmass) & sum(p.mask_kernel)>2
+        if 1 & ~isempty(maskmass) & sum(p.mask_kernel)>2 & ~isempty(rgb_true)
             
             % apply smoothing kernel on the template
-            fprintf(1,'*** Smoothing template for ROI definition with wiener2 filter, kernel-size [%d] ... ',p.mask_kernel(1));
-            for ii=1:size(maskmass,3)
-                maskmass(:,:,ii) = wiener2(maskmass(:,:,ii),p.mask_kernel(1)*[1 1]);
-            end;
-            if ~isempty(rgb_true)
-                for ii=1:size(rgb_true,3)
-                    rt = squeeze(rgb_true(:,:,ii));
-                    rtw = wiener2(rt,p.mask_kernel(1)*[1 1]);
-                    ind = find(isnan(rtw) & ~isnan(rt));
-                    rtw(ind) = rt(ind);
-                    rgb_true(:,:,ii) = rtw;
-                end;
-                % wiener2 filter increases the patches with NaN values.
-                % patch it back based on the original image
+            fprintf(1,'*** Smoothing template for ROI definition ... ');
+            
+            %for ii=1:size(maskmass,3)
+            %    maskmass(:,:,ii) = wiener2(maskmass(:,:,ii),p.mask_kernel(1)*[1 1]);
+            %end;
+            for ii=1:size(rgb_true,3)
+                rt = squeeze(rgb_true(:,:,ii));
+                %rtw = wiener2(rt,p.mask_kernel(1)*[1 1]);
+                rtw = gaussfilt_external(rt,p.mask_kernel);
+                ind = find(isnan(rtw) & ~isnan(rt));
+                rtw(ind) = rt(ind);
+                rgb_true(:,:,ii) = rtw;
             end;
             % after smoothing the values can sometimes go out of allowed
             % range, which can be a problem for displaying it if the
@@ -236,7 +234,7 @@ if isfield(handles,'p')
                     maskmass(ind)=zeros(size(ind));
                 end;
             end;
-            fprintf(1,'Done.\n*** Set smoothing kernel to 1 if you do not want the template image to be smoothed.\n');
+            fprintf(1,'Done.\n*** Set smoothing kernel to [1 1] if you do not want the template image to be smoothed.\n');
             
         end;
 
@@ -282,7 +280,7 @@ if isfield(handles,'p')
                     else
                         p2.accu_im{3}=squeeze(maskmass(:,:,1));
                     end;
-                    [R2,Ra2,Raim2,o2] = calculate_R_images(p2, [1 1 1 0 0 0 0 0]);
+                    [R2,Ra2,Raim2,o2] = calculate_R_images(p2, [1 1 1 0 0 0 0 0], 0,0,[],[5 1]);
                     % because after this step, o2{:}(:,4) contains the
                     % accumulated signal in ROIs, divide it by ROI size to
                     % make it independent of ROI size and thus comparable

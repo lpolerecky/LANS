@@ -31,14 +31,14 @@ if(exist(fname)==2)
             % in earlier versions of LANS, smoothing kernel was a 2x1 vector,
             % but now it's only a number. so correct this when loading the
             % preferences
-            if ii==32
-                eval(['sk=' es2 ';']);
-                sk=str2num(sk);
-                if length(sk)>1
-                    sk=sk(1);
-                end;
-                eval([es2 ' = num2str(sk);']);
-            end;
+%             if ii==32
+%                 eval(['sk=' es2 ';']);
+%                 sk=str2num(sk);
+%                 if length(sk)>1
+%                     sk=sk(1);
+%                 end;
+%                 eval([es2 ' = num2str(sk);']);
+%             end;
             eval(b2);
         end;
     end;
@@ -124,6 +124,14 @@ if(exist(fname)==2)
                 q.display_error_bars = 1;
                 q.display_trend_lines = 1;
                 q.colormap = 1;
+                q.view_pdf = 0;
+                q.apply_1e3_factor = 0;
+                q.include_colorbar_label = 1;
+                q.smooth_masses_kernelsize = [5 1];
+                q.title_position = 0;
+                q.fill_title_background = 0;
+                q.title_background_color = 'w';
+                q.title_font_size_color = '14k';                
                 additional_settings = q;
             else
                 if length(additional_settings.print_factors)<6
@@ -171,7 +179,31 @@ if(exist(fname)==2)
                 if ~isfield(h.additional_settings,'colormap')
                     additional_settings.colormap = 1;
                 end;
-
+                if ~isfield(h.additional_settings,'view_pdf')
+                    additional_settings.view_pdf = 0;
+                end;
+                if ~isfield(h.additional_settings,'include_colorbar_label')
+                    additional_settings.include_colorbar_label = 1;
+                end;                
+                if ~isfield(h.additional_settings,'apply_1e3_factor')
+                    additional_settings.apply_1e3_factor = 0;
+                end;
+                if ~isfield(h.additional_settings,'smooth_masses_kernelsize')
+                    additional_settings.smooth_masses_kernelsize = [5 1];
+                end;
+                if ~isfield(h.additional_settings,'title_position')
+                    additional_settings.title_position = 0;
+                end;
+                if ~isfield(h.additional_settings,'fill_title_background')
+                    additional_settings.fill_title_background = 0;
+                end;
+                if ~isfield(h.additional_settings,'title_background_color')
+                    additional_settings.title_background_color = 'w';
+                end;
+                if ~isfield(h.additional_settings,'title_font_size_color')
+                    additional_settings.title_font_size_color = '14k';
+                end;
+                
             end;
         else
             % these are default values tested on my computer
@@ -194,7 +226,15 @@ if(exist(fname)==2)
             q.autoscale_quantiles = [0.001 0.999];
             q.display_error_bars = 1;
             q.display_trend_lines = 1;
-            q.colormap = 1;            
+            q.colormap = 1;          
+            q.include_colorbar_label = 1;
+            q.view_pdf = 0;
+            q.apply_1e3_factor = 0;
+            q.smooth_masses_kernelsize = [5 1];
+            q.title_position = 0;
+            q.fill_title_background = 0;
+            q.title_background_color = 'w';
+            q.title_font_size_color = '14k';                
             additional_settings = q;
         end;
     end;

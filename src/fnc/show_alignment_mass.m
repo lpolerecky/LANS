@@ -42,10 +42,22 @@ if ~handles.p.planes_aligned
     handles = fillinfo_selected_images(images, handles);
 
     % update special region for alignment
-    xlim=a.region_x;
-    ylim=a.region_y;
-    set(handles.edit44,'string',['[',num2str(ceil(xlim(1))),':',num2str(floor(xlim(2))),']']);
-    set(handles.edit45,'string',['[',num2str(ceil(ylim(1))),':',num2str(floor(ylim(2))),']']);
+    xlim=round(a.region_x);
+    if xlim(1)<1
+        xlim(1) = 1;
+    end;
+    if xlim(2)>p1.width
+        xlim(2)=p1.width;
+    end;
+    ylim=round(a.region_y);
+    if ylim(1)<1
+        ylim(1) = 1;
+    end;
+    if ylim(2)>p1.height
+        ylim(2)=p1.height;
+    end;    
+    set(handles.edit44,'string',sprintf('[%d:%d]',xlim));
+    set(handles.edit45,'string',sprintf('[%d:%d]',ylim));
 
 else
     fprintf(1,'Alignment region and images NOT updated as the masses have been already aligned!\n');

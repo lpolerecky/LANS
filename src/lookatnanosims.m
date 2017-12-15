@@ -83,6 +83,7 @@ global LATEXDIR;
 global MAT_EXT;
 global UNZIP_COMMAND;
 global EXTERNAL_IMAGEFILE;
+global PDF_VIEWER;
 
 % series of versions, last line = the current version
 LANS_version = '11/11/2011';   % A nice date! :)
@@ -105,7 +106,7 @@ LANS_version = '2017-05-14';
 LANS_version = '2017-06-01';
 LANS_version = '2017-09-07';
 LANS_version = '2017-11-04';
-LANS_version = '2017-12-10-matlab2017b';
+LANS_version = '2017-12-15-matlab2017b';
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';

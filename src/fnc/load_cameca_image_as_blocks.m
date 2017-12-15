@@ -33,7 +33,7 @@ else
             break;
         end;
     end;
-    newdir = [char(newdir) 'blocks'];
+    newdir = [char(newdir) '_b' num2str(block_size)];
     
     % create the directory where all the output will be stored
     if ~exist(newdir,'dir')

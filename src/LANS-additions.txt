@@ -1,0 +1,18 @@
+new LANS additions
+
+2017-12-11
+
+- it is possible to display the just generated PDF. new option additional_settings.view_pdf, the viewer is set in paths.m as PDF_VIEWER.
+
+2017-12-13
+
+- debugged and improved plotting of depth profiles via metafile processing (depth profiles are plotted normalized to the mean, and also the mean values +/- SD and coefficients of variance are displayed in the end for all the different rois from the classes and treatments specified by the used in the process_metafile GUI)
+- debugged display of RGB images via metafile processing
+
+2017-12-15
+
+- added new additional_settings for plotting images (e.g., ratio expressions with superscript numbers, placed within the image, title can be separate from the ratio expression)
+- hue modulation implemented also for RGB images
+- mass images can be smoothed before the ratios are calculated (this affects the display of images, their histograms or pixel-by-pixel scatter plots, but NOT scatter plots of ratios calculated from values accumulated in ROIs)
+- when im is loaded in blocks, the output folder will have a suffix _bN, here N=block size
+- improved placing of the axes where the ratio and RGB images are displayed. they look now the same

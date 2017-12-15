@@ -1,4 +1,4 @@
-function [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = construct_RGB_image(handles, p_name, p_scale, Maskimg, R, Raim, opt1)
+function [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = construct_RGB_image(handles, p_name, p_scale, Maskimg, R, Raim, opt1,Rconf)
 % Construct RGB image from R and Raim images. Return also names and scales of the
 % masses that are in the R, G and B channels.
 
@@ -54,7 +54,13 @@ if c1
         if i1>0
             ch_scale = p_scale{i1};
             if opt1(7) 
-                RR=R{i1};                 
+                RR=R{i1};  
+                if nargin>7
+                    % apply the hue correction. it does not make much
+                    % sense, but it does help the RGB image to look better
+                    % by removing all the potentially noisy pixels
+                    RR = RR .* Rconf{i1};
+                end;
                 if ischar(ch_scale) % this happens when user gives [auto]
                     ch_scale = find_image_scale(RR, 0, 0);
                 end;
@@ -79,6 +85,12 @@ if c1
             ch_scale = p_scale{i2};
             if opt1(7)
                 RR=R{i2};
+                if nargin>7
+                    % apply the hue correction. it does not make much
+                    % sense, but it does help the RGB image to look better
+                    % by removing all the potentially noisy pixels
+                    RR = RR .* Rconf{i2};
+                end;
                 if ischar(ch_scale) % this happens when user gives [auto]
                     ch_scale = find_image_scale(RR, 0, 0);
                 end;
@@ -103,6 +115,12 @@ if c1
             ch_scale = p_scale{i3};
             if opt1(7)
                 RR=R{i3}; 
+                if nargin>7
+                    % apply the hue correction. it does not make much
+                    % sense, but it does help the RGB image to look better
+                    % by removing all the potentially noisy pixels
+                    RR = RR .* Rconf{i3};
+                end;
                 if ischar(ch_scale) % this happens when user gives [auto]
                     ch_scale = find_image_scale(RR, 0, 0);
                 end;

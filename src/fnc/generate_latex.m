@@ -172,7 +172,7 @@ for ii=1:ceil(nf/2)
 end;
 fprintf(fid,'\\end{center}\n\\end{document}');
 fclose(fid);
-disp(['Graphical LaTeX output generated in ',tout]);
+fprintf(1,'LaTeX output generated in %s\n',tout);
 
 % convert the LaTeX file to PDF (compile it twice, just in case)
 mepstopdf(tout,'pdflatex',0,0);

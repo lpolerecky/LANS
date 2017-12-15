@@ -5,6 +5,7 @@ if nargin>1
 else
     N = 5; 
 end; %// Define size of Gaussian mask
+
 if nargin>2
     sigma=sigmain;
 else

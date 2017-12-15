@@ -36,6 +36,11 @@ if ~isempty(foutname)
         want_to_be_asked = 1;
     end;
     
+    final_data_cnt = zeros(1,length(fname));
+    final_data = [];
+    for ii=1:length(all{1})
+        final_data{ii} = [];
+    end;
     for k=1:length(fname)
         
         file_counter=0;
@@ -206,9 +211,9 @@ if ~isempty(foutname)
         % each plane
         [m2, dm2]=accumulate_masses_in_cells(p.im,p.Maskimg,p.im,p.images);
         
-        [out pdfout f30] = display_depth_profiles_ROIS(m2,dm2,cid,cnum,p.images,p.mass,p.Maskimg,all{k},p.filename);        
+        [out pdfout f30] = display_depth_profiles_ROIS(m2,dm2,cid,cnum,p.images,p.mass,p.Maskimg,all{k},p.filename,s.cellclasses);        
         
-        % export data 
+        % export data, gather some of it also for final plotting        
         for ii=1:length(all{k})
             if ~isempty(pdfout{ii})
                 a=convert_string_for_texoutput(all{k}{ii});
@@ -223,6 +228,13 @@ if ~isempty(foutname)
                 for jj=1:size(out{ii},1)
                     fprintf(fid,'%d\t%s\t%d\t%c\t%d\t%.4e\t%.4e\t%.4e\t%.4e\n',...
                         k,fname{k},tmnt{k},cid(icid(jj)),cnum(icid(jj)),out{ii}(icid(jj),:));
+                    final_data_cnt(k) = final_data_cnt(k) + 1;
+                    out_final_data = [k tmnt{k} double(cid(icid(jj))) cnum(icid(jj)) out{ii}(icid(jj),:)];
+                    if isempty(final_data{ii})
+                        final_data{ii} = out_final_data;
+                    else
+                        final_data{ii} = [final_data{ii}; out_final_data];
+                    end;
                 end;
                 fclose(fid);
                 fprintf(1,'Output written/appended to %s\n',fout);
@@ -259,7 +271,7 @@ if ~isempty(foutname)
                 s1=regexprep(s1,'_','\\_');
                 s2=regexprep(fname{k},'\','/');
                 s2=regexprep(s2,'_','-');
-                fprintf(fid,'\n\\section{%s}\\label{%d: %s}\n',s1,k,s2);
+                fprintf(fid,'\n\\section{\\normalsize %s}\\label{%d: %s}\n',s1,k,s2);
                 fprintf(fid,'\n\\begin{center}\n');
                 s1=regexprep(pdfout{ii},'\','/');
                 fprintf(fid,'\\includegraphics[width=0.99\\textwidth]{%s}\n',s1);
@@ -294,6 +306,13 @@ if ~isempty(foutname)
         end;
     end;
     
+    % plot final data
+    fig=plot_final_data(final_data, all{1}, s);
+    fout=[foutname '-rois-z-avg-sd-cov.eps'];
+    print_figure(fig,fout,additional_settings.print_factors(3));
+    % create also PDF file, so that it can be included by pdflatex 
+    mepstopdf(fout,'epstopdf',0,1,0);
+    
     fprintf(1,'Done.\n');
                 
     % compile the tex file to create a PDF output
@@ -303,3 +322,57 @@ if ~isempty(foutname)
     %end;
     
 end;
+
+function fig=plot_final_data(d,ratios,s)
+fprintf(1,'Plotting mean +/- SD and COV values ... ');
+fig=figure;
+Nd = length(d);
+tmnt = str2num(s.treatments);
+tmnts = double(s.symbols);
+tmnts = char(tmnts(tmnts>double(' ')));
+classes = s.cellclasses;
+for k=1:Nd    
+    dd=d{k};
+    cnt=0;
+    for ii=1:size(dd,1)
+        t=dd(ii,2);
+        c=char(dd(ii,3));
+        roiid=dd(ii,4);
+        m=dd(ii,5);
+        sd=dd(ii,6);
+        pc=dd(ii,7:8);
+        ci = findstr(classes,c);
+        ti = find(tmnt==t);
+        if ~isempty(ci) & ~isempty(ti)
+            cnt=cnt+1;
+            % plot mean +/- SD
+            subplot(2,Nd,k);
+            if cnt==1
+                hold off;
+            else
+                hold on;
+            end;
+            errorbar(cnt,m,sd,tmnts(ti),'MarkerSize',8,'Color',s.cellcolors(ci));
+            % plot coefficient of variation
+            subplot(2,Nd,k+Nd);            
+            if cnt==1
+                hold off;
+            else
+                hold on;
+            end;
+            plot(cnt,sd/m,tmnts(ti),'MarkerSize',12,'Color',s.cellcolors(ci));   
+            text(cnt,sd/m,num2str(roiid),'HorizontalAlignment','center','FontSize',8);
+        end;
+    end;
+    subplot(2,Nd,k);
+    title(ratios{k});
+    ylabel('mean +/- SD');
+    xlim([0 cnt+1]);
+    subplot(2,Nd,k+Nd);
+    ylabel('COV = SD/mean');
+    ylim2=ylim;
+    ylim([0 ylim2(2)]);
+    xlim([0 cnt+1]);
+end;
+fprintf(1,'Done.\n');
+a=0;

@@ -210,16 +210,16 @@ if(~isempty(foutname))
             % add the LaTeX entry to the file
             if(mod(j,2)==1)
                 fprintf(fid,'%s\n','\begin{tabular}{cc}');
-                if exist(rgb7_fname{j})
+                if exist(rgb_fname{j})
                     %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s} &\n',id{j},ftmp);
-                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},rgb7_fname{j});
+                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},rgb_fname{j});
                 else
                     fprintf(fid,'%d: missing &\n',id{j});
                 end;
             else
-                if exist(rgb7_fname{j})
+                if exist(rgb_fname{j})
                     %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s}\n',id{j},ftmp);
-                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},rgb7_fname{j});
+                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},rgb_fname{j});
                 else
                     fprintf(fid,'%d: missing\n',id{j});
                 end;
@@ -276,7 +276,7 @@ for ii=1:nfy
     else
         if size(rgb1,2)<size(rgb,2)
             rgb_add = zeros(size(rgb1,1),size(rgb,2));
-            rgb_add(1:size(rgb1,1),1:size(rgb1,2)) = rgb1;
+            rgb_add(1:size(rgb1,1),1:size(rgb1,2),1:size(rgb1,3)) = rgb1;
         else
             rgb_add = rgb1;
         end;

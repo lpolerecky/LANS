@@ -25,6 +25,7 @@ olddir=pwd;
 [dname, filename, ext] = fileparts(infile);
 
 global additional_settings;
+global PDF_VIEWER;
 
 if(~isempty(command))
     
@@ -122,11 +123,24 @@ if(~isempty(command))
         end;
         
         if vf & exist(newfile)==2
-            disp(['PDF output generated in ',newfile]);        
+            fprintf(1,'PDF output generated in %s\n',newfile);        
         end;
         
         if exist(newfile)==2
             outfname = newfile;
+            if additional_settings.view_pdf & ~isempty(PDF_VIEWER) & ...
+                    ~isempty(strfind(command, 'pdflatex')) & tuf
+                % command for viewing PDF
+                s=[PDF_VIEWER,' "',outfname,'"&'];
+                try,
+                    fprintf(1,'Displaying just generated PDF ... ');
+                    system(s);
+                    fprintf(1,'Done.\nIf no PDF viewer popped up, check the value of the PDF_VIEWER in the file paths.m.\n');
+                catch exception
+                    fprintf(1,'ERROR: PDF_VIEWER system command not found.\n');
+                    fprintf(1,'Edit paths.m to modify path to the PDF viewer on your system.\n');
+                end;
+            end;
         end;
         
     catch exception

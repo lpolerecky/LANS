@@ -26,9 +26,9 @@ if opt1(9)
                 dx=oall{i1}(:,5); 
                 dy=oall{i2}(:,5); 
                 dz=oall{i3}(:,5); 
-                special_x = Ra{i1}; % it's the same as oall{i1}(:,4)
-                special_y = Ra{i2};
-                special_z = Ra{i3};
+                special_x = oall{i1}(:,4);
+                special_y = oall{i2}(:,4);
+                special_z = oall{i3}(:,4);
             end;
         else
             error_flag = 1;
@@ -43,8 +43,8 @@ if opt1(9)
                 if(opt1(8))
                     dx=oall{i1}(:,5); 
                     dy=oall{i2}(:,5); 
-                    special_x = Ra{i1};
-                    special_y = Ra{i2};
+                    special_x = oall{i1}(:,4);
+                    special_y = oall{i2}(:,4);
                 end;
             else
                 error_flag = 1;
@@ -58,8 +58,8 @@ if opt1(9)
                 if(opt1(8))
                     dx=oall{i1}(:,5); 
                     dy=oall{i3}(:,5); 
-                    special_x = Ra{i1};
-                    special_y = Ra{i3};
+                    special_x = oall{i1}(:,4);
+                    special_y = oall{i3}(:,4);
                 end;
             else
                 error_flag = 1;
@@ -73,8 +73,8 @@ if opt1(9)
                 if(opt1(8))
                     dx=oall{i2}(:,5); 
                     dy=oall{i3}(:,5); 
-                    special_x = Ra{i2};
-                    special_y = Ra{i3};
+                    special_x = oall{i2}(:,4);
+                    special_y = oall{i3}(:,4);
                 end;
             else
                 error_flag = 1;

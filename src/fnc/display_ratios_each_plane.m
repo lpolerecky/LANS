@@ -28,7 +28,7 @@ if opt1(6)
             for jj=1:length(p.accu_im)
                 p.accu_im{jj} = double(p.im{jj}(:,:,ii));
             end;
-            [R,a,b,c,Rconf] = calculate_R_images(p, opt4, 0, opt1(16),1,sic_mass);
+            [R,a,b,c,Rconf] = calculate_R_images(p, opt4, 0, opt1(16),sic_mass);
             %R = calculate_R_images(p, opt4, 0);
             for jj=1:length(R)
                 if ~isempty(R{jj})
