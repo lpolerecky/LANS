@@ -6,6 +6,8 @@ Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/
 
 The software was written by Lubos Polerecky (LP) with input from his colleagues at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Presently, LP keeps maintaining and further developing the software at Utrecht University, The Netherlands, with input from his colleagues and other users from institutions around the world.
 
+Current version: 2022-09-02
+
 ## Features
 
 - **Loading** of secondary ion counts (SIC) image data (Cameca *.im files)
