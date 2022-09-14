@@ -13,21 +13,25 @@ Netherlands.
 
 ## Features
 
-1. **Loading** of secondary ion counts (SIC) image data (Cameca *.im files)
-   - all planes and masses (default)
-   - in blocks
-   - selected planes and masses
-   - merging of multiple *.im files into one
-   - dead-time and QSA corrections applicable
-   - support of zip-compressed input data (*.im.zip files)
-   - Matlab files (*.mat) produced by processing with LANS, without the need of the original *.im file. (Because this loads drift-corrected and accumulated data for each SIC image, analysis of depth profiles is not possible in this case.)
+1. **Loading** of secondary ion counts (SIC) image data (Cameca `im` files)
+   
+    - all planes and masses (default)
+    - selected planes and masses
+    - planes in blocks
+    - merging multiple *.im files into one
+    - corrections for dead-time and QSA
+    - compressed data (`im.zip` files, roughly 10% size of the original `im` files)
+    - data previously processed and exported by LANS (`mat`) 
+
 2. **Accumulation** of planes, with **drift-correction** applied
-- Definition of **regions of interest (ROIs)**
-  - manual and semi-automated
-  - based on NanoSIMS images, or on an imported **external** image (e.g., FISH, TEM, SEM, AFM) with **alignment** done within LANS
-  - ROI **classification** (manual & automated based on a logical expression)
-  - watershed segmentation of ROIs
-- **Quantification** of isotopic and elemental **ratios** (defined through an arbitrary expression)
+
+    - Definition of **regions of interest (ROIs)**
+    - manual and semi-automated
+    - based on NanoSIMS images, or on an imported **external** image (e.g., FISH, TEM, SEM, AFM) with **alignment** done within LANS
+    - ROI **classification** (manual & automated based on a logical expression)
+    - watershed segmentation of ROIs
+
+3. **Quantification** of isotopic and elemental **ratios** (defined through an arbitrary expression)
 - **Display and export** of results in **text** and **graphics** formats
   - images (various colormaps, ROI outlines can be included, hue intensity can be modulated)
   - lateral and depth profiles
