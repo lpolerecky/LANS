@@ -1,24 +1,27 @@
 # Look@NanoSIMS
 
-## Summary
+Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) 
+for the analysis of NanoSIMS image data acquired by the Cameca NanoSIMS 50L instrument. It is distributed 
+as a Matlab code, thus it requires a working installation of Matlab (proprietary software) to run.
 
-Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) for the analysis of NanoSIMS image data produced by the Cameca NanoSIMS 50L instrument. It is distributed as a Matlab code, thus requires Matlab (proprietary software) installed on your system to run.
+The software is written and maintained by Lubos Polerecky (LP). The development started in 2008, at the 
+time when LP worked at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Since 2013, LP 
+continues with the development of the program as part of his permanent employment at Utrecht University in the 
+Netherlands.
 
-The software was written by Lubos Polerecky (LP) with input from his colleagues at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Presently, LP keeps maintaining and further developing the software at Utrecht University, The Netherlands, with input from his colleagues and other users from institutions around the world.
-
-Current version: 2022-09-02
+**Current version: 2022-09-02**
 
 ## Features
 
-- **Loading** of secondary ion counts (SIC) image data (Cameca *.im files)
-  - all planes and masses (default)
-  - in blocks
-  - selected planes and masses
-  - merging of multiple *.im files into one
-  - dead-time and QSA corrections applicable
-  - support of zip-compressed input data (*.im.zip files)
-  - Matlab files (*.mat) produced by processing with LANS, without the need of the original *.im file. (Because this loads drift-corrected and accumulated data for each SIC image, analysis of depth profiles is not possible in this case.)
-- **Accumulation** of planes, with **drift-correction** applied
+1. **Loading** of secondary ion counts (SIC) image data (Cameca *.im files)
+   - all planes and masses (default)
+   - in blocks
+   - selected planes and masses
+   - merging of multiple *.im files into one
+   - dead-time and QSA corrections applicable
+   - support of zip-compressed input data (*.im.zip files)
+   - Matlab files (*.mat) produced by processing with LANS, without the need of the original *.im file. (Because this loads drift-corrected and accumulated data for each SIC image, analysis of depth profiles is not possible in this case.)
+2. **Accumulation** of planes, with **drift-correction** applied
 - Definition of **regions of interest (ROIs)**
   - manual and semi-automated
   - based on NanoSIMS images, or on an imported **external** image (e.g., FISH, TEM, SEM, AFM) with **alignment** done within LANS
@@ -47,14 +50,19 @@ Current version: 2022-09-02
 
 Instructions for installing, running and using LANS are documented on [this dedicated website](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans) maintained by LP.
 
-## Citation
+## Acknowledgement
 
 Please include the following citation if you used LANS in your work. 
 
-L. Polerecky, B. Adam, J. Milucka, N. Musat, T. Vagner, M. M. M. Kuypers (2012). Look@NanoSIMS – a tool for the analysis of nanoSIMS data in environmental microbiology. Environmental Microbiology 14 (4): 1009–1023 ([doi:10.1111/j.1462-2920.2011.02681.x](http://onlinelibrary.wiley.com/doi/10.1111/j.1462-2920.2011.02681.x/abstract))
+L. Polerecky, B. Adam, J. Milucka, N. Musat, T. Vagner, M. M. M. Kuypers (2012). 
+Look@NanoSIMS – a tool for the analysis of nanoSIMS data in environmental microbiology. 
+Environmental Microbiology 14 (4): 1009–1023.
+[DOI:10.1111/j.1462-2920.2011.02681.x](http://onlinelibrary.wiley.com/doi/10.1111/j.1462-2920.2011.02681.x/abstract)
 
-Note that LANS is under **continuous development**, with bugs fixed and new features added every couple of months. This costs a lot of time, effort and energy. Thus, a little extra "thanks to LP" in the acknowledgement section of your paper will be highly appreciated and motivating.
+## Contact 
 
-## Contact
+Over the years, many features have been added to LANS thanks to students, collaborators, and other NanoSIMS users 
+from around the world. If you would like to have a new feature added to LANS, contact LP via email:
+`l (dot) polerecky (at) uu (dot) nl`. 
 
-E-mail LP at `l (dot) polerecky (at-sign) uu (dot) nl` if you experience problems, find bugs, or if you would like to have new features added to, or participate in the development of, the software.
+If you experience problems or find bugs, please contact LP as well - he will be happy to help you out.
