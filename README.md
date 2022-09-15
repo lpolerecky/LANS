@@ -84,7 +84,7 @@ Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 
 2. Install LaTeX. 
     
     - This software is required to enable export of graphical output as tagged PDF documents.
-    - Use one of the well-known LaTeX distributions for your operating system, e.g., texlive (Linux), MikTeX (Windows), MacTex (MacOS).
+    - Use one of the well-known LaTeX distributions for your operating system, e.g., *texlive* (Linux), *MikTeX* (Windows), *MacTex* (MacOS).
     - required executables: *epstopdf*, *pdflatex*
     - required LaTeX packages: *graphicx*, *geometry*, *hyperref*
     
@@ -100,9 +100,9 @@ Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 
     - Unzip `LANS-latest-src.zip` to a folder of your choice. 
     - Start Matlab and set the current folder to the LANS folder.
     - Enter `lookatnanosims` in Matlab console. This should open the main LANS 
-      graphical user interface, as shown below.
+      graphical user interface, as shown below. You can start from there, as explained in the manuals.
 
-<center><img src="man/figures/lans-main-GUI.png" alt="Main GUI of LANS"></img></center>
+<center><img src="man/figures/lans-main-GUI.png"></img></center>
 
 ## Acknowledgement
 
