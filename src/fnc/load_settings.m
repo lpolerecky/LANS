@@ -31,14 +31,14 @@ if(exist(fname)==2)
             % in earlier versions of LANS, smoothing kernel was a 2x1 vector,
             % but now it's only a number. so correct this when loading the
             % preferences
-            if ii==32
-                eval(['sk=' es2 ';']);
-                sk=str2num(sk);
-                if length(sk)>1
-                    sk=sk(1);
-                end;
-                eval([es2 ' = num2str(sk);']);
-            end;
+%             if ii==32
+%                 eval(['sk=' es2 ';']);
+%                 sk=str2num(sk);
+%                 if length(sk)>1
+%                     sk=sk(1);
+%                 end;
+%                 eval([es2 ' = num2str(sk);']);
+%             end;
             eval(b2);
         end;
     end;
@@ -91,12 +91,24 @@ if(exist(fname)==2)
         %fprintf(1,'Flags for shifting columns and rows set to [%d %d %d %d]\n',s.shift_columns_rows);
     else
         s.shift_columns_rows = [0 0 0 0];
-    end;
+    end
     
     if isfield(h,'raster_size')
         set(s.text46,'string',num2str(h.raster_size));
-    end;
+    end
     
+    if isfield(h,'mass')
+        s.mass = h.mass;
+    else
+        s.mass = [];
+    end
+    
+    if isfield(h,'imscale_full')
+        s.imscale_full = h.imscale_full;
+    else
+        s.imscale_full = [];
+    end
+        
     % additional settings (implemented in version 03-09-2012)
     global additional_settings;
     if strcmp(name,'nanosimsini')       
@@ -104,26 +116,7 @@ if(exist(fname)==2)
             additional_settings = h.additional_settings;
             if isempty(additional_settings)
                 % these are default values tested on my computer
-                if isunix
-                    q.print_factors = [0.9 1 3 1 4 1.2 1];
-                else
-                    q.print_factors = [2.5 3 3 2.5 4 3 1];
-                end;                
-                q.scale_bar_pos = 1;
-                q.color_bar_pos = 2;
-                q.export_png = 0;
-                q.export_eps = 0;
-                q.export_tif = 0;
-                q.compress_pdf = 1;            
-                q.always_display_rois = 0;
-                q.title_length = 40;
-                q.defFontSize = 12;
-                q.include_scale_text = 1;
-                q.scale_bar_length = 3;
-                q.autoscale_quantiles = [0.001 0.999];    
-                q.display_error_bars = 1;
-                q.display_trend_lines = 1;
-                q.colormap = 1;
+                q = get_default_settings;                
                 additional_settings = q;
             else
                 if length(additional_settings.print_factors)<6
@@ -171,36 +164,152 @@ if(exist(fname)==2)
                 if ~isfield(h.additional_settings,'colormap')
                     additional_settings.colormap = 1;
                 end;
-
+                if ~isfield(h.additional_settings,'view_pdf')
+                    additional_settings.view_pdf = 0;
+                end;
+                if ~isfield(h.additional_settings,'include_colorbar_label')
+                    additional_settings.include_colorbar_label = 1;
+                end;                
+                if ~isfield(h.additional_settings,'apply_1e3_factor')
+                    additional_settings.apply_1e3_factor = 0;
+                end;
+                if ~isfield(h.additional_settings,'smooth_masses_kernelsize')
+                    additional_settings.smooth_masses_kernelsize = [5 1];
+                end;
+                if ~isfield(h.additional_settings,'smooth_esi_kernelsize')
+                    additional_settings.smooth_esi_kernelsize = [1 1];
+                end;
+                if ~isfield(h.additional_settings,'title_position')
+                    additional_settings.title_position = 0;
+                end;
+                if ~isfield(h.additional_settings,'fill_title_background')
+                    additional_settings.fill_title_background = 0;
+                end;
+                if ~isfield(h.additional_settings,'title_background_color')
+                    additional_settings.title_background_color = 'w';
+                end;
+                if ~isfield(h.additional_settings,'title_font_size_color')
+                    additional_settings.title_font_size_color = '14k';
+                end;                
+                if ~isfield(h.additional_settings,'calculate_LWfactor')
+                    additional_settings.calculate_LWfactor = 1;
+                end;
+                if ~isfield(h.additional_settings,'calculate_perimeter')
+                    additional_settings.calculate_perimeter = 0;
+                end;
+                if ~isfield(h.additional_settings,'calculate_roi_variability')
+                    additional_settings.calculate_roi_variability = 0;
+                end;                                
             end;
         else
             % these are default values tested on my computer
-            if isunix
-                q.print_factors = [0.9 1 3 1 4 1.2 1];
-            else
-                q.print_factors = [2.5 3 3 2.5 4 3 1];
-            end;
-            q.scale_bar_pos = 1;
-            q.color_bar_pos = 2;
-            q.export_png = 0;
-            q.export_eps = 0;
-            q.export_tif = 0;
-            q.compress_pdf = 1;            
-            q.always_display_rois = 0;
-            q.title_length = 40;
-            q.defFontSize = 12;
-            q.include_scale_text = 1;
-            q.scale_bar_length = 3;
-            q.autoscale_quantiles = [0.001 0.999];
-            q.display_error_bars = 1;
-            q.display_trend_lines = 1;
-            q.colormap = 1;            
-            additional_settings = q;
+            q = get_default_settings;                
+            additional_settings = q;       
         end;
     end;
     s.additional_settings = additional_settings;
     
-    disp(['Preferences loaded from ',fname]);
+    % additional settings (implemented in version 03-09-2012)
+    global correction_settings;
+    if strcmp(name,'nanosimsini')       
+        if isfield(h,'correction_settings')
+            correction_settings = h.correction_settings;
+            if isempty(correction_settings)
+                % these are default values tested on my computer
+                q = get_default_correction_settings;                
+                correction_settings = q;
+            else
+                if ~isfield(h.correction_settings,'correction_apply')
+                    correction_settings.correction_apply = zeros(1,6);
+                end
+                if ~isfield(h.correction_settings,'correction_classes')
+                    correction_settings.correction_classes = ['xxxxxx'];
+                end
+                if ~isfield(h.correction_settings,'correction_values')
+                    correction_settings.correction_values = [0.0106 0.0037 1 1 1 1];
+                end
+                if ~isfield(h.correction_settings,'calculate_rate')
+                    correction_settings.calculate_rate = zeros(1,6);
+                end
+                if ~isfield(h.correction_settings,'medium_value')
+                    correction_settings.medium_value = {[1 1], [1 1], [1 1], [1 1], [1 1], [1 1]};;
+                end
+                if ~isfield(h.correction_settings,'treatments')
+                    correction_settings.treatments = [1 2];
+                end
+                if ~isfield(h.correction_settings,'incubation_times')
+                    correction_settings.incubation_times = [1 1];
+                end
+            end
+        else
+            % these are default values tested on my computer
+            q = get_default_correction_settings;                
+            correction_settings = q;
+        end
+    end
+    s.correction_settings = correction_settings;
+                
+    display_message(sprintf('Preferences loaded from %s\n',fname));
+
+    % This was wrong! Don't do any overwriting of these local settings
+%     if isfield(h,'PDF_VIEWER')
+%         global PDF_VIEWER
+%         PDF_VIEWER = h.PDF_VIEWER;
+%         fprintf(1,'PDF_VIEWER overwritten by the value from %s\n',fname);
+%     end
+%     
+%     if isfield(h,'UNZIP_COMMAND')
+%         global UNZIP_COMMAND
+%         UNZIP_COMMAND = h.UNZIP_COMMAND;
+%         fprintf(1,'UNZIP_COMMAND overwritten by the value from %s\n',fname);
+%     end
+
 else
-    disp(['Preferences could not be loaded.']);
-end;
+    
+    display_message('Preferences could not be loaded.\n');
+
+end
+
+function q = get_default_settings
+if isunix
+    q.print_factors = [0.9 1 3 1 4 1.2 1];
+else
+    q.print_factors = [2.5 3 3 2.5 4 3 1];
+end               
+q.scale_bar_pos = 1;
+q.color_bar_pos = 2;
+q.export_png = 0;
+q.export_eps = 0;
+q.export_tif = 0;
+q.compress_pdf = 1;            
+q.always_display_rois = 0;
+q.title_length = 40;
+q.defFontSize = 12;
+q.include_scale_text = 1;
+q.scale_bar_length = 3;
+q.autoscale_quantiles = [0.001 0.999];    
+q.display_error_bars = 1;
+q.display_trend_lines = 1;
+q.colormap = 1;
+q.view_pdf = 0;
+q.apply_1e3_factor = 0;
+q.include_colorbar_label = 1;
+q.smooth_masses_kernelsize = [5 1];
+q.smooth_esi_kernelsize = [1 1];
+q.title_position = 0;
+q.fill_title_background = 0;
+q.title_background_color = 'w';
+q.title_font_size_color = '14k';  
+q.calculate_LWfactor = 1;
+q.calculate_perimeter = 0;
+q.calculate_perimeter = 0;
+q.calculate_roi_variability = 0;
+
+function q = get_default_correction_settings
+q.correction_apply = zeros(1,6);
+q.correction_classes = ['xxxxxx'];
+q.correction_values = [0.0106 0.0037 1 1 1 1];
+q.calculate_rate = zeros(1,6);
+q.medium_value = {[1 1], [1 1], [1 1], [1 1], [1 1], [1 1]};
+q.treatments = [1 2];
+q.incubation_times = [1 1];

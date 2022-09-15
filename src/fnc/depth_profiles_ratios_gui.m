@@ -68,6 +68,8 @@ handles = display_selected_ratio(hObject,handles,1);
 % Choose default command line output for depth_profiles_ratios_gui
 handles.output = hObject;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -117,7 +119,12 @@ if ~isempty(handles.data)
                 pfit(ii)=plot(x,polyval(polyfit(x,y,p),x),[colors{ii}(1) '-'],'LineWidth',1);
             else
                 pfit(ii)=plot(x,exp(polyval(polyfit(x,log(y),1),x)),[colors{ii}(1) '-'],'LineWidth',1);
-            end;
+            end
+            if additional_settings.display_trend_lines
+                set(pfit(ii),'visible','on');
+            else
+                set(pfit(ii),'visible','off');
+            end
         else
             pfit(ii)=0;
         end;
@@ -127,7 +134,7 @@ if ~isempty(handles.data)
             set(eb(ii),'visible','off');
             set(tt(ii),'visible','off');
             if pfit(ii)~=0, set(pfit(ii),'visible','off'); end;
-        end;
+        end;        
     end;
     
     % remember the plot/text handles
@@ -136,7 +143,7 @@ if ~isempty(handles.data)
     handles.pfit = pfit;
     
     % make the graph look nicer for printing
-    set(handles.axes1,'xlim',[0 max(x)+1]);
+    set(handles.axes1,'xlim',[min(x)-1 max(x)+1]);
     xlabel('plane number', 'FontSize',defFontSize);
     title('ratios of counts accumulated over ROI', 'FontSize',defFontSize,'fontweight','normal');
     if get(handles.checkbox102,'value')
@@ -332,3 +339,7 @@ else
     set(handles.axes1,'yscale','lin');
 end;
 get_axis_scale(handles);
+
+function checkbox102_Callback(hObject, eventdata, handles)
+ri = get(handles.popupmenu1,'value');
+handles = display_selected_ratio(hObject,handles,ri);

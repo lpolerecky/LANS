@@ -1,8 +1,20 @@
-function f=my_figure(f)
+function [f, ax]=my_figure(f)
+ax=[];
 % make the figure in the center of the screen by default
-if(ishandle(f))
-    % activate the figure
-    f=figure(f);
+
+% new attempt of figure activation implemented on 2021-05-28
+if ishandle(f)     
+     % return handle to the existing figure
+     fh = handle(f);
+else
+    fh = [];
+end
+
+if isgraphics(fh,'figure')
+    f = fh;
+    figure(f);
+    % return also handles to any axes the figure may have
+    ax = findall(f,'type','axes');     
 else
     FigPos=get(0,'DefaultFigurePosition');
     FigWidth = FigPos(3);
@@ -18,6 +30,6 @@ else
     fpos=FigPos;
     % activate the figure and place it in the middle of screen
     f=figure(f);
-    set(f,'Renderer','painters');
+    %set(f,'Renderer','painters');
     set(f,'Position',fpos,'ToolBar','figure','MenuBar','None');
-end;
+end

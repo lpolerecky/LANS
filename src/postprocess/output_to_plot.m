@@ -7,302 +7,339 @@ function output_to_plot(s,plot_flag)
 % 08-07-2010: this function is now called by the process_metafile GUI,
 % where all the settings are specified by the used and passed here.
 % 26-03-2011: implemented for up to 6 variables
+% 20-05-2020: major revision of the way the data is loaded from individual
+% files, how it is exported, and plotted into 2D and 3D scatter plots.
 
 if nargin==1
     plot_flag=1;
-end;
+end
 
-if(exist(s.base_dir)~=7 | exist(s.metafile)~=2)
-    disp(['Dataset directory or metafile does not exist. Nothing done.']);
+plot2d = s.plot2d;
+global verbose
+
+fprintf(1,'\n\n\nMetafile processing: output_to_plot.m\n');
+
+if(exist(s.base_dir)~=7 || exist(s.metafile)~=2)
+    disp(['WARNING: Dataset directory or metafile does not exist. Nothing done.']);
 else
 
     %% form the final output file basename
-    [pathstr, name, ext] = fileparts(s.metafile);
+    [pathstr, name, ~] = fileparts(s.metafile);
     foutname = [pathstr,delimiter,name];
-    if(~isdir(foutname))
+    if ~isfolder(foutname)
         mkdir(foutname);
-    end;
+    end
     foutname = [foutname delimiter name];
 
     %% get instructions from the meta file
     all_cell_types = regexprep(s.cellclasses,' ','');
-    [id,fname,tmnt,ct,xyz,nf,all,plot3d,basedir]=getmetainstructions(s.metafile, all_cell_types, s.plot3d);
-    % convert tmnt from a cell (array of strings) to a matrix
+    if isempty(all_cell_types)
+        all_cell_types=[];
+    end
+    [id,fname,tmnt,ct,xyz,nf,varnames,plot3d,basedir]=getmetainstructions(s.metafile, all_cell_types, s.plot3d);
     tmnt = cell2mat(tmnt);
     
     if ~isempty(basedir)
-        if isdir(basedir)
+        if isfolder(basedir)
             s.base_dir = basedir;
-        end;
-    end;
-    
-    plot2d = s.plot2d;
-
-    dext = '.dac';
-  
-    %% read data from all specified input files 
-    % assign them to variables dxN and dyN, where N=1,2,3;
-    for j=1:nf
-        for k=1:6 % we assume that k is always at least 1, otherwise exporting data doesn't make sense
-            
-            if(length(xyz{j})>=k)
-                fncells = [s.base_dir, fname{j}, delimiter, s.classificationfile]; 
-                fn = [s.base_dir, fname{j}, delimiter, 'dat', delimiter, xyz{j}{k}, dext];	        
-                [a,b,c,d,e,f,g] = load_xyz_data(fn, fncells, xyz{j}{k}, ct{j});        
-            else
-                a=cell(size(ct{j}));
-            end;
-            switch k
-                case 1, dx1{j} = a;
-                case 2, dy1{j} = a;
-                case 3, dx2{j} = a;
-                case 4, dy2{j} = a;
-                case 5, dx3{j} = a;
-                case 6, dy3{j} = a;
-            end;
-            if (k==1)
-                cellid{j}=b; area{j}=c; pixels{j}=d; xpos{j}=e; ypos{j}=f; l2w{j}=g;
-            end;
-            
-        end;        
-    end;
+        end
+    end
+        
+    %% read data from all specified input files
+    % note that corrections will also be applied in this step!!
+    [t1, t2, xyz, varnames] = read_data_from_input_files(s, fname, xyz, ct, tmnt, varnames);
     
     %% export all gathered data to an output text file
-    
-    % generate format with which the data will be exported 
-    fmt=sprintf('#id\tfile\ttreatment\tcell_type\tcell_id');
-    fmt1='%d\t%s\t%d\t%c\t%d';
-    fmt2=[];
-    for j=1:length(xyz{1})
-        fmt=[fmt sprintf('\t%s\tstd',xyz{1}{j})];
-        fmt2=[fmt2 '\t%.4e\t%.4e'];
-    end;
+    export_data_from_input_files(varnames, foutname, t1, t2);
 
-    % generate the filename for the output
-    fn = [foutname,dext];  
-
-    fprintf(1,'Exporting data to %s ... ',fn); 
-    fid=fopen(fn,'w');
-
-    % open output filename and export the data
-    fprintf(fid,'%s\n',fmt);
-    for j=1:nf
-        for kk=1:min([length(dx1{j}) length(ct{j})])
-            out=[dx1{j}{kk} dy1{j}{kk} dx2{j}{kk} dy2{j}{kk} dx3{j}{kk} dy3{j}{kk}];
-            for ii=1:size(out,1) %length(cellid{j}{kk})                    
-                fprintf(fid,fmt1,id{j},fname{j},tmnt(j),ct{j}(kk),cellid{j}{kk}(ii));
-                fprintf(fid,fmt2,out(ii,:));
-                fprintf(fid,'\n');
-            end;
-        end;
-    end;
-    fclose(fid);
-    fprintf(1,'Done.\n');       
-
-    %fnh = [foutname,'-hxy',dext];
-    %fna = [foutname,'-avg',dext];      
-
-    all_treatments=str2num(s.treatments);
+    %% plot data as 2d or 3d graphs
     
     f2=[]; f3=[]; f4=[]; f5=[]; f6=[];
+    t2 = table2array(t2);
     
-    % plot data as 2d graphs
+    %% plot data as 2d scatter plots
     if plot2d               
         
         epsdir = [pathstr delimiter name delimiter 'eps'];
-        if ~isdir(epsdir)
+        if ~isfolder(epsdir)
             mkdir(epsdir);
-            fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
-        end;
-                
-        % reformat the color/symbol scheme
-        p1=regexprep(s.cellcolors,' ','');
-        p2=regexprep(s.symbols,' ',''); 
+            if verbose>1
+                fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
+            end
+        end
+
+        fprintf(1,'\nPlotting 2D graph ... \n');
         
-        fprintf(1,'Plotting 2D graph ... \n');                       
-        
-        % plot x1 vs y1
-        if(length(all{1})>1)
+        %% plot x1 vs y1
+        if length(varnames{1})>1
             fig = 1;
-            ind1 = 1;
-            ind2 = 2;
             xscale = s.xscale1;
             yscale = s.yscale1;
             logscalex = s.logscale.x1;
             logscaley = s.logscale.y1;
-            xd=dx1;
-            yd=dy1;
-            [f2 pdffile2]=plot_data_2d(plot_flag, fig, ind1, ind2, nf, fname, all, xd, yd, ct,p1,p2,all_treatments,tmnt,...
-                s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name);        
-        end;
+            xlab=varnames{1}{1};
+            ylab=varnames{1}{2};
+            [f2, pdffile2, cls_sel, tmnt_sel]=plot_data_2d(plot_flag, fig, ...
+                t2(:,[1 3]), t2(:,[2 4]), t1, ...
+                xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name);
+        end
                
-        % plot x2 vs y2
-        if(length(all{1})>3)
+        %% plot x2 vs y2
+        if(length(varnames{1})>3)
             fig = 2;
-            ind1 = 3;
-            ind2 = 4;
             xscale = s.xscale2;
             yscale = s.yscale2;
             logscalex = s.logscale.x2;
             logscaley = s.logscale.y2;
-            xd=dx2;
-            yd=dy2;
-            [f3 pdffile3]=plot_data_2d(plot_flag, fig, ind1, ind2, nf, fname, all, xd, yd, ct,p1,p2,all_treatments,tmnt,...
-                s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name);        
-        end;
+            xlab=varnames{1}{3};
+            ylab=varnames{1}{4};
+            [f3, pdffile3, cls_sel, tmnt_sel]=plot_data_2d(plot_flag, fig, ...
+                t2(:,[5 7]), t2(:,[6 8]), t1, ...
+                xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name);        
+        end
         
-        % plot x3 vs y3
-        if(length(all{1})>5)
+        %% plot x3 vs y3
+        if(length(varnames{1})>5)
             fig = 3;
-            ind1 = 5;
-            ind2 = 6;
             xscale = s.xscale3;
             yscale = s.yscale3;
             logscalex = s.logscale.x3;
             logscaley = s.logscale.y3;
-            xd=dx3;
-            yd=dy3;
-            [f4 pdffile4]=plot_data_2d(plot_flag, fig, ind1, ind2, nf, fname, all, xd, yd, ct,p1,p2,all_treatments,tmnt,...
-                s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name);
-        end;        
+            xlab=varnames{1}{5};
+            ylab=varnames{1}{6};
+            [f4, pdffile4, cls_sel, tmnt_sel]=plot_data_2d(plot_flag, fig, ...
+                t2(:,[9 11]), t2(:,[10 12]), t1, ...
+                xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name);
+        end
        
+        %% export graphs
         if plot_flag == 1
             j=0;
             pdffile=[];
             if ~isempty(f2)
                 j=j+1;
                 pdffile{j}=pdffile2;
-            end;
+            end
             if ~isempty(f3)
                 j=j+1;
                 pdffile{j}=pdffile3;
-            end;
+            end
             if ~isempty(f4)
                 j=j+1;
                 pdffile{j}=pdffile4;
-            end;
-
+            end
             create_pdf_output(pathstr, name, pdffile, '-2D-all', s);
-        end;
+        end
         
         if plot_flag == 2
             if ~isempty(f2)
-                create_pdf_output(pathstr, name, pdffile2, ['-' all{1}{1} '--' all{1}{2} '-sep'], s);
-            end;
+                create_pdf_output(pathstr, name, pdffile2, ['-' varnames{1}{1} '--' varnames{1}{2} '-sep'], s);
+            end
             if ~isempty(f3)
-                create_pdf_output(pathstr, name, pdffile3, ['-' all{1}{3} '--' all{1}{4} '-sep'], s);
-            end;
+                create_pdf_output(pathstr, name, pdffile3, ['-' varnames{1}{3} '--' varnames{1}{4} '-sep'], s);
+            end
             if ~isempty(f4)
-                create_pdf_output(pathstr, name, pdffile4, ['-' all{1}{5} '--' all{1}{6} '-sep'], s);
-            end;
-        end;
+                create_pdf_output(pathstr, name, pdffile4, ['-' varnames{1}{5} '--' varnames{1}{6} '-sep'], s);
+            end
+        end
+        
+        fprintf(1,'Done with plotting.\n')
         
     else
         close_figures(f2);
         close_figures(f3);
         close_figures(f4);
-    end;
+    end
 
-    % plot as 3D graphs
+    %% plot data as 3D scatter plots
     if plot3d                        
         
-        % reformat the color/symbol scheme
-        p1=regexprep(s.cellcolors,' ','');
-        p2=regexprep(s.symbols,' ',''); 
+        epsdir = [pathstr delimiter name delimiter 'eps'];
+        if ~isfolder(epsdir)
+            mkdir(epsdir);
+            if verbose>1
+                fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
+            end
+        end
+              
+        fprintf(1,'\nPlotting 3D graph ... \n');
         
-        % plot x1 vs y1 vs x2=z1
-        if(length(all{1})>2)
-            
-            if plot_flag == 1 % plot in the same graph
-                fprintf(1,'Plotting 3D graph ... \n');
-                [f5 pdffile5]=plot_data_3d(4, 1,2,3, nf, fname,all,dx1,dy1,dx2,ct,p1,p2,all_treatments,tmnt,...
-                    s,s.xscale1,s.yscale1,s.xscale2,s.logscale.x1,s.logscale.y1,s.logscale.x2, cellid, pathstr, name);                
-                fprintf(1,'Done\n');
+        %% plot 1 vs 2 vs 3
+        if length(varnames{1})>2
+            fig = 4;
+            xscale = s.xscale1;
+            yscale = s.yscale1;
+            zscale = s.xscale2;
+            logscalex = s.logscale.x1;
+            logscaley = s.logscale.y1;
+            logscalez = s.logscale.x2;
+            xlab=varnames{1}{1};
+            ylab=varnames{1}{2};
+            zlab=varnames{1}{3};
+            if plot_flag % plot in the same graph
+                [f5, pdffile5, cls_sel, tmnt_sel]=plot_data_3d(fig, ...
+                    t2(:,[1 3 5]), t2(:,[2 4 6]), t1, ...
+                    xlab, ylab, zlab, s, xscale, yscale, zscale, logscalex, logscaley, logscalez, pathstr, name);
             else
-                fprintf(1,'Plotting 3D graphs separately for each dataset not implemented. Sorry.\n');
-            end;
-            
-        end;
-        
-        % plot x=y2 vs y=x3 vs z=y3
-        if(length(all{1})>5)
-            
-            if plot_flag == 1 % plot in the same graph
-                fprintf(1,'Plotting 3D graph ... \n');
-                [f6 pdffile6]=plot_data_3d(5, 4,5,6, nf, fname,all,dy2,dx3,dy3,ct,p1,p2,all_treatments,tmnt,...
-                    s,s.yscale2,s.xscale3,s.yscale3,s.logscale.y2,s.logscale.x3,s.logscale.y3, cellid, pathstr, name);
-                fprintf(1,'Done\n');
+                fprintf(1,'WARNING: Plotting 3D graphs separately for each dataset not implemented. Sorry.\n');
+            end
+        end
+                
+        %% plot 4 vs 5 vs 6
+        if length(varnames{1})>5
+            fig = 5;
+            xscale = s.yscale2;
+            yscale = s.xscale3;
+            zscale = s.yscale3;
+            logscalex = s.logscale.y2;
+            logscaley = s.logscale.x3;
+            logscalez = s.logscale.y3;
+            xlab=varnames{1}{4};
+            ylab=varnames{1}{5};
+            zlab=varnames{1}{6};
+            if plot_flag % plot in the same graph
+                [f6, pdffile6, cls_sel, tmnt_sel]=plot_data_3d(fig, ...
+                    t2(:,[7 9 11]), t2(:,[8 10 12]), t1, ...
+                    xlab, ylab, zlab, s, xscale, yscale, zscale, logscalex, logscaley, logscalez, pathstr, name);
             else
-                fprintf(1,'Plotting 3D graphs separately for each dataset not implemented. Sorry.\n');
-            end;
-            
-        end;
+                fprintf(1,'WARNING: Plotting 3D graphs separately for each dataset not implemented. Sorry.\n');
+            end            
+        end
         
+        %% export graphs
         if plot_flag == 1
             j=0;
             pdffile=[];
             if ~isempty(f5)
                 j=j+1;
                 pdffile{j}=pdffile5;
-            end;
+            end
             if ~isempty(f6)
                 j=j+1;
                 pdffile{j}=pdffile6;
-            end;
+            end
 
             create_pdf_output(pathstr, name, pdffile, '-3D-all', s);
-        end;
+        end
         
     else
         close_figures(f5);
         close_figures(f6);
-    end;
+    end
 
-    disp('=== LEGEND ====================')
-    disp(['cell classes: ',s.cellclasses]);
-    disp(['cell colors:  ',s.cellcolors]);
-    disp(['treatment type:   ',s.treatments]);
-    disp(['treatment symbol: ',s.symbols]);
-    disp('===============================');
+    %% display legend in the console
+    if plot2d || plot3d
+        %cls_sel  = regexprep(s.cellclasses,' ','');
+        cls_col = regexprep(s.cellcolors,' ','');
+        cls_col = cls_col(1:length(cls_sel));
+        %tmnt_sel = str2num(s.treatments);
+        tmnt_symb = regexprep(s.symbols,' ','');
+        tmnt_symb = tmnt_symb(1:length(tmnt_sel));
+        fprintf(1,'\n============ LEGEND =====================\n')
+        fprintf(1,'ROI class: '); 
+        fprintf(1,'\t%c',regexprep(cls_sel,' ',''));
+        fprintf(1,'\n');
+        fprintf(1,'ROI color: '); 
+        fprintf(1,'\t%c',regexprep(cls_col,' ',''));
+        fprintf(1,'\n');
+        fprintf(1,'------------------------------------------\n');
+        fprintf(1,'treatment ID    : ');
+        fprintf(1,'\t%d',tmnt_sel);
+        fprintf(1,'\n');
+        fprintf(1,'treatment symbol: ');        
+        fprintf(1,'\t%c',tmnt_symb);
+        fprintf(1,'\n');
+        fprintf(1,'==========================================\n');
+    end
     
     if plot2d
-        fprintf('*** NOTE: Click on DATACURSOR to see annotations for each data-point.\n')
-    end;
+        fprintf('NOTE: Click on DATACURSOR to see annotations for each data-point.\n')
+    end
+    
+    %% add a button for fitting data to each graph
+    if ~isempty(f2)
+        figure(f2)
+        fb1 = findobj('tag','fit_button1');
+        if isempty(fb1)
+            btn1 = uicontrol(f2,'Style', 'pushbutton', 'String', 'Fit data',...
+                'Units','normalized', 'Position', [0.002 0.002 0.15 0.05],...
+                'BackgroundColor',[0 0.6 0],'ForegroundColor',[1 1 1],'FontWeight', 'bold', ...
+                'Callback', @getstats_in_2D_plot,'tag','fit_button1', ...
+                'Tooltip','Draw a polygon and calculate statistics on data inside it.');
+        end    
+    end
+    
+    if ~isempty(f3)
+        figure(f3)
+        fb2 = findobj('tag','fit_button2');
+        if isempty(fb2)
+            btn2 = uicontrol(f3,'Style', 'pushbutton', 'String', 'Fit data',...
+                'Units','normalized', 'Position', [0.002 0.002 0.15 0.05],...
+                'BackgroundColor',[0 0.6 0],'ForegroundColor',[1 1 1],'FontWeight', 'bold', ...
+                'Callback', @getstats_in_2D_plot,'tag','fit_button2', ...
+                'Tooltip','Draw a polygon and calculate statistics on data inside it.');
+        end    
+    end
+    
+    if ~isempty(f4)
+        figure(f4)
+        fb3 = findobj('tag','fit_button3');
+        if isempty(fb3)
+            btn3 = uicontrol(f4,'Style', 'pushbutton', 'String', 'Fit data',...
+                'Units','normalized', 'Position', [0.002 0.002 0.15 0.05],...
+                'BackgroundColor',[0 0.6 0],'ForegroundColor',[1 1 1],'FontWeight', 'bold', ...
+                'Callback', @getstats_in_2D_plot,'tag','fit_button3', ...
+                'Tooltip','Draw a polygon and calculate statistics on data inside it.');
+        end    
+    end    
     
     
-end;
+end
 
-function [f2 pdffile]=plot_data_2d(plot_flag, fig, ind1, ind2, nf, fname, all, xd, yd, ct,p1,p2,all_treatments,tmnt,...
-    s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name);
 
-if plot_flag == 1 % plot in the same graph
-    [f2 pdffile] = plot_data_2dall(fig, ind1, ind2, nf, fname, all, xd, yd, ct,p1,p2,all_treatments,tmnt,...
-        s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name);
-elseif plot_flag == 2 % plot each dataset in a separate graph
-    [f2 pdffile] = plot_data_2dsep(100*fig, ind1, ind2, nf, fname, all, xd, yd, ct,p1,p2,all_treatments,tmnt,...
-        s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name);
-end;
-        
-function [f2 pdffile]=plot_data_2dall(fig, ind1,ind2, nf, fname,all,dx,dy,ct,p1,p2,all_treatments,tmnt,...
-    s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name, fig_ext)    
+%% local function: plot_data_2d
+function [f2, pdffile, cls_sel, tmnt_sel]=plot_data_2d(plot_flag, fig, xyz, dxyz, roi_prop, ...
+    xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name)
+
+if plot_flag == 1 
+    %% plot in the same graph
+    [f2, pdffile, cls_sel, tmnt_sel] = plot_data_2dall(fig, xyz, dxyz, roi_prop, ...
+        xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name);
+elseif plot_flag == 2 
+    %% plot each dataset in a separate graph
+    [f2, pdffile, cls_sel, tmnt_sel] = plot_data_2dsep(100*fig, xyz, dxyz, roi_prop, ...
+        xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name);
+end
+
+
+%% local function: plot_data_2dall
+function [f2, pdffile, cls_sel, tmnt_sel]=plot_data_2dall(fig, xyz, dxyz, roi_prop, ...
+    xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name)    
 
 global additional_settings;
 
-f2=my_figure(fig); 
-subplot(1,1,1); 
+%f2=my_figure(fig);
+f2=figure(fig);
+ax=subplot(1,1,1);
+% make sure ax is linked to f2
+%set(ax,'Parent',f2);
 hold off;
-for j=1:nf
-    fprintf(1,'Adding data-set %d: %s [%s %s] (treatment %d)\n',j,fname{j},all{1}{ind1},all{1}{ind2},tmnt(j));
-    tmnts = find(all_treatments==tmnt(j));
-    if isempty(tmnts)
-        fprintf(1,'WARNING: skipped, because treatment %d is not specified in the Symbol scheme.\n',tmnt(j));
-    end;
-    add_to_plot2d(dx{j},dy{j},ct{j},p1,p2,find(all_treatments==tmnt(j)),all{j}{ind1},all{j}{ind2},...
-        s.graphtitle,xscale,yscale,logscalex,logscaley,s.disp_errorbars,...
-        fname{j},cellid{j},tmnt(j));
-end;
-pdffile = [name '-' all{1}{ind1} '--' all{1}{ind2} '-all.eps'];
-pdffile = regexprep(pdffile,'/','-');
+
+%% add data to the graph
+fprintf(1,'Adding data in a 2D plot ... ');
+[cls_sel, tmnt_sel]=add_to_plot2d(ax,xyz(:,1),xyz(:,2),dxyz(:,1),dxyz(:,2),roi_prop, ...
+    xlab, ylab, xscale,yscale,logscalex,logscaley, s);
+fprintf(1,'Done\n');
+
+%% export graphics
+fbs = ['fit_button' num2str(fig)];
+fb = findobj('tag',fbs);
+if ~isempty(fb)
+    set(fb,'visible','off');
+end
+pdffile = [name '-' xlab '--' ylab '-all'];
+%pdffile = regexprep(pdffile,'/','-');
+pdffile= [convert_string_for_texoutput(pdffile) '.eps'];
 fn = [pathstr delimiter name delimiter pdffile];
 print_figure(f2,fn,additional_settings.print_factors(2));
 %fprintf(1,'EPS output generated in %s\n',fn);
@@ -312,28 +349,51 @@ fn = regexprep(fn,'\','/');
 pdffile = regexprep(pdffile,'eps','pdf');    
 pdffile = regexprep(pdffile,'\','/'); 
 %invoke the datacursormode so that we can set the UpdateFcn
-hdt = datacursormode;
+%par1=get(ax,'OuterPosition');
+%par2=get(ax,'Position');
+%par3=get(ax,'PlotBoxAspectRatio');
+hdt = datacursormode(f2);
 %set(hdt,'DisplayStyle','window');
 set(hdt,'UpdateFcn',{@lanstips});
-hdt = datacursormode;
+hdt = datacursormode(f2);
+if ~isempty(fb)
+    set(fb,'visible','on');
+end
+%set(ax,'OuterPosition',par1);
+%set(ax,'Position',par2);
+%set(ax,'PlotBoxAspectRatio',par3);
 
-function [f2 pdffile]=plot_data_2dsep(fig, ind1,ind2, nf, fname,all,dx,dy,ct,p1,p2,all_treatments,tmnt,...
-    s,xscale,yscale,logscalex,logscaley, cellid, pathstr, name)    
+
+%% local function: plot_data_2dsep
+function [f2, pdffile, cls_sel, tmnt_sel]=plot_data_2dsep(fig, xyz, dxyz, roi_prop, ...
+    xlab, ylab, s, xscale, yscale, logscalex, logscaley, pathstr, name)    
 
 global additional_settings;
 
-for j=1:nf
+file_id = roi_prop.id;
+ufile_id = unique(file_id);
+
+for j=1:length(ufile_id)
+    
+    ind_sel = find(file_id==ufile_id(j));
+    
     f2{j}=my_figure(fig+j);
-    subplot(1,1,1); 
+    ax=subplot(1,1,1); 
     hold off;
-    fprintf(1,'Adding data-set %d: %s [%s %s]\n',j,fname{j},all{1}{ind1},all{1}{ind2});
-    add_to_plot2d(dx{j},dy{j},ct{j},p1,p2,find(all_treatments==tmnt(j)),all{j}{ind1},all{j}{ind2},...
-        fname{j},xscale,yscale,logscalex,logscaley,s.disp_errorbars,...
-        fname{j},cellid{j},tmnt(j));
-    pdffile{j} = [fname{j} '-' all{1}{ind1} '--' all{1}{ind2} '.eps'];
+
+    %% add data to the graph
+    [cls_sel, tmnt_sel]=add_to_plot2d(ax,xyz(ind_sel,1),xyz(ind_sel,2),dxyz(ind_sel,1),dxyz(ind_sel,2),roi_prop(ind_sel,:),...
+        xlab, ylab, xscale,yscale,logscalex,logscaley,s);
+    
+    fname_j = roi_prop.file{ind_sel(1)};
+    fprintf(1,'Displayed data-set %d: %s [%s %s] (treatment %d)\n',j,fname_j,xlab,ylab,roi_prop.treatment(ind_sel(1)));
+
+    %% export graphics
+    pdffile{j} = [fname_j '-' xlab '--' ylab];
+    pdffile{j} = convert_string_for_texoutput(pdffile{j});
     pdffile{j} = regexprep(pdffile{j},'_','-');
-    pdffile{j} = regexprep(pdffile{j},'/','-');
-    pdffile{j} = ['eps' delimiter pdffile{j}];
+    %pdffile{j} = regexprep(pdffile{j},'/','-');        
+    pdffile{j} = ['eps' delimiter pdffile{j} '.eps'];
     fn = [pathstr delimiter name delimiter pdffile{j}];
     print_figure(f2{j},fn,additional_settings.print_factors(2));
     %fprintf(1,'EPS output generated in %s\n',fn);
@@ -347,23 +407,30 @@ for j=1:nf
     %set(hdt,'DisplayStyle','window');
     set(hdt,'UpdateFcn',{@lanstips});
     hdt = datacursormode;
-end;
+    
+end
 
-function [f5 pdffile]=plot_data_3d(fig, ind1,ind2,ind3, nf, fname,all,dx,dy,dz,ct,p1,p2,all_treatments,tmnt,...
-    s,xscale,yscale,zscale,logscalex,logscaley,logscalez, cellid, pathstr, name);
+
+%% local function: plot_data_3d
+function [f5, pdffile,cls_sel, tmnt_sel]=plot_data_3d(fig, xyz, dxyz, roi_prop, ...
+    xlab, ylab, zlab, s, xscale, yscale, zscale, logscalex, logscaley, logscalez, pathstr, name) 
 
 global additional_settings;
 
 f5=my_figure(fig); 
-subplot(1,1,1); 
+ax=subplot(1,1,1); 
 hold off;
-for j=1:nf
-    fprintf(1,'Adding data-set %d: %s [%s %s %s]\n',j,fname{j},all{1}{ind1},all{1}{ind2},all{1}{ind3});
-    add_to_plot3d(dx{j},dy{j},dz{j},ct{j},p1,p2,find(all_treatments==tmnt(j)),all{j}{ind1},all{j}{ind2},all{j}{ind3},...
-        s.graphtitle,xscale,yscale,zscale,logscalex,logscaley,logscalez,s.disp_errorbars);
-end;
-pdffile = [name '-' all{1}{ind1} '--' all{1}{ind2} '--' all{1}{ind3} '-all.eps'];
-pdffile = regexprep(pdffile,'/','-');
+
+%% add data to the graph
+fprintf(1,'Adding data in a 3D plot ... ');
+[cls_sel, tmnt_sel]=add_to_plot3d(ax,xyz(:,1),xyz(:,2),xyz(:,3), dxyz(:,1),dxyz(:,2),dxyz(:,3),roi_prop, ...
+    xlab, ylab, zlab, xscale,yscale,zscale, logscalex,logscaley,logscalez, s);
+fprintf(1,'Done\n');
+
+%% export graphics
+pdffile = [name '-' xlab '--' ylab '--' zlab '-all'];
+%pdffile = regexprep(pdffile,'/','-');
+pdffile= [convert_string_for_texoutput(pdffile) '.eps'];
 fn = [pathstr delimiter name delimiter pdffile];
 print_figure(f5,fn,additional_settings.print_factors(2));
 %fprintf(1,'EPS output generated in %s\n',fn);
@@ -373,39 +440,22 @@ fn = regexprep(fn,'\','/');
 pdffile = regexprep(pdffile,'eps','pdf');    
 pdffile = regexprep(pdffile,'\','/');
 f5=my_figure(fig);
-if 0
-    [az, el]=view;            
-    % plot also x-y, y-z and x-z projections
-    view([0 0]);
-    fn = [pathstr delimiter name delimiter 'eps' delimiter name fig_ext '-xz.eps'];
-    print_figure(f5,fn,additional_settings.print_factors(2));
-    %fprintf(1,'3D graph (x-z view) saved as %s\n',fn);
-    mepstopdf(fn,'epstopdf',1,1); 
-    view([90 0]);
-    fn = [pathstr delimiter name delimiter 'eps' delimiter name fig_ext '-yz.eps'];
-    print_figure(f5,fn,additional_settings.print_factors(2));
-    %fprintf(1,'3D graph (y-z view) saved as %s\n',fn);
-    mepstopdf(fn,'epstopdf',1,1);
-    view([0 90]);
-    fn = [pathstr delimiter name delimiter 'eps' delimiter name fig_ext '-xy.eps'];
-    print_figure(f5,fn,additional_settings.print_factors(2));
-    %fprintf(1,'3D graph (x-y view) saved as %s\n',fn);
-    mepstopdf(fn,'epstopdf',1,1);       
-    % return to the default view
-    view([az el]);
-end;
 
+
+%% local function: close_figures
 function close_figures(f)
 if ~isempty(f)
     if iscell(f)
         for ii=1:length(f)
             close(f{ii});
-        end;
+        end
     else
         close(f);
-    end;
-end;
+    end
+end
 
+
+%% local function: create_pdf_output
 function create_pdf_output(pathstr, name, pdffile2, file_ext, s)                
 fname = [name file_ext '.tex'];
 fname = regexprep(fname,'/','-');
@@ -427,14 +477,14 @@ for j=1:length(pdffile2)
         fprintf(fid,'\\includegraphics[width=0.49\\textwidth]{%s}\n',pdffile2{j});
         fprintf(fid,'\\end{tabular}\n');
         k=1;
-    end;
-end;    
+    end
+end 
 if k==2
     fprintf(fid,'\\end{tabular}\n');
-end;
+end
 fprintf(fid,'\\end{document}\n');
 fclose(fid);
-fprintf(1,'*** Output written to %s\n',fout);
+fprintf(1,'Output written to %s\n',fout);
 % compile the tex file to create a PDF output
 mepstopdf(fout,'pdflatex',0);
 mepstopdf(fout,'pdflatex',1);

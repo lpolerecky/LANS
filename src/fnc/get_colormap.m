@@ -9,9 +9,13 @@ switch colmap
     case 7, cmap=summer;
     case 8, cmap=autumn;
     case 9, cmap=winter;
-    case 10, cmap=jet;
+    case 10, cmap=cmap_turbo;
     case 11, cmap=bone;
     case 12, cmap=copper;
     case 13, cmap=pink;
+    case 14, cmap=gwyddion;
+    case 15, cmap=cubehelix;
+    case 16, cmap=cmrmap;
+    case 17, cmap=viridis;
     otherwise, cmap=clut;
-end;
+end

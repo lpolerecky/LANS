@@ -54,6 +54,8 @@ function about_window_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for about_window
 handles.output = 'Yes';
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 

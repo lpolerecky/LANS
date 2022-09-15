@@ -68,6 +68,8 @@ set(handles.edit19,'string',base_dir);
 % Choose default command line output for auto_classification
 handles.output = hObject;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 

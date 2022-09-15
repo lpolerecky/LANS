@@ -53,26 +53,27 @@ function statistics_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to statistics_gui (see VARARGIN)
 
 if nargin>3
-    handles.data = varargin{1};
-    handles.ratios = varargin{2};
-    handles.metafile = varargin{3};
+    handles.roi_prop = varargin{1};
+    handles.roi_ratios = varargin{2};
+    handles.varnames = varargin{3};
+    handles.metafile = varargin{4};
     %handles.print_factor = varargin{4};
 else
-    handles.data = [];
-    handles.ratios = [];
+    handles.roi_prop = [];
+    handles.roi_ratios = [];
+    handles.varnames = [];
     handles.metafile = [];
     %handles.print_factor = [];
-end;
+end
 
-if ~isempty(handles.data)
+if ~isempty(handles.roi_prop)
     
     % initialize GUI based on input
     
-    d=handles.data{1};
-    cellclass = d(:,4);
-    treatment = d(:,5);
+    cellclass = handles.roi_prop.roi_class;
+    treatment = handles.roi_prop.treatment;
     
-    set(handles.popupmenu1,'string',handles.ratios,'value',1);
+    set(handles.popupmenu1,'string',handles.varnames,'value',1);
     
     cu = unique(cellclass);    
     % make all classes that are not in cu invisible
@@ -90,8 +91,8 @@ if ~isempty(handles.data)
         else
             s = sprintf('set(handles.checkbox%d,''visible'',''off'');',ii);
             eval(s);
-        end;        
-    end;
+        end    
+    end
     
     tu = unique(treatment);
     % make all treatments that are not in tu invisible
@@ -102,26 +103,28 @@ if ~isempty(handles.data)
         eval(s);
         s = sprintf('set(handles.checkbox%d,''value'',0);',ii+25);
         eval(s);
-    end;
+    end
     for ii=1:min([15 length(tu)])
         s = sprintf('set(handles.checkbox%d,''visible'',''on'');',ii+25);
         eval(s);
         if ii==1
             s = sprintf('set(handles.checkbox%d,''value'',1);',ii+25);
             eval(s);
-        end;
+        end
         s = sprintf('set(handles.checkbox%d,''string'',''%d'');',ii+25,tu(ii));
         eval(s); 
         handles.treatment_checkbox(ii)=ii+25;
-    end;  
+    end
 
-end;
+end
 
 apos=get(handles.axes1,'Position');
 %set(handles.axes1,'Position',[apos(1:2) 400 400]);
 
 % Choose default command line output for statistics_gui
 handles.output = hObject;
+
+handles = update_gui_fontsize(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -595,22 +598,30 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 
 [nt,t] = selected_treatments(handles);
 [nc,c] = selected_classes(handles);
-sr = handles.ratios{selected_ratio(handles)};
+sr = handles.varnames{selected_ratio(handles)};
 
 % export when pushbutton7 pressed
 export_flag = hObject==handles.pushbutton7;
 
 if selected_compare(handles)==1 
     if nt==1
+        
+        %% THIS WILL NOT WORK %%
+        
         if nc>0
             
             % code for comparing ROIs in 1 or more classes for 1 treatment
             % ratios measured in different planes are used as the basis for
             % comparison
             
-            d=handles.data{selected_ratio(handles)};
-            cellclass = d(:,4);
-            treatment = d(:,5);
+%             d=handles.data{selected_ratio(handles)};
+%             cellclass = d(:,4);
+%             treatment = d(:,5);
+            ROIs = handles.roi_prop.roi_uid;
+            cellclass = handles.roi_prop.roi_class;
+            treatment = handles.roi_prop.treatment;
+            ratios = table2array(handles.roi_ratios(:,(selected_ratio(handles)-1)*2+1));
+
             cu = unique(cellclass);
             tu = unique(treatment);
             indc = findn(cellclass, cu(find(c)));
@@ -618,11 +629,11 @@ if selected_compare(handles)==1
             ind = intersect(indc,indt);
             
             % prepare data
-            x = log_transform(d(ind,3),handles); % ratios, optionally log10-transformed
-            cls = d(ind,4); % classes
-            tmnt = d(ind,5); % treatments
+            x = log_transform(ratios(ind),handles); % ratios, optionally log10-transformed
+            cls = cellclass(ind); % classes
+            tmnt = treatment(ind); % treatments
             % cell number is the group for comparison, classes are ignored now
-            g = d(ind,2); 
+            g = ROIs(ind); 
             if get(handles.checkbox43,'value')
                 sr = ['log(' sr ')']; % selected ratio
             end;
@@ -663,12 +674,11 @@ if selected_compare(handles)==2
             % average ratios measured in different ROIs are used as the basis for
             % comparison
                         
-            d=handles.data{selected_ratio(handles)};
-            ROIs = d(:,2);
-            cellclass = d(:,4);
-            treatment = d(:,5);
-            ratios = d(:,3);
-            
+            ROIs = handles.roi_prop.roi_uid;
+            cellclass = handles.roi_prop.roi_class;
+            treatment = handles.roi_prop.treatment;
+            ratios = table2array(handles.roi_ratios(:,(selected_ratio(handles)-1)*2+1));
+                        
             % find average ratios for each ROI first
             mr = grpstats(ratios,ROIs,{'mean'});
             mc = grpstats(cellclass,ROIs,{'mean'});
@@ -704,7 +714,7 @@ if selected_compare(handles)==2
             
             % display raw data to the main window so that the one can copy
             % and paste it nicely organized, if one wishes to do so
-            fprintf(1,'ALL DATA:\ncls\ttmnt\t%s\n',sr);
+            fprintf(1,'*********\nALL DATA (comparison of classes):\ncls\ttmnt\t%s\n',sr);
             for ii=1:length(x)
                 fprintf(1,'%c\t%d\t%.4e\n',cls(ii),g(ii),x(ii));
             end;
@@ -713,11 +723,14 @@ if selected_compare(handles)==2
             [mm,ss,gn,nn,meanci,sem]=grpstats(x,g,{'mean','std','gname','numel','meanci','sem'});
             [mc]=grpstats(cls,g,{'mean'});
             [mt]=grpstats(tmnt,g,{'mean'});
-            fprintf(1,'STATISTICS:\ngroup\tmean     \tsem      \tstd      \tN:\n');
+            fprintf(1,'STATISTICS:\t%s\ngroup\tmean    \tsem      \tstd      \tN      \tfrac (%s)\tPr(mean=0)\t(ci)\n',sr,'%');
             for ii=1:length(mm)
-                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii));
-            end;
-         
+                % test whether value significantly different from zero
+                ind0 = find(g==gn{ii});
+                [ht,pt,cit]=ttest(x(ind0));
+                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\t%.1f\t%.1e\t\t%.1e\t%.1e\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii), 100*nn(ii)/sum(nn),pt,cit);
+            end
+                     
         if nc>1
             
             tt = get(handles.popupmenu3,'value'); % test type       
@@ -744,11 +757,15 @@ if selected_compare(handles)==3
             % average ratios measured in different ROIs are used as the basis for
             % comparison
                         
-            d=handles.data{selected_ratio(handles)};
-            ROIs = d(:,2);
-            cellclass = d(:,4);
-            treatment = d(:,5);
-            ratios = d(:,3);
+            %d=handles.data{selected_ratio(handles)};
+            %ROIs = d(:,2);
+            ROIs = handles.roi_prop.roi_uid;
+            %cellclass = d(:,4);
+            cellclass = handles.roi_prop.roi_class;
+            %treatment = d(:,5);
+            treatment = handles.roi_prop.treatment;
+            %ratios = d(:,3);
+            ratios = table2array(handles.roi_ratios(:,(selected_ratio(handles)-1)*2+1));
             
             % find average ratios for each ROI first
             mr = grpstats(ratios,ROIs,{'mean'});
@@ -786,11 +803,23 @@ if selected_compare(handles)==3
             % display raw data to the main window so that the one can copy
             % and paste it nicely organized, if one wishes to do so
             %fprintf(1,'cls\ttmnt\t%s\n',sr);
-            fprintf(1,'class = %s\ntmnt\t%s\n',cls(1),sr);
+            fprintf(1,'*********\nALL DATA (comparison of treatments):\ncls\ttmnt\t%s\n',sr);
             for ii=1:length(x)
                 %fprintf(1,'%c\t%d\t%.4e\n',cls(ii),g(ii),x(ii));
-                fprintf(1,'%d\t%.4e\n',g(ii),x(ii));
+                fprintf(1,'%c\t%d\t%.4e\n',cls(1),g(ii),x(ii));
             end;
+                        
+            % calculate means, std, etc.
+            [mm,ss,gn,nn,meanci,sem]=grpstats(x,g,{'mean','std','gname','numel','meanci','sem'});
+            [mc]=grpstats(cls,g,{'mean'});
+            [mt]=grpstats(tmnt,g,{'mean'});
+            fprintf(1,'STATISTICS:\t(%c)\t%s\ngroup\tmean     \tsem      \tstd      \tN      \tfrac(%s)\tPr(mean=0)\t(ci)\n',cls(1),sr,'%');
+            for ii=1:length(mm)
+                % test whether value significantly different from zero
+                ind0 = find(g==str2num(gn{ii}));
+                [ht,pt,cit]=ttest(x(ind0));
+                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\t%.1f\t%.1e\t\t%.1e\t%.1e\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii), 100*nn(ii)/sum(nn),pt,cit);
+            end
             
             tt = get(handles.popupmenu3,'value'); % test type       
             % do the actual comparison test
@@ -816,16 +845,16 @@ if get(handles.checkbox43,'value')
     log10x(ind) = NaN(size(ind));
 else
     log10x = x;
-end;
+end
 
-function ind = findn(a, b);
+function ind = findn(a, b)
 % find indices where a==b. b can be a vector
 ind = [];
 b=unique(b);
 a=a(:)';
 for ii=1:length(b)
     ind = [ind find(a==b(ii))];
-end;
+end
 ind = unique(ind);
 
 function s=selected_ratio(handles)
@@ -840,7 +869,7 @@ c = zeros(nc,1);
 for ii=1:nc
     s = sprintf('c(ii)=get(handles.checkbox%d,''value'');',ii);
     eval(s);
-end;
+end
 nc = length(find(c==1));
 
 function [nt,c]=selected_treatments(handles)
@@ -849,7 +878,7 @@ c = zeros(nt,1);
 for ii=1:nt
     s = sprintf('c(ii)=get(handles.checkbox%d,''value'');',ii+25);
     eval(s);
-end;
+end
 nt = length(find(c==1));
 
 

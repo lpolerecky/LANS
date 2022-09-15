@@ -1,6 +1,9 @@
 function [rat rat_m]=read_statc(fname, ratios)
 
-fprintf('Processing file %s\n', fname);
+global verbose
+if verbose 
+    fprintf('Processing file %s\n', fname);
+end
 
 fid=fopen(fname,'r');
 
@@ -15,13 +18,13 @@ while isempty(strfind(tline,'Cumulated results'))
         rat_id = rat_id+1;
         rat(k, rat_id) = A(5);
         if rat_id==length(ratios), rat_id = 0; k=k+1; end;
-    end;
+    end
     tline=fgetl(fid);
-end;
+end
 
 while isempty(strfind(tline,'Ratio#'))
     tline=fgetl(fid);
-end;
+end
 
 tline=fgetl(fid);
 
@@ -29,6 +32,6 @@ for i=1:length(ratios)
     tline=fgetl(fid); 
     A = sscanf(tline,'%s %e %e %e %e %e'); 
     rat_m(i) = A(4);
-end;
+end
 
 fclose(fid);

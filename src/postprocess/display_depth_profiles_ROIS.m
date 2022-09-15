@@ -1,4 +1,4 @@
-function [out pdfout f30 cid] = display_depth_profiles_ROIS(m,dm,cid,cnum,images,masses,Maskimg,ratios,fname)
+function [out pdfout f30 cid] = display_depth_profiles_ROIS(m,dm,cid,cnum,images,masses,Maskimg,ratios,fname,cellclasses)
 
 global additional_settings;
 
@@ -7,29 +7,33 @@ dcounts = dm;
 plane_range = images{1};
 if isempty(plane_range)
     plane_range = 1:size(m{1},2);
-end;
+end
 
 out=[];
 pdfout=[];
 
-MAX_GRAPHS=12;
+MAX_GRAPHS=9;
 
 for ii=1:length(ratios)
         
-    [formula PoissErr mass_index] = parse_formula(ratios{ii},masses);
+    [formula, PoissErr, mass_index] = parse_formula_lans(ratios{ii},masses);
     
     if ~isempty(mass_index)
         
         f30{ii}=figure(30+ii);
-
+        sz = get( 0, 'ScreenSize' );
+        fp = get(f30{ii},'Position');
+        set(f30{ii},'Position',[sz(3)/2 1 sz(3)/2 sz(4)]);
+        
         Nrois = length(cid);
 
-        nrows = ceil(MAX_GRAPHS/4);
+        nrows = ceil(MAX_GRAPHS/3);
 
         if Nrois>MAX_GRAPHS
             fprintf(1,'*** WARNING: Number of ROIs>%d. Depth profiles for only the first %d ROIs will be displayed.\n',MAX_GRAPHS,MAX_GRAPHS);
         end;
 
+        ll = 0;
         for jj=1:Nrois
 
             y=[];
@@ -38,7 +42,7 @@ for ii=1:length(ratios)
             end;
 
             ROIsize=length(find(Maskimg==jj));
-            y=y/ROIsize;
+            y=y/ROIsize;            
 
             m=[];
             for kk=1:length(masses)
@@ -47,58 +51,28 @@ for ii=1:length(ratios)
 
             % calculate depth profile of the ratio
             eval(formula);
-
-            if jj<=MAX_GRAPHS
-                % display depth profiles of the ion_counts/pixel and of the ratio
-                subplot(nrows, 4, jj);
-
-                % transform r for better scaling
-                sc = quantile(r,[0.01 0.99]);
-                minr=floor(sc(1)*10)/10;
-                maxr=ceil(sc(2)*10)/10;        
-                fac = 1/10^floor(log10(maxr));
-                r=r*fac;
-                minr=minr*fac;
-                maxr=maxr*fac;
-
-                hold off;
-                [ax,h1,h2]=plotyy(plane_range,y,plane_range,r,'semilogy','plot');
-
-                set(get(ax(1),'Ylabel'),'String','counts/pixel') 
-                if fac==1
-                    set(get(ax(2),'Ylabel'),'String', ratios{ii})
-                else
-                    set(get(ax(2),'Ylabel'),'String',[num2str(fac) ' x ' ratios{ii}])
-                end;
-                xlabel('plane')
-                title(sprintf('ROI %d (%c)',cnum(jj),cid(jj)));
-                for kk=1:length(h1)
-                    set(h1(kk),'linestyle','none');
-                    set(h1(kk),'Marker','.');
-                end;
-                set(h2,'linestyle','none');        
-                set(h2,'Marker','x');
-                sc = quantile(y,[0.01 0.99]);
-                miny = min(sc(1,:));
-                if miny==0
-                    miny=min(mean(y));
-                end;
-                maxy = max(sc(2,:));                
-                miny=10^floor(log10(miny));
-                maxy=10^ceil(log10(maxy));
-                if miny~=0
-                    yt=10.^linspace(log10(miny),log10(maxy),log10(maxy/miny)+1);
-                    set(ax(1),'ylim',[miny maxy],'ytick',yt,'xlim',[min(plane_range) max(plane_range)]);
-                else
-                    yt=10.^linspace(log10(maxy*1e-3),log10(maxy),4);
-                    set(ax(1),'ylim',[1e-3*maxy maxy],'ytick',yt,'xlim',[min(plane_range) max(plane_range)]);
-                end;
-                set(ax(2),'ylim',[minr maxr],'xlim',[min(plane_range) max(plane_range)]);
-            end;
-
-            % gather statistics from the depth profiles
-            a=0;
-            out1 = [ std(r(find(isfinite(r)))) quantile(r,additional_settings.autoscale_quantiles) ];
+            r_profile = r;
+            
+            % calculate correction for variance in r due to Poisson contribution
+            % NOTE: the formula only works for a *simple ratio of two* variables (R/S), i.e.,
+            % not when the expression is like R/(R+S).
+            if length(mass_index)==2
+                R = m{mass_index(1)};
+                S = m{mass_index(2)};
+                var_poiss = (mean(R)/mean(S)*sqrt(1/mean(R)+1/mean(S)))^2;
+            else
+                var_poiss = 0;
+            end
+            % total variance in ratio (due to depth AND Poisson)
+            var_r = var(r_profile(find(isfinite(r_profile))));
+            % variance due to depth
+            var_depth = var_r-var_poiss;
+            if var_depth<0
+                var_depth=0;
+            end
+            
+            % gather statistics from the depth profile
+            out1 = [ sqrt(var_r) sqrt(var_poiss) sqrt(var_depth) quantile(r_profile,[0.025 0.975]) ];
             % mean ratio value needs to be calculated from the accumulated counts
             m=[];
             for kk=1:length(masses)
@@ -107,6 +81,71 @@ for ii=1:length(ratios)
             eval(formula);
             out{ii}(jj,:) = [r out1];
 
+            % display depth profiles of the ion_counts/pixel and of the ratio
+            % in the ROI, but only if its class is member of the
+            % cellclasses specified by the user
+            % NOTE: both ion counts and ratios will be normalized to mean
+            % to highlight the variability
+            if sum(ismember(cellclasses,cid(jj))) > 0
+                ll=ll+1;
+                if ll<=MAX_GRAPHS                
+                    subplot(nrows, 3, ll);
+                    % normalize ion counts and ratios to their respective mean
+                    ind1 = ~isnan(r_profile);
+                    ind2 = ~isinf(abs(r_profile));
+                    ind = ind1 & ind2;
+                    r_norm = r_profile/mean(r_profile(ind));
+                    y_norm = y ./ (ones(size(y,1),1)*mean(y));
+                    hold off;
+                    [ax,h1,h2]=plotyy(plane_range,r_norm,plane_range,y_norm);                    
+                    % calculate scaling
+                    sc = quantile(r_norm(ind),[0.01 0.99]);
+                    if sc(1)==sc(2)
+                        sc=[min(r_norm(ind)) max(r_norm(ind))];
+                    end
+                    if sc(2)>sc(1)
+                        minr = sc(1) - diff(sc)/10;
+                        maxr = sc(2) + diff(sc)/10;                
+                        minr = floor(minr*100)/100;
+                        maxr = ceil(maxr*100)/100;
+                    else
+                        minr = -1;
+                        maxr = 1;
+                    end
+                    sc = quantile(y_norm(:),[0.01 0.99]);
+                    if sc(1)==sc(2)
+                        sc=[min(y_norm(:)) max(y_norm(:))];
+                    end
+                    if sc(2)>sc(1)
+                        miny = sc(1) - diff(sc)/10;
+                        maxy = sc(2) + diff(sc)/10;
+                        miny = floor(miny*100)/100;
+                        maxy = ceil(maxy*100)/100;
+                    else
+                        miny = -1;
+                        maxy = 1;
+                    end
+                    % set axes properties to make them look nicer
+                    set(ax(1),'YColor',[1 0 0]);
+                    set(get(ax(1),'Ylabel'),'String', sprintf('(%s) / %.2e',ratios{ii},r));
+                    xlabel('plane')
+                    title(sprintf('ROI %d (%c) [CV=%2.1f%c (z:%2.0f%c)]',cnum(jj),cid(jj),...
+                        out1(1)/r*100, '%', (out1(3)/out1(1))^2*100, '%'));
+                    set(ax(1),'FontSize',additional_settings.defFontSize);
+                    set(ax(2),'FontSize',additional_settings.defFontSize);
+                    mcols = 'gbmc';
+                    for kk=1:length(h2)
+                        set(h2(kk),'linestyle','none','Marker','.',...
+                            'MarkerSize',12,'Color',mcols(kk));
+                    end;
+                    set(h1,'linestyle','-','Marker','x','Color','r');
+                    set(ax(1),'ylim',[minr maxr],'xlim',[min(plane_range)-1 max(plane_range)],...
+                        'ytick',linspace(minr,maxr,2));
+                    set(ax(2),'ylim',[miny maxy],'xlim',[min(plane_range)-1 max(plane_range)],...
+                        'ytick',linspace(miny,maxy,2));
+                    a=0;
+                end;
+            end;
         end;
 
         [fdir, fn, fext] = fileparts(fname);
@@ -128,6 +167,6 @@ for ii=1:length(ratios)
         out{ii} = [];
         pdfout{ii} = [];
         
-    end;
+    end
     
-end;
+end

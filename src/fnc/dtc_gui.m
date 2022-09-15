@@ -54,7 +54,7 @@ function dtc_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 if nargin>3
     handles.dtc = varargin{1};    
 else
-    ones = [1 1 1 1 1 1 1 1];
+    ones = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
     % default structure of the dead-time correction parameters
     d.dt = 44*ones; % dead-time, in ns
     d.y  = 1*ones; % yield
@@ -76,6 +76,8 @@ fpos=get(handles.figure1,'Position');
 
 % Choose default command line output for dtc_gui
 handles.output = handles.dtc;
+
+handles = update_gui_fontsize(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -685,29 +687,31 @@ end
 function fill_objects(h)
 set(h.checkbox1,'value',h.dtc.apply_dtc);
 set(h.checkbox2,'value',h.dtc.apply_QSA);
-if length(h.dtc.y)<8
-    h.dtc.y(8) = h.dtc.y(1);
-end;
-if length(h.dtc.bkg)<8
-    h.dtc.bkg(8) = h.dtc.bkg(1);
-end;
-if length(h.dtc.dt)<8
-    h.dtc.dt(8) = h.dtc.dt(1);
-end;
-if length(h.dtc.K)<8
-    h.dtc.K(8) = h.dtc.K(1);
-end;
+if length(h.dtc.y)<16
+    h.dtc.y(8:16) = h.dtc.y(1);
+end
+if length(h.dtc.bkg)<16
+    h.dtc.bkg(8:16) = h.dtc.bkg(1);
+end
+if length(h.dtc.dt)<16
+    h.dtc.dt(8:16) = h.dtc.dt(1);
+end
+if length(h.dtc.K)<16
+    h.dtc.K(8:16) = h.dtc.K(1);
+end
 
 for ii=1:8
-    s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+1,num2str(h.dtc.y(ii)));
-    eval(s);
-    s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+2,num2str(h.dtc.bkg(ii)));
-    eval(s);
-    s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+3,num2str(h.dtc.dt(ii)));
-    eval(s);
-    s=sprintf('set(h.edit%d,''string'',''%s'');',32+ii,num2str(h.dtc.K(ii)));
-    eval(s);
-end;
+    % first 8
+    s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+1,num2str(h.dtc.y(ii)));    eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+2,num2str(h.dtc.bkg(ii)));  eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+3,num2str(h.dtc.dt(ii)));   eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',32+ii,num2str(h.dtc.K(ii)));         eval(s);
+    % second 8 (applicable when peak-switching used)
+    s=sprintf('set(h.edit%d,''string'',''%s'');',100+(ii-1)*3+1,num2str(h.dtc.y(ii+8)));   eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',100+(ii-1)*3+2,num2str(h.dtc.bkg(ii+8))); eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',100+(ii-1)*3+3,num2str(h.dtc.dt(ii+8)));  eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',100+32+ii,num2str(h.dtc.K(ii+8)));        eval(s);
+end
 %set(h.edit50,'string',num2str(h.dtc.dwelling_time));
 
 
@@ -715,13 +719,15 @@ function h = get_values(h)
 h.dtc.apply_dtc = get(h.checkbox1,'value');
 h.dtc.apply_QSA = get(h.checkbox2,'value');
 for ii=1:8
-    s=sprintf('h.dtc.y(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+1);
-    eval(s);
-    s=sprintf('h.dtc.bkg(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+2);
-    eval(s);
-    s=sprintf('h.dtc.dt(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+3);
-    eval(s);
-    s=sprintf('h.dtc.K(ii) = str2num(get(h.edit%d,''string''));',32+ii);
-    eval(s);
-end;
+    % first 8
+    s=sprintf('h.dtc.y(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+1);     eval(s);
+    s=sprintf('h.dtc.bkg(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+2);   eval(s);
+    s=sprintf('h.dtc.dt(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+3);    eval(s);
+    s=sprintf('h.dtc.K(ii) = str2num(get(h.edit%d,''string''));',32+ii);          eval(s);
+    % second 8 (applicable when peak-switching used)
+    s=sprintf('h.dtc.y(ii+8) = str2num(get(h.edit%d,''string''));',100+(ii-1)*3+1);     eval(s);
+    s=sprintf('h.dtc.bkg(ii+8) = str2num(get(h.edit%d,''string''));',100+(ii-1)*3+2);   eval(s);
+    s=sprintf('h.dtc.dt(ii+8) = str2num(get(h.edit%d,''string''));',100+(ii-1)*3+3);    eval(s);
+    s=sprintf('h.dtc.K(ii+8) = str2num(get(h.edit%d,''string''));',100+32+ii);          eval(s);    
+end
 %h.dtc.dwelling_time = str2num(get(h.edit50,'string'));

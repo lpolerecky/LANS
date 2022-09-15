@@ -8,10 +8,10 @@ flipud_flag=1;
 
 if isfield(p,'planes_aligned')
     if ~p.planes_aligned
-        fprintf(1,'*** Warning: Accummulate planes first before displaying mass images!\n');    
+        fprintf(1,'*** Warning: Accumulate planes first before displaying mass images!\n');    
     else
         
-        [formula PoissErr mass_index] = parse_formula('ext',p.mass);
+        [formula PoissErr mass_index] = parse_formula_lans('ext',p.mass);
         if isempty(mass_index)
             fprintf(1,'Empty file. Please select aligned external image first.\n');
         else

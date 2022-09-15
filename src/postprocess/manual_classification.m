@@ -66,6 +66,8 @@ end
 % Choose default command line output for manual_classification
 handles.output = hObject;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -101,6 +103,8 @@ ss=num2str(str2num(a(v,1:size(a,2))));
 set(handles.edit1,'string',ss);
 a=get(handles.listbox2,'string');
 set(handles.edit2,'string',a(v,1));
+% refocus on edit2
+uicontrol(handles.edit2);
 
 % --- Executes during object creation, after setting all properties.
 function listbox1_CreateFcn(hObject, eventdata, handles)
@@ -132,6 +136,8 @@ ss=num2str(str2num(a(v,1:size(a,2))));
 set(handles.edit1,'string',ss);
 a=get(handles.listbox2,'string');
 set(handles.edit2,'string',a(v,1));
+% refocus on edit2
+uicontrol(handles.edit2);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -221,17 +227,23 @@ update_listboxes(handles,allcnum,allclass,cnum);
 set(handles.edit1,'string',num2str(cnum+1));
 
 function update_listboxes(handles,allcnum,allclass,cnum)
-% sort the cells first
-[allcnum,ind]=sort(allcnum);
-allclass=allclass(ind);
-set(handles.listbox1,'string', num2str(allcnum));
-set(handles.listbox2,'string', allclass);
-% highlight the cell cnum
-ind=find(allcnum==cnum);
-if(~isempty(ind))
-    set(handles.listbox1,'value',ind);
-    set(handles.listbox2,'value',ind);
-end;
+if ~isempty(allcnum)
+    % sort the cells first
+    [allcnum,ind]=sort(allcnum);
+    allclass=allclass(ind); 
+    % highlight the cell cnum
+    ind=find(allcnum==cnum);
+    if(~isempty(ind))
+        set(handles.listbox1,'value',ind);
+        set(handles.listbox2,'value',ind);
+    end
+    set(handles.listbox1,'string', num2str(allcnum));
+    set(handles.listbox2,'string', allclass);
+    set(handles.edit1,'string',num2str(cnum));
+    set(handles.edit2,'string',allclass(cnum));
+else
+    fprintf(1,'WARNING: classification file empty.\n');
+end
 
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
@@ -248,7 +260,7 @@ if(~isempty(allcnum))
     newind = setdiff(allind,ind);
     allcnum = allcnum(newind,1);
     allclass = allclass(newind,1);
-end;
+end
 
 update_listboxes(handles,allcnum,allclass,ind-1);
 
@@ -263,33 +275,47 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 base_dir = handles.base_dir;
 base_dir=fixdir(base_dir);
 
-[FileName,newdir,newext] = uigetfile('*.dat','Select cell classification file (e.g. cells.dat)', base_dir);
-if(FileName~=0)
-    cellfile = [newdir, FileName];
-    base_dir=newdir;
-else
-    % default
-    cellfile = [base_dir,delimiter,'cells.dat'];
-end;
+global CELLSFILE
+
+if hObject == handles.pushbutton3
+    
+    def_file = [base_dir CELLSFILE '.dat'];
+    fprintf(1,'\n*** Select ROIs classification file (default %s.dat)\n',def_file);
+    
+    [FileName,newdir,newext] = uigetfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+    if(FileName~=0)
+        cellfile = [newdir, FileName];
+        base_dir=newdir;
+    else
+        % default
+        cellfile = def_file;
+    end
+elseif hObject == handles.pushbutton5
+    cellfile = handles.cellfile;
+end
 
 if(exist(cellfile)==2)
     fid=fopen(cellfile,'r');
     jj=0;
+    allcnum=[];
+    allclass=[];
     while 1
         tline = fgetl(fid);
         if ~ischar(tline),   break,   end
         a=sscanf(tline,'%d %s');
         jj=jj+1;
         allcnum(jj,1) = a(1);
-        allclass(jj,1) = char(a(2));
+        allclass(jj,1) = a(2);
     end
     fclose(fid);
+    allclass=char(allclass);
     s=sprintf('Data loaded from %s',cellfile);
     disp(s);
     handles.base_dir = base_dir;
+    handles.cellfile = cellfile;
     update_listboxes(handles,allcnum,allclass,1);
     guidata(hObject, handles);
-end;
+end
 
 % --- Executes on button press in pushbutton4.
 function pushbutton4_Callback(hObject, eventdata, handles)
@@ -300,22 +326,101 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 base_dir = handles.base_dir;
 base_dir=fixdir(base_dir);
 
-[FileName,newdir,newext] = uiputfile('*.dat','Select cell classification file (e.g. cells.dat)', base_dir);
-if(FileName~=0)
-    cellfile = [newdir, FileName];
-else
-    % default
-    cellfile = [base_dir,delimiter,'cells.txt'];
-end;
+global CELLSFILE
+
+if hObject == handles.pushbutton6
+    
+    def_file = [base_dir CELLSFILE];
+    fprintf(1,'\n*** Select ROIs classification file (default %s.dat)\n',def_file);
+    
+    [FileName,newdir,newext] = uiputfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+
+    if(FileName~=0)
+        cellfile = [newdir, FileName];
+        handles.cellfile = cellfile;
+        guidata(hObject, handles);
+    else
+        % default
+        cellfile = [def_file '.dat'];        
+    end
+elseif hObject==handles.pushbutton4
+    if isfield(handles,'cellfile')
+        cellfile = handles.cellfile;
+    else
+        fprintf(1,'Output filename unknown. Please use Save As ... first.\n');
+        cellfile = [];
+    end
+end
 
 % save the cell classification in the selected cellfile
 allcnum = str2num(my_get(handles.listbox1,'string'));
 allclass = my_get(handles.listbox2,'string');
 N=length(allcnum);
-fid=fopen(cellfile,'w');
-for ii=1:N
-    fprintf(fid,'%d\t%s\n',allcnum(ii,1),allclass(ii,1));
-end;
-fclose(fid);
-s=sprintf('Cell classes saved as %s',cellfile);
-disp(s);
+if ~isempty(cellfile)
+    fid=fopen(cellfile,'w');
+    for ii=1:N
+        fprintf(fid,'%d\t%s\n',allcnum(ii,1),allclass(ii,1));
+    end;
+    fclose(fid);
+    s=sprintf('Cell classes saved as %s',cellfile);
+    disp(s);
+end
+
+function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
+global control_pressed;
+
+% determine the key that was pressed 
+keyPressed = eventdata.Key;
+%fprintf(1,'Key pressed: %s\n',keyPressed);
+
+if strcmpi(keyPressed,'control')
+    control_pressed = 1;
+end
+
+if strcmpi(keyPressed,'return') % add class
+    if control_pressed 
+        control_pressed = 0;
+        uicontrol(handles.pushbutton1);
+        pushbutton1_Callback(handles.pushbutton1,[],handles);
+        % refocus on edit2
+        uicontrol(handles.edit2);
+    end
+end
+
+if strcmpi(keyPressed,'l')
+    if control_pressed 
+        control_pressed = 0;
+        uicontrol(handles.pushbutton3);
+        pushbutton3_Callback(handles.pushbutton3,[],handles);
+        % refocus on edit2
+        uicontrol(handles.edit2);
+    end
+end
+if strcmpi(keyPressed,'r') % reload
+    if control_pressed 
+        control_pressed = 0;
+        uicontrol(handles.pushbutton5);
+        pushbutton3_Callback(handles.pushbutton5,[],handles);
+        % refocus on edit2
+        uicontrol(handles.edit2);
+    end
+end
+
+if strcmpi(keyPressed,'s') % save
+    if control_pressed 
+        control_pressed = 0;
+        uicontrol(handles.pushbutton4);
+        pushbutton4_Callback(handles.pushbutton4,[],handles);
+        % refocus on edit2
+        uicontrol(handles.edit2);
+    end
+end
+if strcmpi(keyPressed,'a') % save as
+    if control_pressed 
+        control_pressed = 0;
+        uicontrol(handles.pushbutton6);
+        pushbutton4_Callback(handles.pushbutton6,[],handles);
+        % refocus on edit2
+        uicontrol(handles.edit2);
+    end
+end

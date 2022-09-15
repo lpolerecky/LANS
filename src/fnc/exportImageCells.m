@@ -1,5 +1,6 @@
-function f=exportImageCells(f,title_,mass_,ext,print_factor)
+function [f outname] = exportImageCells(f,title_,mass_,ext,print_factor)
 %disp('*** This is exportImageCells ***');
+outname = [];
 title_=fixdir(title_);
 if(~isempty(ext))
     
@@ -25,7 +26,7 @@ if(~isempty(ext))
     %fprintf(1,'Figure exported as %s\n',out);
     if(strcmp(ext,'eps'))
         print_figure(f,out,print_factor);
-        mepstopdf(out,'epstopdf');
+        outname = mepstopdf(out,'epstopdf');
     end;
     
     t2=now;

@@ -5,7 +5,7 @@ if nargin>12
 else
     global additional_settings;
     q=additional_settings.autoscale_quantiles;
-end;
+end
 
 rgb=sum(rgb_flags);
 
@@ -17,7 +17,7 @@ if rgb==1
     [xstack,ystack,zstack,xs,ys,h,w,l,dx,dy]=get_stacks(d,x,y,wx,wy,wz,logf);
     fig=display_stacks(f1,xstack,ystack,zstack,xs,ys,q,h,w,l,dx,dy,fname,mass);
     print_stacks(fig,fname,mass,printf);
-end;
+end
 
 % plot stacks of more than one of the masses
 if rgb>1
@@ -36,35 +36,35 @@ if rgb>1
         zstack1=zeros(size(zstack));
         xs1=zeros(size(xs));
         ys1=zeros(size(ys));
-    end;
+    end
     if rgb_flags(2)==1
         [xstack2,ystack2,zstack2,xs2,ys2]=get_stacks(d{2},x,y,wx,wy,wz,logf);
         if ~isempty(massname)
             massname=[massname '-' mass{2}];
         else
             massname=[massname mass{2}];
-        end;
+        end
     else
         xstack2=zeros(size(xstack));
         ystack2=zeros(size(ystack));
         zstack2=zeros(size(zstack));
         xs2=zeros(size(xs));
         ys2=zeros(size(ys));
-    end;
+    end
     if rgb_flags(3)==1
         [xstack3,ystack3,zstack3,xs3,ys3]=get_stacks(d{3},x,y,wx,wy,wz,logf);
         if ~isempty(massname)
             massname=[massname '-' mass{3}];
         else
             massname=[massname mass{3}];
-        end;
+        end
     else
         xstack3=zeros(size(xstack));
         ystack3=zeros(size(ystack));
         zstack3=zeros(size(zstack));
         xs3=zeros(size(xs));
         ys3=zeros(size(ys));
-    end;
+    end
     fig=display_stacks_rgb(f1,{xstack1,xstack2,xstack3},...
         {ystack1,ystack2,ystack3},...
         {zstack1,zstack2,zstack3},...
@@ -72,16 +72,7 @@ if rgb>1
     massname=strrep(massname,'(','');
     massname=strrep(massname,')','');
     print_stacks(fig,fname,massname,printf);    
-end;
-
-
-
-
-
-
-
-
-
+end
 
 
 

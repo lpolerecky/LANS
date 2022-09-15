@@ -29,7 +29,7 @@ if ~isempty(m) & ~isempty(dm)
             out = zeros(Np,Nc*2);
             pol = zeros(1,Nc);
             
-            [formula PoissErr] = parse_formula(ratios{ii},mass);
+            [formula PoissErr] = parse_formula_lans(ratios{ii},mass);
 
             % calculate ratio and its PE based on the formulas
             % set Np to 1 temporarily when calculating per plane signals

@@ -26,7 +26,12 @@ if isfield(handles,'p')
 
     if(inter)
         % choose the mask image file interactively
-        [FileName,newdir,newext] = uigetfile(['*' MAT_EXT], ['Select ROIs file (e.g. ' CELLSFILE MAT_EXT ')'], p.fdir);
+        
+        def_file = [p.fdir CELLSFILE MAT_EXT];
+        fprintf(1,'\n*** Select ROIs file (default %s)\n',def_file);
+        fprintf(1,'If the file does not exit, or if you do not want to select it, click ''Cancel'' or press ''Esc''.\n');
+        
+        [FileName,newdir,newext] = uigetfile(['*' MAT_EXT], ['Select ROIs file (e.g. ' CELLSFILE MAT_EXT ')'], def_file);
         if(FileName~=0)
             mf = [newdir, FileName];
             cellname = FileName;
@@ -45,27 +50,27 @@ if isfield(handles,'p')
     end;
 
     if(exist(mf)==2)
-        disp(['Cells loaded from ',mf]);
+        disp(['ROIs loaded from ',mf]);
         eval(['load ',mf]);
     else
-        disp(['Cells image ',mf,' not found. Returning empty cells.']);
+        disp(['ROIs image ',mf,' not found. Returning empty ROIs.']);
         global EXTERNAL_IMAGEFILE
         if exist(EXTERNAL_IMAGEFILE)
             tmp=imread(EXTERNAL_IMAGEFILE);
             Maskimg = zeros(size(tmp,1),size(tmp,2));
         else
-            Maskimg = zeros(size(handles.p.im{1},1),size(handles.p.im{1},2));
+            Maskimg = zeros(size(handles.p.accu_im{1},1),size(handles.p.accu_im{1},2));
         end;
     end;
     
     % display loaded cells
     global additional_settings;
-    if additional_settings.always_display_rois | interactive
+    if additional_settings.always_display_rois && interactive
         my_figure(10);
         imagesc(Maskimg); colormap(clut(max(Maskimg(:))+1));
         addCellNumbers(10,Maskimg);
         set(gca,'DataAspectRatio',[1 1 1]);%,'xtick',[],'ytick',[]);
-    end;
+    end
     
 else
     

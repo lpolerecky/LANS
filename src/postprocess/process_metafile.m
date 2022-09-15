@@ -84,8 +84,19 @@ handles.base_mass_for_alignment = base_mass_for_alignment;
 handles.all_handles = all_handles;
 %handles.additional_settings = additional_settings;
 
+% default corrections settings
+global correction_settings;
+% make sure that when the process_metafile GUI is open, the correction and
+% rate calculation options are always set to 0 (=not applied) by default to
+% avoid unintentional consequences
+correction_settings.correction_apply = zeros(1,6);
+correction_settings.calculate_rate = zeros(1,6);
+handles.correction_settings = correction_settings;
+
 % Choose default command line output for process_metafile
 handles.output = hObject;
+
+handles = update_gui_fontsize(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -773,6 +784,11 @@ function class_ranking_Callback(hObject, eventdata, handles)
 s=get_processing_settings(handles);
 compare_classes(s);
 
+function apply_corrections_Callback(hObject, eventdata, handles)
+corrections_gui;
+%handles.corrections = corrections_gui(handles.corrections);
+%guidata(hObject, handles);
+
 % --------------------------------------------------------------------
 function plot_graphs_Callback(hObject, eventdata, handles)
 % hObject    handle to plot_graphs (see GCBO)
@@ -785,7 +801,7 @@ if hObject == handles.plot_graphs
     output_to_plot(s,1);
 elseif hObject == handles.plot_graphs_separately
     output_to_plot(s,2);
-end;
+end
 
 % --------------------------------------------------------------------
 function generate_pdf_all_datasets_Callback(hObject, eventdata, handles)
@@ -813,7 +829,6 @@ function plotstests2pdf_Callback(hObject, eventdata, handles)
 s=get_processing_settings(handles);
 plotstests_to_pdf(s);
 
-
 % --------------------------------------------------------------------
 function settings_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to settings_menu (see GCBO)
@@ -828,12 +843,12 @@ function load_settings_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile('*.mat','Select processing settings', s.base_dir);
+[FileName,newdir,newext] = uigetfile('*.mat','Select file with processing settings', s.base_dir);
 if(FileName~=0)
     processfile = [newdir, FileName];
     a=load(processfile);
     update_processing_settings(a.s,handles)
-    disp(['Processing settings loaded from ',processfile]);    
+    disp(['Metafile processing settings loaded from ',processfile]);    
 end;
 
 % --------------------------------------------------------------------
@@ -843,13 +858,13 @@ function save_settings_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uiputfile('*.mat','Select processing settings', s.base_dir);
+[FileName,newdir,newext] = uiputfile('*.mat','Select output file', s.base_dir);
 if(FileName~=0)
     processfile = [newdir, FileName];
     %s.base_dir=newdir;
     eval(['save ',processfile,' s -v6']);
-    disp(['Processing settings save to ',processfile]);    
-end;
+    disp(['Metafile processing settings saved to ',processfile]);
+end
 
 
 
@@ -898,8 +913,11 @@ s=get_processing_settings(handles);
 s.base_mass_for_alignment = handles.base_mass_for_alignment;
 p = load_masses_parameters(handles.all_handles);
 s.p = p;
-autoprocess_to_pdf(s);
+autoprocess_to_pdf(s, handles.all_handles);
 
+function dead_time_correction_Callback(hObject, eventdata, handles)
+handles.all_handles.dtc = dtc_gui(handles.all_handles.dtc);
+guidata(hObject, handles);
 
 function export_depth_profiles_Callback(hObject, eventdata, handles)
 s=get_processing_settings(handles);
@@ -908,3 +926,7 @@ p = load_masses_parameters(handles.all_handles);
 s.p = p;
 export_depth_profiles(s);
 
+
+function export_classified_ROIs_images_Callback(hObject, eventdata, handles)
+s=get_processing_settings(handles);
+export_classified_ROIs_images(s);

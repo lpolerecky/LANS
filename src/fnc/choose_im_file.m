@@ -16,16 +16,28 @@ else
 end;
 workdir=fixdir(workdir);
 
+global IM_FILE_EXT;
+file_types = {'*.im', 'Cameca IM file (*.im)'; ...
+        '*.im.zip','Compressed Cameca IM file (*.im.zip)'; ...
+        '*.mat','LANS-processed data (*.mat)'};
+if contains(IM_FILE_EXT,'zip')
+    ft = cell(2,2);
+    ft{1,1} = file_types{2,1};
+    ft{1,2} = file_types{2,2};
+    ft{2,1} = file_types{1,1};
+    ft{2,2} = file_types{1,2};    
+else
+    ft = file_types;
+end
+
 % select file(s)
 
 if multiple==0
-    [FileName,newdir,newext] = uigetfile({'*.im', 'Cameca IM file (*.im)'; ...
-        '*.im.zip','Compressed Cameca IM file (*.im.zip)'}, ...
+    [FileName,newdir,newext] = uigetfile(ft, ...
         'Select *.IM or *.IM.zip file', workdir, ...
         'MultiSelect', 'off');
 elseif multiple==1
-    [FileName,newdir,newext] = uigetfile({'*.im', 'Cameca IM file (*.im)'; ...
-        '*.im.zip','Compressed Cameca IM file (*.im.zip)'}, ...
+    [FileName,newdir,newext] = uigetfile(ft, ...
         'Select *.IM or *.IM.zip file (+Ctrl for multiple)', workdir, ...
         'MultiSelect', 'on');
 elseif multiple==2 % this is used when loading the accumulated data, without the need to have the original im data 
@@ -35,43 +47,77 @@ elseif multiple==2 % this is used when loading the accumulated data, without the
     [newdir fname]=fileparts(newdir(1:end-1));
     [newdir]= [newdir filesep];
     FileName = [fname filesep FileName];
-end;
+elseif multiple==3 % this is used when loading the complete processed dataset, i.e., all planes
+    [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS processed file (*.mat)'}, ...
+        'Select LANS-generated data file', workdir, ...
+        'MultiSelect', 'off');    
+end
 
 % parse the selected filenames
 if ~iscell(FileName) 
     
     if FileName~=0
-       set(handles.edit1,'String',newdir);
-       set(handles.text2,'String',newext); 
-       fn = approve_imfile([newdir FileName]);
-       if ~isempty(fn) 
+        
+        if contains(FileName,'zip')
+            newext = 2;
+        elseif contains(FileName,'mat')
+            newext = 3;
+        else
+            newext = 1;
+        end
+        
+        set(handles.edit1,'String',newdir);
+        set(handles.text2,'String',newext); 
+        fn = approve_imfile([newdir FileName]);
+
+        if ~isempty(fn) 
            imfile{1} = fn;
            if multiple~=2
                dname{1} = get_outdirectory(fn,newext);
            else
                dname{1} = newdir;
-           end;
-       end;
-    end;
+           end
+        end
+        
+    end
         
 else
     
     set(handles.edit1,'String',newdir);
-    set(handles.text2,'String',newext);    
     bad_flag = 0;
     for ii=1:length(FileName)
+        
+        if contains(FileName{ii},'zip')
+            newext = 2;
+        elseif contains(FileName,'mat')
+            newext = 3;
+        else
+            newext = 1;
+        end
+        set(handles.text2,'String',newext);    
+    
         tmp1{ii} = approve_imfile([newdir FileName{ii}]);
         tmp2{ii} = get_outdirectory(tmp1{ii},newext);
+    
         if isempty(tmp1{ii})
             bad_flag = 1;
-        end;
-    end;
+        end
+        
+    end
+    
     if ~bad_flag
         imfile = tmp1;
         dname = tmp2;
-    end;
+    end
     
-end;
+end
+if newext==2
+    IM_FILE_EXT = '.im.zip';
+elseif newext==3
+    IM_FILE_EXT = '.mat';
+else
+    IM_FILE_EXT = '.im';
+end
 
 function fout = approve_imfile(imfile)
 forbidden_chars = ' *"^][()#%&,;''';

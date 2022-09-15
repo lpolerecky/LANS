@@ -12,12 +12,12 @@ end;
 % export the data as ASCII text
 fid=fopen([newdir,a,ext],'w');
 fprintf(fid,'# %s : %s\n',fdir,fname);    
-fprintf(fid,'# i\tXi\tYi\tMEANi\tPoiss_Ei\tPoiss_%cEi\tSIZEi\tPIXELSi\tLWratio\n','%');
+fprintf(fid,'# i\tXi\tYi\tMEANi\tPoiss_Ei\tPoiss_%cEi\tSIZEi\tPIXELSi\tLWratio\tdLWratio\n','%');
 if ff=='d'
-    fprintf(fid,'%d\t%.2f\t%.2f\t%d\t%.2f\t%.2f\t%.2f\t%d\t%.2f\n',o');
+    fprintf(fid,'%d\t%.2f\t%.2f\t%d\t%.2f\t%.2f\t%.2f\t%d\t%.2f\t%.2f\n',o');
 end;
 if ff=='f'
-    fprintf(fid,'%d\t%.2f\t%.2f\t%.3e\t%.3e\t%.3e\t%.2f\t%d\t%.2f\n',o');
+    fprintf(fid,'%d\t%.2f\t%.2f\t%.4e\t%.4e\t%.4e\t%.2f\t%d\t%.2f\t%.2f\n',o');
 end;
 fclose(fid);
 fprintf(1,'Data exported as %s\n', [newdir,a,ext]);
@@ -35,16 +35,16 @@ if ~isempty(findstr(ext,'.dat'))
     fprintf(fid,'\\begin{longtable}{lllllllll}\n');
     [pathdir, fn]=fileparts(fdir(1:end-1));
     fn=regexprep(fn,'_','\\_'); 
-    fprintf(fid,'\\multicolumn{9}{l}{%s : %s}\\\\\n\\hline\n',fn,fname);
-    fprintf(fid,'i & Xi & Yi & MEANi & PEi$^*$ & P\\%cEi$^*$ & SIZEi & PIXELSi & LWratio\\\\\n\\hline\n','%');
+    fprintf(fid,'\\multicolumn{10}{l}{%s : %s}\\\\\n\\hline\n',fn,fname);
+    fprintf(fid,'i & Xi & Yi & MEANi & PEi$^*$ & P\\%cEi$^*$ & SIZEi & PIXELSi & LWratio & dLWratio\\\\\n\\hline\n','%');
     if ff=='d'
-        fprintf(fid,'%d & %.2f & %.2f & %d & %.1f & %.2f & %.2f & %d & %.2f \\\\\n',o');
+        fprintf(fid,'%d & %.2f & %.2f & %d & %.1f & %.2f & %.2f & %d & %.2f & %.2f \\\\\n',o');
     end;
     if ff=='f'
-        fprintf(fid,'%d & %.2f & %.2f & %.5f & %.5f & %.2f & %.2f & %d & %.2f \\\\\n',o');
+        fprintf(fid,'%d & %.2f & %.2f & %.5f & %.5f & %.2f & %.2f & %d & %.2f & %.2f \\\\\n',o');
     end;
     fprintf(fid,'\\hline\n');
-    fprintf(fid,'\\multicolumn{9}{l}{$^*$~Poisson error and percentage error.}\n');
+    fprintf(fid,'\\multicolumn{10}{l}{$^*$~Poisson error and percentage error.}\n');
     fprintf(fid,'\\end{longtable}\n');
     fclose(fid);
     fprintf(1,'LaTeX output exported as %s\n', [newdir,a,'.tex']);

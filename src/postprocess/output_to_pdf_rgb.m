@@ -55,10 +55,10 @@ if(~isempty(foutname))
             ms = all{1}{m};
             R{m} = [];
             Ra{m} = [];
+            title_ = ms;
             
             % load accumulated ion counts from the mat file
-            if ~strcmp(lower(ms),'size')
-                title_ = ms;
+            if ~strcmp(lower(ms),'size')                
                 ms=convert_string_for_texoutput(ms);
                 mtmp=[base_dir,fname{j},delimiter,'mat',delimiter,ms,'.mat'];
                 if exist(mtmp)
@@ -74,9 +74,9 @@ if(~isempty(foutname))
                   
             % find the scale
             switch m,
-                case 1, scale=s.xscale1; lscale=s.logscale.x1; xl = ms;
-                case 2, scale=s.yscale1; lscale=s.logscale.y1; yl = ms;
-                case 3, scale=s.xscale2; lscale=s.logscale.x2; zl = ms;
+                case 1, scale=s.xscale1; lscale=s.logscale.x1; xl = title_;
+                case 2, scale=s.yscale1; lscale=s.logscale.y1; yl = title_;
+                case 3, scale=s.xscale2; lscale=s.logscale.x2; zl = title_;
             end;
 
             if isempty(strfind(scale,'auto'))
@@ -85,7 +85,7 @@ if(~isempty(foutname))
 
                         
             if isempty(scale) | ~isempty(strfind(scale,'auto'))
-                scale = find_image_scale(R{m}, 0, 0);
+                scale = find_image_scale(R{m}, 0, additional_settings.autoscale_quantiles, lscale, 0, title_);
             end;
             
             % average values over ROI pixels
@@ -99,6 +99,24 @@ if(~isempty(foutname))
                 end;
             end;
             
+            if lscale
+                itmp1=R{m};
+                ind1=find(itmp1>0);
+                ind2=find(itmp1<=0);
+                itmp1(ind1)=log10(itmp1(ind1));
+                itmp1(ind2)=0;
+                R{m}=itmp1;
+                %R{m} = log10(R{m});
+                itmp1=Ra{m};
+                ind1=find(itmp1>0);
+                ind2=find(itmp1<=0);
+                itmp1(ind1)=log10(itmp1(ind1));
+                itmp1(ind2)=0;
+                Ra{m}=itmp1;                
+                %Ra{m} = log10(Ra{m});
+                scale = log10(scale);
+            end;
+            
             % rescale R and Ra so that min/max = 0/1
             R{m} = (R{m}-scale(1))/(diff(scale));
             ind = find(R{m}<0);
@@ -110,23 +128,7 @@ if(~isempty(foutname))
             Ra{m}(ind) = zeros(size(ind));
             ind = find(Ra{m}>1);
             Ra{m}(ind) = ones(size(ind));
-            
-            % log-transform, if requested
-            if lscale
-                % the same code as in construct_RGB_image.m
-                minlog=-log10(255);
-                ind0=find(R{m}<10^minlog);
-                R{m}(ind0)=(10^minlog)*ones(size(ind0));
-                R{m} = log10(R{m});
-                % rescale from [-N 0] to [0 1]
-                R{m}=(R{m}-minlog)/(0-minlog);
-                ind0=find(Ra{m}<10^minlog);
-                Ra{m}(ind0)=(10^minlog)*ones(size(ind0));
-                Ra{m} = log10(Ra{m});
-                % rescale from [-N 0] to [0 1]
-                Ra{m}=(Ra{m}-minlog)/(0-minlog);
-            end;
-      
+                             
         end;
         
         % construct the RGB images
@@ -210,16 +212,16 @@ if(~isempty(foutname))
             % add the LaTeX entry to the file
             if(mod(j,2)==1)
                 fprintf(fid,'%s\n','\begin{tabular}{cc}');
-                if exist(rgb7_fname{j})
+                if exist(rgb_fname{j})
                     %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s} &\n',id{j},ftmp);
-                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},rgb7_fname{j});
+                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},rgb_fname{j});
                 else
                     fprintf(fid,'%d: missing &\n',id{j});
                 end;
             else
-                if exist(rgb7_fname{j})
+                if exist(rgb_fname{j})
                     %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s}\n',id{j},ftmp);
-                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},rgb7_fname{j});
+                    fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},rgb_fname{j});
                 else
                     fprintf(fid,'%d: missing\n',id{j});
                 end;
@@ -249,11 +251,15 @@ if(~isempty(foutname))
             rgb = assemble_rgb_big(nf, rgba_big);
         end;
         tif_out = [fdir delimiter fn '.tif'];
-        imwrite(uint16(rgb*(2^16-1)),tif_out);
-        fprintf(1,'16-bit RGB image saved as %s\n', tif_out);  
-        
-    end;
-end;
+        Nbits = 8;
+        if Nbits==16
+            imwrite(uint16(rgb*(2^Nbits-1)),tif_out);
+        elseif Nbits==8
+            imwrite(uint8(rgb*(2^Nbits-1)),tif_out);
+        end
+        fprintf(1,'%d-bit RGB image saved as %s\n', Nbits, tif_out);
+    end
+end
 
 
 function rgb = assemble_rgb_big(nf, rgb_big)
@@ -262,27 +268,64 @@ function rgb = assemble_rgb_big(nf, rgb_big)
 rgb=[];
 nfx = round(sqrt(nf));
 nfy = ceil(nf/nfx);
+prompt = {sprintf('%d files in the metafile.\nEnter number of columns in the TIF image assembly',nf)};
+dlg_title = 'Final TIF formatting';
+num_lines = 1;
+defaultans = {num2str(nfy)};
+answer = inputdlg(prompt,dlg_title,num_lines,defaultans);
+[val status] = str2num(answer{1});
+if status
+    nfx=val;
+    nfy=ceil(nf/nfx);
+end
 k=0;
 for ii=1:nfy
     rgb1 = [];
     for jj=1:nfx
         k=k+1;
         if k<=length(rgb_big)
-            rgb1 = [rgb1 rgb_big{k}];
-        end;
-    end;
+            if jj==1
+                rgb1 = [rgb1 rgb_big{k}];
+            else             
+                rgb_big_k = rgb_big{k};
+                if size(rgb_big_k,1) >  size(rgb1,1)
+                    tmp = zeros(size(rgb_big_k,1),size(rgb1,2),size(rgb1,3));
+                    tmp(1:size(rgb1,1),1:size(rgb1,2),1:size(rgb1,3)) = rgb1;
+                    rgb1 = tmp;
+                elseif size(rgb_big_k,1) <  size(rgb1,1)
+                    tmp = zeros(size(rgb1,1),size(rgb_big_k,2),size(rgb_big_k,3));
+                    tmp(1:size(rgb_big_k,1),1:size(rgb_big_k,2),1:size(rgb_big_k,3)) = rgb_big_k;
+                    rgb_big_k = tmp;
+                end
+                %if size(rgb_big{k},1) == size(rgb1,1)
+                rgb1 = [rgb1 rgb_big_k];
+                %else
+                %    fprintf(1,'WARNING: data #%d skipped due to size mismatch.\n',k);
+                %end
+            end
+        end
+    end
     if ii==1
         rgb = rgb1;
     else
         if size(rgb1,2)<size(rgb,2)
             rgb_add = zeros(size(rgb1,1),size(rgb,2));
-            rgb_add(1:size(rgb1,1),1:size(rgb1,2)) = rgb1;
+            rgb_add(1:size(rgb1,1),1:size(rgb1,2),1:size(rgb1,3)) = rgb1;
         else
             rgb_add = rgb1;
-        end;
+        end
+        if size(rgb_add,2)>size(rgb,2)
+            tmp = zeros(size(rgb,1),size(rgb_add,2),size(rgb,3));
+            tmp(1:size(rgb,1),1:size(rgb,2),1:size(rgb,3)) = rgb;
+            rgb=tmp;
+        elseif size(rgb,2)>size(rgb_add,2)
+            tmp = zeros(size(rgb_add,1),size(rgb,2),size(rgb_add,3));
+            tmp(1:size(rgb_add,1),1:size(rgb_add,2),1:size(rgb_add,3)) = rgb_add;
+            rgb_add=tmp;
+        end
         rgb = [rgb; rgb_add];
-    end;
-end;
+    end
+end
     
 
 

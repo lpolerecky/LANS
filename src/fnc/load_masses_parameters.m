@@ -61,6 +61,12 @@ for ii=1:8
     
 end;
 
+if length(p.images)<length(p.mass)
+    for ii=(length(p.images)+1):length(p.mass)
+        p.images{ii} = p.images{1};
+    end
+end
+
 %% fill p.special, p.special_scale
 if uss
     
@@ -124,3 +130,5 @@ if ~isempty(EXTERNAL_IMAGEFILE)
         end;
     end;
 end;
+
+

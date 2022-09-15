@@ -12,7 +12,8 @@ else
     tit = my_get(handles.edit63,'string');
 end;
 
-sic_mass = str2num(get(handles.edit65,'string'));
+%sic_mass = str2num(get(handles.edit65,'string'));
+sic_mass = get(handles.edit65,'string');
 
 if opt1(6)    
           
@@ -24,11 +25,12 @@ if opt1(6)
         for jj=1:length(p.accu_im)
             p.imscale{jj} = p.imscale{jj}/Nplanes;
         end;
+        p.planes=1;
         for ii=1:Nplanes
             for jj=1:length(p.accu_im)
                 p.accu_im{jj} = double(p.im{jj}(:,:,ii));
             end;
-            [R,a,b,c,Rconf] = calculate_R_images(p, opt4, 0, opt1(16),1,sic_mass);
+            [R,a,b,c,Rconf] = calculate_R_images(p, opt4, 0, opt1(16),sic_mass);
             %R = calculate_R_images(p, opt4, 0);
             for jj=1:length(R)
                 if ~isempty(R{jj})

@@ -68,6 +68,8 @@ set(handles.edit10,'string',handles.base_dir);
 % Choose default command line output for manual_metafiledef
 handles.output = hObject;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -448,24 +450,34 @@ base_dir=fixdir(base_dir);
 %dname = uigetdir(base_dir,'Select dataset directory');
 fprintf(1,'Select processed IM file(s). Hold Ctrl for selecting multiple files.\n');
 
-[FileName,PathName,FilterIndex] = uigetfile({'*.im', 'Cameca IM file'; ...
-    '*.im.zip','Compressed Cameca IM file (*.im.zip)'}, ...
-    'Select processed *.IM or *.IM.zip file(s) (+Ctrl for multiple)', base_dir, ...
+[FileName,PathName,~] = uigetfile({'*.im', 'Cameca IM file'; ...
+    '*.im.zip','Compressed Cameca IM file (*.im.zip)'; ...
+    '*.mat','LANS-generated file (*.mat)'}, ...
+    'Select processed *.IM, *.IM.zip or *.mat file(s) (+Ctrl for multiple)', base_dir, ...
     'MultiSelect', 'on');
 
-if strcmp(base_dir,PathName)
-    rp=[];
+if iscell(FileName)
+    FileName1 = FileName{1};
 else
-    [p rp]=fileparts(PathName(1:end-1));
-    i=0;
-    while i<10 & ~strcmp(base_dir,[p filesep])
-        [p rp2] = fileparts(p);
-        rp = [rp2 filesep rp];
-        i=i+1;
-    end;
-end;
+    FileName1 = FileName;
+end
 
-if ~isempty(FileName)
+% find the relative path for the selected filename(s)
+if FileName1~=0
+    if strcmp(base_dir,PathName)
+        rp=[];
+    else
+        [p, rp]=fileparts(PathName(1:end-1));
+        i=0;
+        while i<10 && ~strcmp(base_dir,[p filesep])
+            [p, rp2] = fileparts(p);
+            rp = [rp2 filesep rp];
+            i=i+1;
+        end
+    end
+end
+
+if FileName1~=0
     
     if iscell(FileName)
         % when multiple files were selected, add them all to the edit1
@@ -477,36 +489,43 @@ if ~isempty(FileName)
             indzip = findstr(FileName{ii},'.zip');
             if indzip>0
                 FileName{ii}= FileName{ii}(1:indzip-1);
-            end;
-            [newdir,fn,newext] = fileparts(FileName{ii});
+            end
+            [~,fn,~] = fileparts(FileName{ii});
             if(fn~=0)
                 if ii>1
                     fnames = [fnames ';']; % add ; in between
-                end;
+                end
                 if isempty(rp)
                     fnames = [fnames fn];
                 else
                     fnames = [fnames rp filesep fn];
-                end;
-            end;
+                end
+            end
         end
     else
         % remove the .zip suffix
         indzip = findstr(FileName,'.zip');
         if indzip>0
             FileName = FileName(1:indzip-1);
-        end;
-        [newdir,fnames,newext] = fileparts(FileName);
+        end
+        [~,fnames,~] = fileparts(FileName);
         if ~isempty(rp)
             fnames = [rp filesep fnames];
-        end;
-    end;
+        end
+    end
+    
+    % in case the prefs.mat file was selected, choose the corresponding
+    % folder name
+    ind = findstr(fnames, '/prefs');
+    if ~isempty(ind)
+        fnames = fnames(1:(ind-1));
+    end
     
     if ~isempty(fnames)
         set(handles.edit1,'string',fnames);
-    end;
+    end
     
-end;
+end
 
 % --- Executes on button press in pushbutton4.
 function pushbutton4_Callback(hObject, eventdata, handles)

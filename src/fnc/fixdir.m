@@ -3,8 +3,10 @@ function fout=fixdir(fin)
 
 % disp('*** This is fixdir ***');
 
-if(~strcmp(fin(length(fin)),delimiter))
-    fout = [fin,delimiter];
-else
-    fout = fin;
-end;
+fout=fin;
+
+if ~isempty(fin)
+    if(~strcmp(fin(length(fin)),delimiter))
+        fout = [fin,delimiter];
+    end
+end

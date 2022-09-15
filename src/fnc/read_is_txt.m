@@ -1,6 +1,9 @@
 function [out]=read_is_txt(fname, cnts)
 
-fprintf('Processing file %s\n', fname);
+global verbose
+if verbose 
+    fprintf('Processing file %s\n', fname);
+end
 
 fid=fopen(fname);
 

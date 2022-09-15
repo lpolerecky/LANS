@@ -52,14 +52,13 @@ function lateral_profile_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to lateral_profile_gui (see VARARGIN)
 
-
 global additional_settings;
 
 if isfield(additional_settings,'defFontSize')
     defFontSize = additional_settings.defFontSize;
 else 
     defFontSize=10;
-end;
+end
 
 % Choose default command line output for lateral_profile_gui
 handles.output = hObject;
@@ -73,8 +72,10 @@ if(nargin>3)
     handles.ratios = varargin{3};   
     handles.fdir = varargin{4};
     handles.scale = varargin{5};
-    %handles.print_factor = varargin{6};
-end;
+    handles.image_stack = varargin{6};
+    handles.mass_names = varargin{7};
+    handles.mass_ratio_flag = varargin{8};
+end
 
 % keep only non-empty images
 jj=0;
@@ -84,8 +85,8 @@ for ii=1:length(handles.images)
         im{jj} = handles.images{ii};
         s{jj} = handles.scales{ii};
         r{jj} = handles.ratios{ii};
-    end;
-end;
+    end
+end
 handles.images = im;
 handles.scales = s;
 handles.ratios = r;
@@ -104,8 +105,12 @@ if jj>0
     b=colorbar('FontSize',defFontSize);
     %colormap(clut);
     colormap(get_colormap(additional_settings.colormap));
-end;
+    set(handles.edit2,'string', num2str(handles.scales{1}(1)));
+    set(handles.edit3,'string', num2str(handles.scales{1}(2)));    
+end
     
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -130,40 +135,56 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% chil = handles.axes1.Children;
+% ind_img = [];
+% for ii=1:length(chil)
+%     if strcmp(chil(ii).Type,'image'), ind_img=ii; end
+%     if strcmp(chil(ii).Type,'image'), ind_img=ii; end
+%     
+% end
+% imdata = chil(ind).CData;
+% fig = figure;
+% ax = subplot(1,1,1); hold off;
+% imagesc(imdata, quantile(imdata(:), additional_settings.autoscale_quantiles));
+% set(ax, 'DataAspectRatio',[1 1 1])
+
+fprintf(1,'Draw polygon within the image\n');
+fprintf(1,'* Left-click to add a point.\n');
+fprintf(1,'* Double-click to define last point.\n');
+fprintf(1,'* Double-click on the line to add a point.\n');
+fprintf(1,'* Click and drag to move the polygon.\n');
+
+% define polygon within the current image
+ax = handles.axes1;
+polygon = images.roi.Polyline(ax, 'Color', 'w', 'Tag', 'lans_polygon');
+draw(polygon);
+handles.polygon = polygon;
+
+% wait(roi);
+
 % define profile using a mouse
-[h,pos]=add_lans_line(handles.axes1);
-pos=round(pos);
-handles.pos = pos;
-fprintf(1,'Line defined: from [%d %d] to [%d %d]\n',pos(1,:),pos(2,:));
-% fill the line coordinates in the gui, for later use
-set(handles.edit2,'string',num2str(pos(1,1)))
-set(handles.edit3,'string',num2str(pos(1,2)))
-set(handles.edit4,'string',num2str(pos(2,1)))
-set(handles.edit5,'string',num2str(pos(2,2)))
-delete(h);
-[x,y,handles]=plot_lateral_profile(pos,hObject,handles);
+% [h,pos]=add_lans_line(handles.axes1);
+% pos=round(pos);
+% handles.pos = pos;
+% fprintf(1,'Line defined: from [%d %d] to [%d %d]\n',pos(1,:),pos(2,:));
+% % fill the line coordinates in the gui, for later use
+% set(handles.edit2,'string',num2str(pos(1,1)))
+% set(handles.edit3,'string',num2str(pos(1,2)))
+% set(handles.edit4,'string',num2str(pos(2,1)))
+% set(handles.edit5,'string',num2str(pos(2,2)))
+% delete(h);
+% [x,y,handles]=plot_lateral_profile(pos,hObject,handles);
 guidata(hObject, handles);
 
 function [x,y,handles]=plot_lateral_profile(pos, hObject, handles)
-% connect the beginning and end points with a line and get the coordinates
-% of the pixels on the line
-k = diff(pos,1);
-if abs(k(1))>abs(k(2))
-    dx = diff(pos(:,1))/abs(diff(pos(:,1)));
-    x = [pos(1,1):dx:pos(2,1)];
-    y = round((x-x(1))*k(2)/k(1) + pos(1,2));
-else
-    dy = diff(pos(:,2))/abs(diff(pos(:,2)));
-    y = [pos(1,2):dy:pos(2,2)];
-    x = round((y-y(1))*k(1)/k(2) + pos(1,1));
-end;
+[x y] = get_points_lateral_profile(pos);
 if ~isfield(handles,'line') | (isfield(handles,'line') & isempty(handles.line))
     axes(handles.axes1); hold on;
     line = plot(x,y,'w-');
     handles.line = line;
 else
     set(handles.line,'xdata',x,'ydata',y);
-end;
+end
 %guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton2.
@@ -172,217 +193,299 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if matversion==2015
-	defFontSize=10;
-else
-  defFontSize=14;
-end;
+global additional_settings;
 
-% read the line coordinates from the gui and plot it
+% get the thickness of the profile from the gui
+lw = str2num(get(handles.edit1,'string'));        
+if lw<1, lw=1; end
+set(handles.edit1,'string', num2str(lw));
+
+%% obsolete from 2020-03-28
+if 0
+% get the line coordinates from the gui and plot it
 pos(1,1) = str2num(get(handles.edit2,'string'));
 pos(1,2) = str2num(get(handles.edit3,'string'));
 pos(2,1) = str2num(get(handles.edit4,'string'));
 pos(2,2) = str2num(get(handles.edit5,'string'));
+
+% plot the lateral profile within the image
+
+% get the x-y coordinates of each point on it along the way
 [x,y,handles]=plot_lateral_profile(pos,hObject,handles);
 
-% calculate the mean and std of images along the profile
-      
 % make sure that the pixels lie inside the image
-[w,h]=size(handles.images{1});
+[h,w]=size(handles.images{1});
 ind = find(x>=1 & x<=w & y>=1 & y<=h);
 x = x(ind);
 y = y(ind);
+end
 
-Nx = length(x);
-pos = sqrt((x-x(1)).^2 + (y-y(1)).^2);  % position along the profile
+%% for all masses, calculate the mean counts and ratios along a profile
 
-r=handles.ratios;
-im=handles.images;
-pos=pos(:)/(size(im{1},1)-1)*handles.scale; % position in um
+% extract the relevant variables from the handles
+ratios=handles.ratios;
+images=handles.images;
+scales=handles.scales;
+image_stack=handles.image_stack;
+mass=handles.mass_names;
 
-% thickness of the profile
-lw = str2num(get(handles.edit1,'string'));        
-if lw<1, lw=1; end;
-set(handles.edit1,'string', num2str(lw));
-
-%if get(handles.checkbox3,'value')==1 | get(handles.checkbox5,'value')==1
-%    jj_range = [1:length(r)]; % display profiles for all images
-%else
-%    jj_range = get(handles.popupmenu1,'value'); % display profile only for the selected image
-%end;       
-
-%global additional_settings;
-
-for jj = 1:length(r)
-
-    N = size(im{jj},1);
-    M = size(im{jj},2);                               
-
-    dx = x(Nx)-x(1);
-    dy = y(Nx)-y(1);
-
-    % find the values along the (thick) profile
-
-    if abs(dx)>abs(dy) 
-        % the profile is more in the horizontal direction
-        v = NaN(Nx,lw);
-        for ii = 1:lw
-            if ii==1
-                dj=0;
-            else
-                if mod(ii,2)==0
-                    dj=floor(ii/2);
-                else
-                    dj=-floor(ii/2);
-                end;
-            end;                
-            % move the profile up and down, depending on the profile thickness
-            new_y = y + dj;
-            % move the profile also left and right, to account for the
-            % fact that it is not completely horizontal
-            di = -dy*dj/dx;
-            new_x = x + round(di);
-            ind = (new_x-1)*N + new_y;               
-            inside = find(new_y>=1 & new_y<=N & new_x>=1 & new_x<=M);
-            v(inside,ii) = im{jj}(ind(inside));
-            % check whether the pixels along the (thick) profile are
-            % correctly calculated
-            if 0
-                figure(70); if ii==1, hold off; else, hold on; end;
-                plot(new_x,new_y,'bo',new_x(inside),new_y(inside),'r.');
-            end;
-        end;            
-    else
-        % the profile is more in the vertical direction
-        v = NaN(Nx,lw);
-        for ii = 1:lw
-            if ii==1
-                di=0;
-            else
-                if mod(ii,2)==0
-                    di=floor(ii/2);
-                else
-                    di=-floor(ii/2);
-                end;
-            end;
-            % move the profile left and right, depending on the profile thickness
-            new_x = x + di;
-            % move the profile also up and down, to account for the
-            % fact that it is not completely vertical
-            dj = -dx*di/dy;
-            new_y = y + round(dj);
-            ind = (new_x-1)*N + new_y;
-            inside = find(new_y>=1 & new_y<=N & new_x>=1 & new_x<=M);
-            v(inside,ii) = im{jj}(ind(inside));
-            % check whether the pixels along the (thick) profile are
-            % correctly calculated
-            if 0
-                figure(70); if ii==1, hold off; else, hold on; end;
-                plot(new_x,new_y,'bo',new_x(inside),new_y(inside),'r.');
-            end;
-        end;
-    end;
-
-    % calculate the mean and std of the values along the profile; do
-    % not use the NaN values
-    meanv=zeros(Nx,1); stdv=zeros(Nx,1);
-    for ii=1:Nx
-        val = v(ii,:);
-        indnan = find(~isnan(val)==1);
-        if ~isempty(indnan)
-            meanv(ii)=mean(val(indnan));
-            stdv(ii)=std(val(indnan));
-        end;
-    end;
+if isfield(handles,'polygon')
+    xy = handles.polygon.Position; 
     
-    % remember the values for later plotting and regression analysis
-    meanv_all{jj}=meanv;
-    stdv_all{jj}=stdv;
-    r_all{jj}=r{jj};
+    % store lateral profiles (dim 1) for each plane (dim 2) and mass
+    % {imass}, and also accumulated over all planes
+    lprofiles = cell(1,length(image_stack));
+    lprofiles_accu1 = lprofiles;
+    lprofiles_accu2 = lprofiles;
+    fprintf(1,'Extracting data along the profile...');
+    for imass = 1:length(image_stack)
+        ims_i = image_stack{imass};
+        for iplane = 1:size(ims_i,3)
+            [pos, accuval, allval] = get_lateral_profile(xy(:,1), xy(:,2), ...
+                ims_i(:,:,iplane), lw, handles.scale);
+            if imass==1 && iplane==1
+                lprofiles{imass} = zeros(length(pos), size(ims_i,3));
+                lprofiles_accu1{imass} = zeros(length(pos), size(ims_i,3), lw);
+            end
+            lprofiles{imass}(:, iplane) = accuval;  % accumulated over profile width
+            lprofiles_accu1{imass}(:, iplane, :) = allval; % complete data (all profile pixels, all plances)
+        end
+        lprofiles_accu1{imass} = squeeze(sum(lprofiles_accu1{imass},2));
+        lprofiles_accu2{imass} = sum(lprofiles_accu1{imass},2);
+    end
+    fprintf(1,'done\n');
+         
+    % calculate lateral profiles of ratios for each plane and also for the
+    % accumulated data
+    ratio_planes=cell(1,length(ratios));
+    ratio_accu = ratio_planes;
+    sd_ratio_accu = ratio_planes;
+    for ir=1:length(ratios)
+        % find the formula in r        
+        [formula PoissErr mass_index] = parse_formula_lans(ratios{ir},mass);
+        if ~isempty(formula)            
+            warning('off');
+            % for each plane
+            m = lprofiles;
+            cell_sizes = ones(size(m{1}));
+            LWratio = ones(size(m{1}));
+			Np = lw;
+            eval(formula);
+            if handles.mass_ratio_flag==1
+                r = r/lw;
+            end
+            ratio_planes{ir} = r;
+            % for each profile within the parallel profiles (profile
+            % thickness)
+            m = lprofiles_accu1;
+            Np = size(image_stack{imass},3);
+            cell_sizes = ones(size(m{1}));
+            LWratio = ones(size(m{1}));
+            eval(formula);
+            sd_ratio_accu{ir} = std(r,0,2);
+            % for accumulated
+			Np = size(image_stack{imass},3)*lw;
+            m = lprofiles_accu2;
+            cell_sizes = ones(size(m{1}));
+            LWratio = ones(size(m{1}));
+            eval(formula);
+            if handles.mass_ratio_flag==1
+                r = r/lw;
+            end
+            ratio_accu{ir} = r;            
+            warning('on');
+            
+            if 0 && ir==7
+                % debug
+                figure;
+                subplot(3,1,1);
+                plot(ratio_planes{ir})
+                subplot(3,1,2);
+                plot(lprofiles_accu1{ir})
+                subplot(3,1,3);
+                plot(ratio_accu{ir})
+            end
+        end
+    end
     
-end;
-
-%if get(handles.checkbox3,'value')==1
-%    jj_range = [1:length(r)]; % display profiles for all images
-%else
-%    jj_range = get(handles.popupmenu1,'value'); % display profile only for the selected image
-%end; 
-
-% display values along the profile
-% if get(handles.checkbox3,'value')==1
-%     f60=figure(60);
-% else            
-%     
-% end;    
+    % if everything went well, here we have lateral profiles for 
+    % - each mass and plane (lprofiles)
+    % - each mass, accumulated over planes (lprofiles_accu)
+    % - each ratio and plane (ratio_planes)
+    % - each ratio, accumulated over planes (ratio_accu)
+    % pos = position along the profile (in um)
+ 
+end
 
 if hObject == handles.pushbutton2  % display lateral profiles   
     
     if get(handles.checkbox3,'value')==0 % plot only for the selected mass or ratio
 
         jj = get(handles.popupmenu1,'value');
-        meanv = meanv_all{jj};
-        stdv = stdv_all{jj};
-        f60=figure(60+jj);
+        jj_range = get(handles.listbox1,'Value');
+        if length(jj_range)==1
+            jj_range = jj;
+        end
 
         if get(handles.checkbox1,'value')
-            errorbar(pos,meanv,stdv,'sk-');
+            if get(handles.checkbox7,'value')
+                f60=figure;
+            else
+                f60=figure(160+jj); 
+            end
+            njj=length(jj_range);
+            for ii=1:njj
+                sjj=subplot(njj,1,ii); hold off;
+                meanv(:,:,ii) = ratio_planes{jj_range(ii)};
+                stdv = zeros(size(meanv));
+                if handles.mass_ratio_flag==1
+                    imsc = scales{jj_range(ii)}/size(ratio_planes{jj_range(ii)},2);
+                else
+                    imsc = scales{jj_range(ii)};
+                end
+                imagesc(pos, [1:size(meanv,2)], meanv(:,:,ii)', imsc);
+                
+                title(ratios{jj_range(ii)}, 'FontSize',additional_settings.defFontSize);
+                if njj<5
+                    ylabel('depth (block)', 'FontSize',additional_settings.defFontSize);
+                end
+                if ii<njj
+                    set(sjj,'xticklabel',[]);
+                end
+                if ii==njj
+                    xlabel('distance (micron)', 'FontSize',additional_settings.defFontSize);            
+                end
+                cb=colorbar;
+            end
+            colormap(get_colormap(additional_settings.colormap));
         else
-            plot(pos,meanv,'sk-');
-        end;
-        ylabel(r{jj}, 'FontSize',defFontSize);
-
-        export_lateral_profile(hObject, eventdata, handles, jj, jj, pos,Nx, meanv,stdv, x,y,lw, f60);
+            if get(handles.checkbox7,'value')
+                f60=figure;
+            else
+                f60=figure(60+jj); 
+            end
+            njj=length(jj_range);
+            for ii=1:njj
+                sjj=subplot(njj,1,ii); hold off;
+                meanv(:,ii) = ratio_accu{jj_range(ii)};
+                stdv(:,ii) = sd_ratio_accu{jj_range(ii)};
+                global additional_settings;
+                if additional_settings.display_error_bars
+                    errorbar(pos,meanv(:,ii),stdv(:,ii),'sk-');
+                    fprintf(1,'ERROR-BAR length = SD over profile pixels (N=%d)\n',lw);
+                else
+                    plot(pos, meanv(:,ii), 'sk-');
+                end
+                xlim([min(pos) max(pos)]);
+                title(ratios{jj_range(ii)}, 'FontSize',additional_settings.defFontSize);                
+                if ii<njj
+                    set(sjj,'xticklabel',[]);
+                end
+                if ii==njj
+                    xlabel('distance (micron)', 'FontSize',additional_settings.defFontSize);            
+                end
+            end
+            
+        end
+        
+        export_lateral_profile(hObject,eventdata,handles,jj,jj_range,pos,meanv,stdv,xy,lw,f60);       
 
     else
 
         % plot normalized values in one graph. normalization is done such that
         % the corresponding handles.scales will transform to [0 1]
 
-        jj_range = get(handles.listbox1,'Value');    
+        jj_range = get(handles.listbox1,'Value');
+        
+        if get(handles.checkbox1,'value')
+            if length(jj_range)>3
+                fprintf(1,'WARNING: max 3 ratios can be combined.\n');
+                jj_range = jj_range(1:3);
+                set(handles.listbox1,'Value',jj_range);
+            end
+        end        
 
         if length(jj_range)<2
             fprintf(1,'Error: Please select at least TWO masses or ratios in the left listbox.\n');
         else
-            for ii=1:length(jj_range)
+            
+            for ii=1:length(jj_range)                                
                 
-                jj=jj_range(ii);
-                meanv = meanv_all{jj};
-                stdv = stdv_all{jj};
-                f60=figure(60);
-                if jj==min(jj_range)
-                    hold off;
+                jj = jj_range(ii);
+                
+                % normalize each profile
+                fac = diff(handles.scales{jj});
+                if get(handles.checkbox1,'value')                   
+                    mv = (ratio_planes{jj}-handles.scales{jj}(1))/fac;
+                    sv = sd_ratio_accu{jj}/fac;
+                    mv(mv<0)=0; mv(mv>1)=1;
+                    if ii==1
+                        meanv = zeros(size(mv,1),size(mv,2),3);
+                        stdv = meanv;
+                        meanv_norm = meanv;
+                        tit = sprintf('R=%s',ratios{jj});
+                    elseif ii==2
+                        tit = sprintf('%s, G=%s', tit, ratios{jj});
+                    elseif ii==3
+                        tit = sprintf('%s, B=%s', tit, ratios{jj});
+                    end
+                    meanv_norm(:,:,ii) = mv;
+                    stdv_norm(:,:,ii) = sv*ones(1,size(mv,2));
+                    meanv(:,:,ii) = ratio_planes{jj};
+                    stdv(:,:,ii) = zeros(size(ratio_planes{jj}));
                 else
-                    hold on;
-                end;
+                    mv = (ratio_accu{jj}-handles.scales{jj}(1))/fac;
+                    sv = sd_ratio_accu{jj}/fac;
+                    if ii==1
+                        meanv = zeros(size(mv,1),length(jj_range));
+                        stdv = meanv;
+                        meanv_norm = meanv;
+                    end
+                    meanv_norm(:,ii) = mv;
+                    stdv_norm(:,ii) = sv;
+                    meanv(:,ii) = ratio_accu{jj};
+                    stdv(:,ii) = sd_ratio_accu{jj};
+                end
+                
+            end
+            
+            % create figure
+            if get(handles.checkbox7,'value')
+                f60=figure;
+            else
+                f60=figure(160+jj); 
+            end
+            subplot(1,1,1); hold off;
 
-                fac = (handles.scales{jj}(2)-handles.scales{jj}(1));
-                meanv2=(meanv-handles.scales{jj}(1))/fac;
-                %meanv2=(meanv)/fac;
-                stdv2=stdv/fac;
+            % display lateral profiles
+            if get(handles.checkbox1,'value')
+                image(pos, [1:size(meanv_norm,1)], permute(meanv_norm,[2 1 3]));
+                title(tit, 'FontSize',additional_settings.defFontSize);
+                ylabel('depth (block)', 'FontSize',additional_settings.defFontSize);
+                xlabel('distance (micron)', 'FontSize',additional_settings.defFontSize);
+            else
                 col = {'r.-','g.-','b.-','m.-','c.-','k.-','ro-','go-'};
+                for jj=1:length(jj_range)
+                    if jj>1, hold on; end
+                    global additional_settings;
+                    if additional_settings.display_error_bars
+                        errorbar(pos,meanv_norm(:,jj),stdv_norm(:,jj),col{jj});
+                        fprintf(1,'ERROR-BAR length = SD over profile pixels (N=%d)\n',lw);
+                    else
+                        plot(pos,meanv_norm(:,jj),col{jj});
+                    end
+                end
+                legend(ratios(jj_range), 'FontSize',additional_settings.defFontSize);
+                legend('boxoff');
+                ylabel('normalized values: [min max]->[0 1]', 'FontSize',additional_settings.defFontSize);                
+            end
+           
+            export_lateral_profile(hObject,eventdata,handles,jj,jj_range,pos,meanv,stdv,xy,lw,f60);
+            
+        end                
 
-                if get(handles.checkbox1,'value')
-                    errorbar(pos,meanv2,stdv2,col{jj});
-                else
-                    plot(pos,meanv2,col{jj});
-                end;
-
-                if jj==max(jj_range) & get(handles.checkbox3,'value')==1
-                    legend(handles.ratios(jj_range), 'FontSize',defFontSize);
-                    legend('boxoff');
-                    ylabel('normalized values: [min max]->[0 1]', 'FontSize',defFontSize);
-                end;
-                export_lateral_profile(hObject, eventdata, handles, jj,jj_range, pos,Nx, meanv,stdv, x,y,lw, f60);
-                
-            end;
-        end;
-
-    end;
-end;
-
-%figure(f60);
-%xlabel('position (micron)', 'FontSize',14);
-%set(gca,'xlim',[min(pos) max(pos)], 'FontSize',14);
+    end
+end
 
 if hObject == handles.pushbutton3  % perform pairwise regression analysis
     
@@ -393,7 +496,13 @@ if hObject == handles.pushbutton3  % perform pairwise regression analysis
     else
         
         fprintf(1,'Pair-wise regression analysis of values along the profile\n')
-        f70=figure(70);
+        % create figure
+        if get(handles.checkbox7,'value')
+            f70=figure;
+        else
+            f70=figure(70); 
+        end
+        
         Nvar = length(jj_range);
         Ngraphs = Nvar*(Nvar-1)/2;
         splot_x = ceil(sqrt(Ngraphs));
@@ -403,124 +512,163 @@ if hObject == handles.pushbutton3  % perform pairwise regression analysis
             for jj=1:(Nvar-1)
                 for ii=(jj+1):Nvar
                     subplot(splot_y,splot_x,k); hold off;
-                    x = meanv_all{jj_range(jj)};
-                    y = meanv_all{jj_range(ii)};
-                    plot(x,y,'k.');
-                    xlabel(r{jj_range(jj)});
-                    ylabel(r{jj_range(ii)});
-                    k=k+1;
+                    if get(handles.checkbox1,'value')
+                        xk = ratio_planes{jj_range(jj)};
+                        yk = ratio_planes{jj_range(ii)};
+                    else
+                        xk = ratio_accu{jj_range(jj)};
+                        dxk = sd_ratio_accu{jj_range(jj)};
+                        yk = ratio_accu{jj_range(ii)};
+                        dyk = sd_ratio_accu{jj_range(ii)};
+                    end
+                    r = get(handles.popupmenu1,'string');
                     
+                    x=xk(:); y=yk(:); dx=dxk(:); dy=dyk(:);                   
+                    global additional_settings;
+                    if additional_settings.display_error_bars
+                        pl1=errorbar(x,y,dy,dy,dx,dx,'x','Markersize',3);
+                        fprintf(1,'ERROR-BAR length = SD over profile pixels (N=%d)\n',lw);
+                    else
+                        pl1=plot(x,y,'x','Markersize',3);
+                    end
                     % test for significant correlation
                     [R,P] = corrcoef(x,y);
                     fprintf(1,'** %s versus %s:\n',r{jj_range(jj)}, r{jj_range(ii)});
                     fprintf(1,'Correlation coefficient: R = %.2e (p=%.2e)\n', R(1,2),P(1,2));                    
-                    
                     % fit with a line
                     p = polyfit(x,y,1);
                     hold on;
-                    plot(sort(x),polyval(p,sort(x)),'r-');
-                    fprintf(1,'Linear fit (y=ax+b): a = %.2e b = %.2e\n',p);
-                    
-                end;
-            end;
-        end;
-        
-    end;
-end;
+                    pl2=plot(sort(x),polyval(p,sort(x)),'k-','LineWidth',2);
+                    fprintf(1,'Linear fit (y=ax+b): a = %.2e b = %.2e\n',p);                 
+                    xlabel(r{jj_range(jj)});
+                    ylabel(r{jj_range(ii)});
+                    k=k+1;                    
+                end
+            end
+        end
+        colormap(get_colormap(additional_settings.colormap));
+    end
+end
 
-function export_lateral_profile(hObject, eventdata, handles, jj, jj_range, pos,Nx, meanv,stdv, x,y,lw, f60)
+function export_lateral_profile(hObject,eventdata,handles,jj,jj_range,pos,meanv,stdv,xy,lw,f60)
 
 global additional_settings;
 
-if isfield(additional_settings,'defFontSize')
-    defFontSize = additional_settings.defFontSize;
-else 
-    defFontSize=10;
-end;
+defFontSize = additional_settings.defFontSize;
 
 figure(f60);
-xlabel('position (micron)', 'FontSize',defFontSize);
-set(gca,'xlim',[min(pos) max(pos)], 'FontSize',defFontSize);
+%xlabel('distance (micron)', 'FontSize',defFontSize);
+%set(gca,'xlim',[min(pos) max(pos)], 'FontSize',defFontSize);
 
 % export profile as ASCII text into files with suggested filenames
 if get(handles.checkbox2,'value')
-    out = [pos(:) meanv(:) stdv(:)];
-    a = get(handles.popupmenu1,'string');
-    a1 = a{jj};
-    a=convert_string_for_texoutput(a1);
-    fdir = [handles.fdir,'dat'];
-    if ~isdir(fdir)
-        mkdir(fdir);
-        fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-    end;
-    fname = [fdir, delimiter, a,'.dap'];
-    [FileName,PathName] = uiputfile('*.dap',['Save lateral profile for ',a1,' as'],fname);
-    if length(PathName)~=1 % if cancel was not pressed
-        a = [PathName FileName];
-        fid = fopen(a,'w');
-        global LANS_version;
-        fprintf(fid,'%c Generated by Look@NanoSIMS (version %s) on %s\n','%',LANS_version,datestr(now));
-        fprintf(fid,'%c Profile from [%d %d] to [%d %d], width=%d\n',...
-            '%',x(1),y(1),x(Nx),y(Nx),lw);
-        fprintf(fid,'%c position\tmean\tstd\n','%');
-        fprintf(fid,'%.2f\t%.3e\t%.3e\n',out');
-        fclose(fid);
-        fprintf(1,'Profile saved to %s\n',a);
-    end;    
-end;
+    for j=1:length(jj_range)
+        if size(meanv,3)>1
+            out = [pos, meanv(:,:,j), stdv(:,:,j)];
+        else
+            if length(jj_range)>1
+                out = [pos meanv(:,j) stdv(:,j)];
+            else
+                out = [pos meanv stdv];
+            end
+        end
+        a = get(handles.popupmenu1,'string');
+        a1 = a{jj_range(j)};
+        a=convert_string_for_texoutput(a1);
+        fdir = [handles.fdir,'dat'];
+        if ~isfolder(fdir)
+            mkdir(fdir);
+            fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
+        end
+        fname = [fdir, delimiter, a,'.dap'];
+        [FileName,PathName] = uiputfile('*.dap',['Save lateral profile for ',a1,' as'],fname);
+        if length(PathName)~=1 % if cancel was not pressed
+            a = [PathName FileName];
+            fid = fopen(a,'w');
+            global LANS_version;
+            fprintf(fid,'%c Generated by Look@NanoSIMS (version %s) on %s\n','%',LANS_version,datestr(now));
+            fprintf(fid,'%c Polyline properties:\n');
+            fprintf(fid,'%c x:','%');
+            fprintf(fid,'\t%.2f',xy(:,1));
+            fprintf(fid,'\n');
+            fprintf(fid,'%c y:','%');
+            fprintf(fid,'\t%.2f',xy(:,2));
+            fprintf(fid,'\n');
+            fprintf(fid,'%c w: %d (pix)\n','%',lw);
+            if size(out,2)>2
+                fprintf(fid,'%c pos\tmean in blocks\tSD in blocks\n','%');
+            else
+                fprintf(fid,'%c pos\tmean\tSD\n','%');
+            end
+            fmt = '%.3f';
+            for ii=1:(size(out,2)-1)
+                fmt = [fmt '\t%.3e'];
+            end
+            fmt = [fmt '\n'];
+            fprintf(fid,fmt,out');
+            fclose(fid);
+            fprintf(1,'Lateral profile(s) saved to %s\n',a);
+        end
+    end
+end
 
 % export the graph as EPS
-if get(handles.checkbox2,'value') & jj==max(jj_range)
+if get(handles.checkbox2,'value') %&& jj==max(jj_range)
     if get(handles.checkbox3,'value')==0
         a = get(handles.popupmenu1,'string');
         a1 = a{jj};
         a=convert_string_for_texoutput(a1);
-        fname = [handles.fdir, 'eps', delimiter, a,'-lp.eps'];
+        fname = [handles.fdir, 'eps', delimiter, a,'-lp'];
     else
-        fname = [handles.fdir, 'eps', delimiter, 'all-lp.eps'];
-    end;
-    if ~isdir([handles.fdir 'eps'])
+        fname = [handles.fdir, 'eps', delimiter, 'all-lp'];
+    end
+    if get(handles.checkbox1,'value')
+        fname = [fname 'd'];
+    end
+    fname = [fname '.eps'];
+    if ~isfolder([handles.fdir 'eps'])
         mkdir([handles.fdir 'eps']);
         fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
-    end;
+    end
     [FileName,PathName] = uiputfile('*.eps',['Export lateral profile as'],fname);
     if length(PathName)~=1 % if cancel was not pressed
         a = [PathName FileName];
         print_figure(f60,a,additional_settings.print_factors(4));
         mepstopdf(a,'epstopdf');
         %fprintf(1,'Profile exported to %s\n',a);
-    end;   
-end;
+    end
+end
 
 % export the image with the profile line as EPS
 if get(handles.checkbox4,'value')
     % redraw the image and the profile in the gui
-    set(handles.popupmenu1,'value',jj);
-    popupmenu1_Callback(hObject, eventdata, handles);
+    %set(handles.popupmenu1,'value',jj);
+    %popupmenu1_Callback(hObject, eventdata, handles);
     a = get(handles.popupmenu1,'string');
     a1 = a{jj};
     a=convert_string_for_texoutput(a1);
     fname = [handles.fdir, 'eps', delimiter, a,'-ilp.eps'];
-    if ~isdir([handles.fdir 'eps'])
+    if ~isfolder([handles.fdir 'eps'])
         mkdir([handles.fdir 'eps']);
         fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
-    end;
+    end
     [FileName,PathName] = uiputfile('*.eps',['Export image with the lateral profile as'],fname);
     if length(PathName)~=1 % if cancel was not pressed
         a = [PathName FileName];
         % pretty print the image together with the profile
-        [CELLS, f]=plotImageCells(10+jj,handles.images{jj},[],handles.fdir,handles.ratios{jj},...
+        [~, f]=plotImageCells(10+jj,handles.images{jj},[],handles.fdir,handles.ratios{jj},...
                 ['w-'],handles.scales{jj},...
                 [0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0],0,0, handles.scale, handles.fdir, [], [],[]);
         hold on;
-        plot(x,y,'w-');
+        [cx, cy, ~] = improfile(handles.images{jj}, xy(:,1), xy(:,2), 'bicubic');
+        plot(cx,cy,'w:','LineWidth',2);
         % print it to eps and pdf
         print_figure(f,a,additional_settings.print_factors(1));
         mepstopdf(a,'epstopdf');
         delete(f);
         %fprintf(1,'Profile exported to %s\n',a);
-    end;   
-end;
+    end   
+end
 
 function set_handles_visible(handles,v)
 set(handles.popupmenu1,'visible',v);
@@ -548,6 +696,22 @@ function edit1_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit1 as text
 %        str2double(get(hObject,'String')) returns contents of edit1 as a double
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit1 as text
+%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+min_scale = str2num(get(handles.edit2,'string'));
+max_scale = str2num(get(handles.edit3,'string'));
+jj = get(handles.popupmenu1,'value');
+if min_scale<max_scale
+    handles.scales{jj} = [min_scale max_scale];
+end
+set(handles.axes1,'CLim', handles.scales{jj});
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -582,25 +746,39 @@ else
 end;
 
 jj=get(handles.popupmenu1,'value');
-axes(handles.axes1); hold off;
-imagesc(handles.images{jj},handles.scales{jj});
+chil = handles.axes1.Children;
+if length(chil)>1
+    for ii=1:length(chil)
+        if strcmp(chil(ii).Type,'image')
+            chil = chil(ii);
+            break;
+        end
+    end
+end
+set(chil, 'CData', handles.images{jj});
+set(handles.axes1, 'CLim', handles.scales{jj});
+%axes(handles.axes1); hold off;
+%imagesc(handles.images{jj},handles.scales{jj});
 title(handles.ratios{jj});
-set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',defFontSize);
-b=colorbar('FontSize',10);
+%set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',defFontSize);
+%b=colorbar('FontSize',10);
 %colormap(clut);
-colormap(get_colormap(additional_settings.colormap));
+%colormap(get_colormap(additional_settings.colormap));
+
+set(handles.edit2,'string', num2str(handles.scales{jj}(1)))
+set(handles.edit3,'string', num2str(handles.scales{jj}(2)))
 
 % add the profile, if it exists
-pos(1,1) = str2num(get(handles.edit2,'string'));
-pos(1,2) = str2num(get(handles.edit3,'string'));
-pos(2,1) = str2num(get(handles.edit4,'string'));
-pos(2,2) = str2num(get(handles.edit5,'string'));
+%pos(1,1) = str2num(get(handles.edit2,'string'));
+%pos(1,2) = str2num(get(handles.edit3,'string'));
+%pos(2,1) = str2num(get(handles.edit4,'string'));
+%pos(2,2) = str2num(get(handles.edit5,'string'));
 % because the image was redrawn with hold off, the profile does not exist
 % any more, so delete the handles.line field
-if isfield(handles,'line')
-    handles=rmfield(handles,'line');
-end;
-[x,y,handles]=plot_lateral_profile(pos,hObject,handles);
+%if isfield(handles,'line')
+%    handles=rmfield(handles,'line');
+%end;
+%[x,y,handles]=plot_lateral_profile(pos,hObject,handles);
 guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -632,3 +810,29 @@ function checkbox2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox2
+
+function window_resized_Callback(hObject, eventdata, handles)
+
+wpos = get(hObject,'Position');
+% ensure that window size does not go below design values
+if wpos(3)<85.71 || wpos(4)<45.375
+    wpos(3)=85.71;
+    wpos(4)=45.375;
+    set(hObject,'Position',wpos);
+    fprintf(1,'Warning: size of the window cannot be below w=85.71 and h=45.375. Reseting.\n');
+end
+
+p1pos = handles.uipanel1.Position;
+p1pos(2) = wpos(4)-p1pos(4) - 0.07;
+handles.uipanel1.Position = p1pos;
+p2pos = handles.uipanel2.Position;
+p2pos(2) = 0.07;
+handles.uipanel2.Position = p2pos;
+
+%apos = handles.axes1.Position;
+%apos(1) = 0.03;
+% apos(2) = p2pos(2)+p2pos(4) + 1.37;
+% %apos(4) = wpos(4) - p1pos(4) - p2pos(4) - 2*1.37;
+% apos(3) = wpos(3);
+%handles.axes1.Position = apos;
+a=0;

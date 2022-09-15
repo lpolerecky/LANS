@@ -192,16 +192,16 @@ if avg==3
     % division by zero, to zero.
     ind1 = find((isnan(r)|isinf(r))==1);
     if length(ind1)>0
-        fprintf(1,'WARNING: ROIs with NaN or Inf values:\n');
+        fprintf(1,'WARNING: Ratio values in ROIs equal to NaN or Inf:\n');
         fprintf(1,' %d', ind1);
-        fprintf(1,'\nTheir values were set to zero.\n');
+        fprintf(1,'\nTheir ratio values were set to zero.\n');
         r(ind1) = 0;
     end;
     ind1 = find((isnan(per)|isinf(per))==1);
     if length(ind1)>0
-        fprintf(1,'\nWARNING: Detected ROIs with NaN or Inf values:');
+        fprintf(1,'\nWARNING: Poisson error values in ROIs equal to NaN or Inf:\n');
         fprintf(1,' %d', ind1);
-        fprintf(1,'\nTheir values were set to zero.\n');
+        fprintf(1,'\nTheir Poission error values were set to zero.\n');
         per(ind1) = 0;
     end;    
 

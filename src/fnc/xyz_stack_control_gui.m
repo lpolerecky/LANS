@@ -71,21 +71,26 @@ set(handles.popupmenu3,'string',handles.masses);
 % set
 ims=handles.imagestacks{1};
 if ~isempty(ims)
-    set(handles.slider2,'Max',size(ims,1), 'value', size(ims,1)/2);
-    set(handles.slider4,'Max',size(ims,1), 'value', size(ims,1));
-    set(handles.slider1,'Max',size(ims,2), 'value', size(ims,2)/2);
-    set(handles.slider3,'Max',size(ims,2), 'value', 1);
-    set(handles.edit2,'String',num2str(round(size(ims,1)/2)));
+    % HELP:
+    % stepSz = [1,5]; % <- [minorStep,majorStep]
+    % set(handles.slider2, 'Min', val_min, 'Max',val_max','SliderStep',stepSz/(val_max-val_min))
+    set(handles.slider1, 'Max', size(ims,2), 'value', round(size(ims,2)/2), 'sliderstep',[1 5]/(size(ims,2)-1));
+    set(handles.slider2, 'Max', size(ims,1), 'value', round(size(ims,1)/2), 'sliderstep',[1 5]/(size(ims,1)-1)); 
+    set(handles.slider3, 'Max', size(ims,2), 'value', 1,                    'sliderstep',[1 5]/(size(ims,2)-1));
+    set(handles.slider4, 'Max', size(ims,1), 'value', 1,                    'sliderstep',[1 5]/(size(ims,1)-1));
     set(handles.edit1,'String',num2str(round(size(ims,2)/2)));
+    set(handles.edit2,'String',num2str(round(size(ims,1)/2)));
     set(handles.edit4,'String','1');
     set(handles.edit3,'String','1');
-end;    
+end
 
 pos1=get(handles.figure1,'Position');
 set(handles.figure1,'Position',[1 26 pos1(3:4)]);
 
 % Choose default command line output for xyz_stack_control_gui
 handles.output = hObject;
+
+handles = update_gui_fontsize(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -182,7 +187,8 @@ function slider4_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-set(handles.edit4,'string',sprintf('%d',get(hObject,'Max')-round(get(hObject,'Value'))+1))
+%set(handles.edit4,'string',sprintf('%d',get(hObject,'Max')-round(get(hObject,'Value'))+1))
+set(handles.edit4,'string',sprintf('%d',round(get(hObject,'Value'))))
 pushbutton1_Callback(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -196,8 +202,6 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 
-
-
 function edit1_Callback(hObject, eventdata, handles)
 % hObject    handle to edit1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -210,7 +214,7 @@ if v>get(handles.slider1,'Max')
     v=get(handles.slider1,'Max');
 elseif v<1
     v=1;
-end;
+end
 set(handles.slider1,'Value',v);
 set(hObject,'String',num2str(v));
 
@@ -226,8 +230,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function edit2_Callback(hObject, eventdata, handles)
 % hObject    handle to edit2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -240,7 +242,7 @@ if v>get(handles.slider2,'Max')
     v=get(handles.slider2,'Max');
 elseif v<1
     v=1;
-end;
+end
 set(handles.slider2,'Value',get(handles.slider2,'Max')-v+1);
 set(hObject,'String',num2str(v));
 
@@ -256,8 +258,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function edit3_Callback(hObject, eventdata, handles)
 % hObject    handle to edit3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -270,7 +270,7 @@ if v>get(handles.slider3,'Max')
     v=get(handles.slider3,'Max');
 elseif v<1
     v=1;
-end;
+end
 set(handles.slider3,'Value',v);
 set(hObject,'String',num2str(v));
 
@@ -286,8 +286,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function edit4_Callback(hObject, eventdata, handles)
 % hObject    handle to edit4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -300,8 +298,8 @@ if v>get(handles.slider4,'Max')
     v=get(handles.slider4,'Max');
 elseif v<1
     v=1;
-end;
-set(handles.slider4,'Value',get(handles.slider4,'Max')-v+1);
+end
+set(handles.slider4,'Value',v);
 set(hObject,'String',num2str(v));
 
 % --- Executes during object creation, after setting all properties.
@@ -348,7 +346,7 @@ if get(handles.checkbox1,'value')
     mass3=['log(',mass3,')'];
 else
     logf=0;
-end;
+end
 rgb_flags = [get(handles.text6,'value'),...
     get(handles.text7,'value'),...
     get(handles.text8,'value')];
@@ -359,21 +357,21 @@ if sum(rgb_flags)==1
         fnum=massind2;
     else 
         fnum=massind3;
-    end;
+    end
 elseif sum(rgb_flags)>1
     fnum=0;
 else
     fnum=[];
-end;
+end
 if ~isempty(fnum)
     if hObject==handles.pushbutton2
         plot_3D_sections(90+fnum,{d1,d2,d3},x,y,wx,wy,wz,fname,{mass1,mass2,mass3},logf,rgb_flags,1);
     else
         plot_3D_sections(90+fnum,{d1,d2,d3},x,y,wx,wy,wz,fname,{mass1,mass2,mass3},logf,rgb_flags,0);
-    end;
+    end
 else
     fprintf(1,'WARNING: Select at least one color (red, green or blue) to display XYZ-stacks.\n');
-end;
+end
 
 function edit5_Callback(hObject, eventdata, handles)
 % hObject    handle to edit5 (see GCBO)

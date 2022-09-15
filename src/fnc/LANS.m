@@ -60,21 +60,6 @@ fp=get(handles.figure1,'Position');
 h = load_settings(handles,get_ini_file('r'));
 handles.dtc = h.dtc;
 
-% if isfield(h,'dtc')
-%     handles.dtc = h.dtc;
-% else
-%     ones = [1 1 1 1 1 1 1 1];
-%     d.dt = 44*ones; % dead-time, in ns
-%     d.y  = 1*ones; % yield
-%     d.bkg = 0*ones; % in counts/second
-%     d.dwelling_time = 1; % dwelling time, in ms
-%     d.apply_dtc = 0; % apply dead-time correction
-%     d.apply_QSA = 0; % apply QSA correction
-%     d.K = 0*ones;
-%     d.apply_QSA = 0;
-%     handles.dtc = d;
-% end;
-    
 log_user_info('start');
 
 % Choose default command line output for LookAtNanoSIMS
@@ -84,6 +69,8 @@ set(handles.checkbox63,'TooltipString',...
     sprintf('Check if you want to modify the intensity of the hue in the ratio images.\nHI=intensity of the displayed ratio''s hue.'));
 set(handles.edit65,'TooltipString',...
     sprintf('If empty, HI is calculated from the denominator in the ratio expression.\nAlternatively, use ID of one of the loaded masses (1-8) to calculate HI from it.\nHI is calculated as HI=(mass-min)/(max-min), and set to 1 when mass>max and to 0 when mass<min.\nThus, you can modify HI by modifying the scale of the corresponding mass.'));
+
+handles = update_gui_fontsize(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -1747,49 +1734,49 @@ if(strcmp(get(handles.ask_for_range,'checked'),'off'))
     set(handles.ask_for_range,'checked','on');
 else
     set(handles.ask_for_range,'checked','off');
-end;
+end
 
 function shift_columns_rows_Callback(hObject, eventdata, handles)
-if hObject==handles.shift_first_column_end
-    global shift_first_column_end
+global shift_first_column_end shift_last_column_beginning
+global shift_first_row_end shift_last_row_beginning
+if hObject==handles.shift_first_column_end    
     if(strcmp(get(handles.shift_first_column_end,'checked'),'off'))
         set(handles.shift_first_column_end,'checked','on');
         shift_first_column_end=1;
     else
         set(handles.shift_first_column_end,'checked','off');
         shift_first_column_end=0;
-    end;
-end;
+    end
+end
 if hObject==handles.shift_last_column_beginning
-    global shift_last_column_beginning;
     if(strcmp(get(handles.shift_last_column_beginning,'checked'),'off'))
         set(handles.shift_last_column_beginning,'checked','on');
         shift_last_column_beginning=1;
     else
         set(handles.shift_last_column_beginning,'checked','off');
         shift_last_column_beginning=0;
-    end;
-end;
-if hObject==handles.shift_first_row_end
-    global shift_first_row_end;
+    end
+end
+if hObject==handles.shift_first_row_end    
     if(strcmp(get(handles.shift_first_row_end,'checked'),'off'))
         set(handles.shift_first_row_end,'checked','on');
         shift_first_row_end=1;
     else
         set(handles.shift_first_row_end,'checked','off');
         shift_first_row_end=0;
-    end;
-end;
+    end
+end
 if hObject==handles.shift_last_row_beginning
-    global shift_last_row_beginning;
     if(strcmp(get(handles.shift_last_row_beginning,'checked'),'off'))
         set(handles.shift_last_row_beginning,'checked','on');
         shift_last_row_beginning=1;
     else
         set(handles.shift_last_row_beginning,'checked','off');
         shift_last_row_beginning=0;
-    end;
-end;
+    end
+end
+fprintf(1,'Current settings for shifts during loading: [%d %d %d %d]\n',...
+    fliplr(get_shift_columns_rows(handles)));
 guidata(hObject, handles);
 
 function generate_fake_cameca_Callback(hObject, eventdata, handles)
@@ -1808,10 +1795,14 @@ guidata(hObject, handles);
 function load_processed_image_Callback(hObject, eventdata, handles)
 handles = load_cameca_image(handles);
 h = Load_Display_Preferences_Callback(hObject, eventdata, handles);
+% LP: added 21-05-2021 (next 2 lines)
+if isfield(h,'mass'), handles.p.mass = h.mass; end
+if isfield(h,'imscale_full'), handles.p.imscale_full = h.imscale_full; end
 handles = shift_columns_rows(handles,h.shift_columns_rows);
 handles = accumulate_images_Callback(hObject, eventdata, handles);
 display_all_masses_Callback(hObject, eventdata, handles);
 guidata(hObject, handles);
+figure(handles.figure1);
 a=0;
 
 % --------------------------------------------------------------------
@@ -1844,85 +1835,222 @@ function out=accumulate_images_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 p = load_masses_parameters(handles);
-k = identifyMass(p.mass,p.alignment_mass);
-
-if ~isdir(p.fdir)
+if ~isfolder(p.fdir)
     mkdir(p.fdir);
     fprintf(1,'Output directory %s created.\n',p.fdir);
-end;
+end
 
-% find alignments if requested, but only if p.im was not yet aligned
-if p.find_alignments & ~p.planes_aligned
+%% fill the image (r) based on which the alignment will be found
+[formula, ~, ~] = parse_formula_lans(p.alignment_mass,p.mass);
+m=cell(size(p.im));
+for mi=1:length(m)
+    m{mi} = double(p.im{mi});
+end
+eval(formula);
+
+xyalign = [];
+tforms = [];
+choice = 'Reject';
+
+%% find alignments if requested, but only if p.im was not yet aligned 
+if p.find_alignments && ~p.planes_aligned
     
+    % default file containing the alignment info
     aname=[p.fdir,'xyalign.mat'];
-    
-    if(exist(aname)==2)
-        
-        load(aname);
+            
+    %% load alignment info from disk, if it exists
+    if exist(aname)==2        
+        a=load(aname);
         disp(['XY-alignment loaded from ',aname]);
-        p.xyalign = xyalign;
+        if isfield(a,'xyalign')
+            p.xyalign = a.xyalign;
+            xyalign = p.xyalign;
+        end
+        if isfield(a,'tforms')
+            p.tforms = a.tforms;
+            tforms = p.tforms;
+        end
         
+        % display xy-alignment data loaded from the file
+        if isempty(p.images{1})
+            xyplanes=[1:size(p.xyalign,1)]';
+        else
+            xyplanes=p.images{1};
+        end
+        f40=figure(40); subplot(1,1,1);
+        plot(xyplanes, p.xyalign(xyplanes,1:2), 'x-');
+        xlabel('plane');
+        title('Alignment coordinates')
+        ylabel('x and y (pix)');
+        legend('x','y');
+    
     else
         
-        [xyalign, images] = findimagealignments(p.im{k}, ...
-            p.images{k}, p.alignment_image,...
-            p.alignmentregion_x, p.alignmentregion_y,p.maxalignment);        
-        s=['save ',aname,' xyalign -v6'];
-        eval(s);
-        fprintf(1,'XY-alignment saved as %s\n',aname);
+        %% perform alignment using either old or new algorithm
+        align_method = questdlg('Which algorithm do you want to use to align images? Old=correlation-based, New=registration-based.',...
+            'LANS input', 'Old', 'New', 'Old');
         
-        % update p structure
-        p.xyalign = xyalign;
-        for ii=1:length(p.images)
-            p.images{ii} = images;
-        end;
+        switch align_method
+            case 'Old'                
+                % old method of alignment (prior to 04-06-2018)
+                [xyalign, images, f40, choice] = findimagealignments(r, ...
+                    p.images{1}, p.alignment_image,...
+                    p.alignmentregion_x, p.alignmentregion_y, p.maxalignment);
+                tforms = [];
+            case 'New'
+                % new alignment method (from 04-06-2018)
+                [tforms, images, xyalign, f40, choice] = findimagealignments2(r, ...
+                    p.images{1}, ...
+                    p.alignmentregion_x, p.alignmentregion_y);
+        end                
+                
+        switch choice
+            case 'Apply'
+                % update p structure
+                p.xyalign = xyalign;
+                for ii=1:length(p.images)
+                    p.images{ii} = images;
+                end
+                switch align_method
+                    case 'Old'
+                        save(aname,'xyalign','-v6')
+                        fprintf(1,'XY-alignment saved as %s\n',aname);
+                    case 'New'
+                        save(aname,'tforms','xyalign','-v6');
+                        fprintf(1,'Tforms of plane alignment saved as %s\n',aname);
+                        p.tforms = tforms;
+                end
+                % update the images fields in the GUI
+                handles = fillinfo_selected_images(images, handles);                  
+                % export it as png
+                oname=[p.fdir,'xyalign.png'];
+                print(f40,oname,'-dpng');
+                fprintf(1,'Alignment exported as %s\n',oname);
+            case 'Reject'
+                tforms = [];
+                xyalign = [];
+                fprintf(1,'%s selected. Planes were not accumulated.\n',choice);
+        end
         
-        % update the images fields in the GUI
-        handles = fillinfo_selected_images(images, handles);  
-
-    end;    
+    end 
     
-    % display xy-alignment data
-    f40=figure(40);
-    if isempty(p.images{1})
-        xyplanes=[1:size(p.xyalign,1)]';
-    else
-        xyplanes=p.images{1};
-    end;
-    plot(xyplanes, p.xyalign(xyplanes,1:2), 'x-');
-    xlabel('plane');
-    ylabel('Alignment coordinates: x and y (pix)');
-    legend('x','y');
-    
-    % export it as png
-    oname=[p.fdir,'xyalign.png'];
-    print(f40,oname,'-dpng');
-    fprintf(1,'Alignment exported as %s\n',oname);
-    
-else
-    xyalign = [];
-end;
+elseif ~p.find_alignments && ~p.planes_aligned
+    %% if no algnment requested
+    % if the planes were not yet aligned and accumulated, but there is no
+    % desire to align them before accumulation, set the xyalign to zeros.
+    % this will force the accumulation to be performed without alignment.
+    xyalign = zeros(length(p.planes),2);
+end
 
-if ~isempty(xyalign)
-    fprintf(1,'Alignment coordinates per plane:\np:\tx\ty\n');
-    fprintf(1,'%d:\t%d\t%d\n',[1:size(xyalign,1); xyalign(:,:)']);
-end;
-
-% load options to get the status of the checkboxes
+%% load options 
+% to get the status of the checkboxes
 [opt1,opt3,opt4]=load_options(handles, 1);
 
-% align and accumulate masses, if they were not aligned and accumulated yet
-if ~p.planes_aligned
-    [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.find_alignments, p.mass, p.images, opt4);
-    p.planes_aligned = 1;
+%% align and accumulate masses
+% if they were not aligned and accumulated yet
+if ~p.planes_aligned && ~isempty(xyalign)
+    error_occurred = 0;
+         
+    if isempty(tforms)
+        %% old algorithm
+        [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, p.images, opt4);
+    else
+        %% new algorithm
+        [p.accu_im, p.im, error_occurred]=accumulate_images2(p.im, tforms, p.mass, p.images, opt4);
+    end
+    if ~error_occurred
+        p.planes_aligned = 1;
+    end
 else
-    fprintf(1,'*** Warning: Planes have been already aligned and accummulated. Nothing changed.\n');
-end;
+    if p.planes_aligned
+        opts = struct('WindowStyle','modal', 'Interpreter','none');
+        tit = {'Planes were aligned already. If you want to re-align and re-accumulate',...
+            'them, you must first re-load the im file from disk, and possibly also',...
+            'remove the xyalign.mat file (see Preferences menu).'};
+        edl = warndlg(tit,'Warning',opts);
+    end
+    if isempty(xyalign) && ~strcmp(choice,'Reject')
+        fprintf(1,'*** WARNING: xyalign empty.\n');
+    end
+end
 
 handles.p = p;
 guidata(hObject, handles);
 out=handles;
+pause(0.1);
+figure(handles.figure1);
 
+function accu_resize_Callback(hObject, eventdata, handles)
+
+global additional_settings;
+p=handles.p;
+nmasses = length(p.mass);
+nscales = length(p.imscale);
+
+if ~p.planes_aligned 
+    warndlg('Please first align and accumulate the mass images.','Warning','modal');
+else  
+    % IMPORTANT: Resizing of the images will be done using the nearest
+    % method. This is to ensure that no modification of the data occurs if
+    % the image is enlarged and then shrunk back by the same factor. This
+    % is true, however, only if the magnification factor is M or 1/M, where
+    % M is integer. This is why there needs to be (enforced) restriction on M.
+    x=inputdlg('Specify magnification factor, M. To enlarge the image, use M>1, where M must be integer. To shrink the image, use M<1, where 1/M must be integer.','LANS input',1,{'1'});
+    mf = 1;
+    if ~isempty(x)
+        mf = str2num(cell2mat(x));
+        if isempty(mf) % if x was not a number
+            mf = 1;
+        end
+    end
+    % ensure that M is integer (if M>1) or that 1/M is integer (if M<1)
+    if mf>1
+        mf = round(mf);
+    else
+        mf = 1/round(1/mf);
+    end
+    
+    fprintf(1,'Using magnification factor %.1f\n',mf);
+    
+    if mf~=1
+        
+        x=questdlg(sprintf('You are about to modify the resolution of the ion count and ROI images by a factor %.1f. Do you want to continue?',mf),'LANS input','Yes','No','No');
+        
+        if strcmp(x,'Yes')
+            % BEWARE: here the actual data is changed!
+            for i=1:length(p.im) % do this only for the measured ion count images, not for the (potentially loaded) external image
+                a = imresize(p.accu_im{i},mf,'method','nearest');
+                p.accu_im{i} = a/(mf^2);
+            end
+        
+            msg1 = sprintf('Images resized by a factor %.1f using the NEAREST method.',mf);
+            msg2 = sprintf('1. This also changed the ion counts by a factor %.2f. You may need to change the scale of the images to display them properly.',mf^2);
+            msg3 = '2. Additionally, you may need to update the ROI image by reloading it from disk to account for this change in resolution.';
+            warndlg({msg1,msg2,msg3},'LANS warning','modal');
+        
+            % resize also Maskimg, or create a new one if it does not exist
+            %if isfield(p,'Maskimg')
+            %    if sum(size(p.Maskimg)==size(p.accu_im{1}))<1
+            %        p.Maskimg = imresize(p.Maskimg,mf,'method','nearest');
+            %    end
+            %else
+            %    p.Maskimg = zeros(size(p.accu_im{1}));
+            %end
+        
+            % remember the magnification factor
+            p.mag_factor = mf;
+
+            handles.p = p;
+            guidata(hObject, handles);
+        end
+        
+    else
+        p.mag_factor = 1;
+        handles.p = p;
+        guidata(hObject, handles);
+    end
+end
+    
 % --------------------------------------------------------------------
 function display_all_masses_Callback(hObject, eventdata, handles)
 % hObject    handle to display_all_masses (see GCBO)
@@ -1931,6 +2059,7 @@ function display_all_masses_Callback(hObject, eventdata, handles)
 
 handles.p = load_masses_parameters(handles);
 display_all_masses(handles);
+figure(handles.figure1);
 
 function display_xyz_stacks_Callback(hObject, eventdata, handles)
 % hObject    handle to display_all_masses (see GCBO)
@@ -1957,7 +2086,11 @@ if(isdir(workdir))
 else
     newdir='';
 end;
-[FileName,newdir,newext] = uigetfile('*.mat', 'Select the Preferences file', workdir);
+global MAT_EXT
+def_file = [workdir 'prefs' MAT_EXT];
+fprintf(1,'Select the Preferences file (default %s)\n',def_file);
+
+[FileName,newdir,newext] = uigetfile('*.mat', 'Select the Preferences file', def_file);
 if(FileName~=0)
     imfile = [newdir, FileName];
     h = load_settings(handles,imfile,0);
@@ -1977,16 +2110,23 @@ function define_external_image_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 p = load_masses_parameters(handles);
 ext_im=define_external_image(p);
+% convert to gray. in the future one may want to think of using all 3 rgb
+% channels as ext1, ext2 and ext3 "masses", but for now we keep it as a
+% gray-scale image only
+if size(ext_im,3)>1
+    ext_im = rgb2gray(ext_im);
+    fprintf(1,'WARNING: External image was converted from RGB to gray scale.\n');
+end
 if ~isempty(ext_im)
-    [formula pois mass_index]=parse_formula('ext',p.mass);
+    [formula pois mass_index]=parse_formula_lans('ext',p.mass);
     if mass_index>length(p.mass)
         warndlg('External image added to the list of masses. You can now use it as EXT in any of the expressions.','For your information','modal');
     else
         warndlg('External image replaced. You may want to recalculate ratios or reexport overlays.','For your information','modal');
-    end;
+    end
     % add external image to the list of masses
     p.mass{mass_index} = 'ext';        
-    p.imscale{mass_index} = find_image_scale(ext_im, 0, 1);
+    p.imscale{mass_index} = find_image_scale(ext_im, 0);
     p.accu_im{mass_index} = ext_im;
     a = zeros(size(ext_im,1),size(ext_im,2),size(p.im{1},3));
     for i=1:size(a,3)
@@ -1997,7 +2137,7 @@ if ~isempty(ext_im)
     p.ext_im = ext_im;
 else
     % if empty ext_im, remove it from the list of masses, if it exists
-    [formula pois mass_index]=parse_formula('ext',p.mass);
+    [formula pois mass_index]=parse_formula_lans('ext',p.mass);
     if mass_index>1
         p.mass = {p.mass{1:mass_index-1}};
         p.imscale = {p.imscale{1:mass_index-1}};
@@ -2008,8 +2148,8 @@ else
             p = rmfield(p,'ext_im');
         end;
         warndlg('External image removed from the list of masses. You may no longer use EXT in your expressions or overlay it with masses/ratios.','For your information','modal');
-    end;
-end;
+    end
+end
 handles.p = p;
 guidata(hObject, handles);
 
@@ -2046,10 +2186,10 @@ if isfield(handles,'p')
     if isempty(Maskimg)
         if isfield(handles.p,'Maskimg') 
             rmfield(handles.p,'Maskimg');
-        end;
+        end
     else
         handles.p.Maskimg = Maskimg;
-    end;
+    end
     
     guidata(hObject, handles);
 
@@ -2060,9 +2200,15 @@ if isfield(handles,'p')
     % calculate the mask image
     [maskmass,maskimg,mass,ps,bw] = display_raw_mask_image(handles,0,cellname);
 
+    if isfield(handles.p,'mag_factor')
+        mag_factor = handles.p.mag_factor;
+    else
+        mag_factor = 1;
+    end
+    
     % start the GUI for interactive cell definition
-    add_remove_cells_tool(maskmass,maskimg,mass,ps,handles.p.fdir,...
-        my_get(handles.edit62,'string'), cellname,bw,cellfile);
+    add_remove_cells_tool(maskmass, maskimg, mass, ps, handles.p.fdir,...
+        my_get(handles.edit62,'string'), cellname, bw, cellfile, mag_factor);
         
     guidata(hObject, handles);
 
@@ -2082,12 +2228,13 @@ Maskimg = load_cells_from_disk(handles,1);
 if isempty(Maskimg)
     if(isfield(handles.p,'Maskimg'))
         rmfield(handles.p,'Maskimg');
-    end;
+    end
 else
     handles.p.Maskimg = Maskimg;
-end;
+end
 
 guidata(hObject, handles);
+figure(handles.figure1)
 
 % --------------------------------------------------------------------
 function shift_cells_image_Callback(hObject, eventdata, handles)
@@ -2097,7 +2244,7 @@ function shift_cells_image_Callback(hObject, eventdata, handles)
 
 if(get(handles.checkbox11,'value'))
     handles.p.Maskimg = shift_image(handles,handles.p.Maskimg);
-end; 
+end
 guidata(hObject, handles);
 
 % --------------------------------------------------------------------
@@ -2131,13 +2278,14 @@ fprintf(1,'\nChecking consistency of the output data...\n');
 p = load_masses_parameters(handles);
 [opt1,opt3,opt4]=load_options(handles, 0);
 
-fncells = [p.fdir 'cells.dat'];
+fncells = select_classification_file(p);
+
 [cidu,cc,cid,cnum,ss]=load_cell_classes(fncells);
 if ~isempty(cnum)
     Ncells = max(cnum);
-    fprintf(1,'Number of classified cells in file cells.dat: %d\n',Ncells);
+    fprintf(1,'Number of classified ROIs: %d\n',Ncells);
 else
-    fprintf(1,'*** Warning: cell classification file cells.dat does not exist.\n');
+    fprintf(1,'*** Warning: cell classification file does not exist.\n');
     Ncells = [];
 end;
 
@@ -2156,7 +2304,7 @@ if isdir(datdir)
             if Ncells2~=Ncells
                 fprintf(1,'*** number of cells (N=%d) differs! Please check.\n',Ncells2);
             else
-                fprintf(1,'OK\n');
+                fprintf(1,'\t\t\tOK\n');
             end;
         else
             Ncells = Ncells2;
@@ -2179,7 +2327,7 @@ if ~isfield(handles.p,'Maskimg')
 else
     global CELLSFILE MAT_EXT;
     handles.p.Maskimg = load_cells_from_disk(handles,0,[CELLSFILE MAT_EXT]);
-end;
+end
 guidata(hObject, handles);
 display_detected_cells(handles);
 
@@ -2251,8 +2399,12 @@ if(isdir(workdir))
     newdir=workdir;
 else
     newdir='';
-end;
-[FileName,newdir,newext] = uiputfile('*.mat', 'Select *.MAT file', workdir);
+end
+
+def_file = [workdir 'prefs'];
+fprintf(1,'Specify file name to store the preferences (default %s.mat)\n',def_file);
+
+[FileName,newdir,newext] = uiputfile('*.mat', 'Select *.MAT file', def_file);
 if(FileName~=0)
     imfile = [newdir, FileName];
     save_settings(handles,imfile);
@@ -2266,10 +2418,12 @@ function close_all_figures_Callback(hObject, eventdata, handles)
 
 cc=get(0,'Children');
 for ii=1:length(cc)
-    if(isempty(get(cc(ii),'Tag')))
+    if isempty(get(cc(ii),'Tag'))
         close(cc(ii));
-    end;
-end;
+    elseif ~isempty(strfind( get(cc(ii),'Tag'), 'fig_' ))
+        close(cc(ii));
+    end
+end
 
 % --------------------------------------------------------------------
 function Postprocessing_Callback(hObject, eventdata, handles)
@@ -2315,6 +2469,55 @@ display_all_masses_Callback(hObject, eventdata, handles);
 guidata(hObject, handles);
 a=0;
 
+function process_full_processed_data_Callback(hObject, eventdata, handles)
+% hObject    handle to process_accumulated_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles=load_cameca_image(handles,3);
+display_all_masses_Callback(hObject, eventdata, handles);
+guidata(hObject, handles);
+
+function save_full_processed_data_Callback(hObject, eventdata, handles)
+% hObject    handle to process_accumulated_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if isfield(handles,'p')
+    p=handles.p;
+    outfname=[p.filename '.mat'];
+    [FileName, fdir] = uiputfile({'*.mat', 'LANS processed file (*.mat)'}, ...
+        'Specify LANS-generated data file', outfname);
+    if prod(FileName ~= 0)
+        outfname = [fdir FileName];
+        fprintf(1,'Saving LANS-processed data to %s ... ', outfname);
+        save(outfname, 'p');
+        fprintf(1,'done\n');
+    end
+end
+
+function save_processed_data_each_mass_Callback(hObject, eventdata, handles)
+% hObject    handle to process_accumulated_data (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if isfield(handles,'p')
+    p=handles.p;
+    for ii=1:length(p.im)
+        cnt = double(p.im{ii});
+        outfname = [p.filename filesep 'mat' filesep p.mass{ii} '_cnt.mat'];
+        a = fileparts(outfname);
+        if ~isfolder(a)
+            mkdir(a);
+            fprintf(1,'Output folder created: %s\n', a);
+        end        
+        fprintf(1,'Exporting COUNTS for %s into %s ... ', p.mass{ii}, outfname);
+        save(outfname, 'cnt');
+        fprintf(1,'done\n');
+    end
+    if p.planes_aligned
+        fprintf(1,'Note: individual planes WERE aligned.\n')
+    else
+        fprintf(1,'Note: individual planes WERE NOT aligned.\n')
+    end
+end
 
 % --------------------------------------------------------------------
 function aboutprogram_Callback(hObject, eventdata, handles)
@@ -2410,10 +2613,10 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % the ini file would be too big and contain unnecessary information
 if(isfield(handles,'p'))
     handles = rmfield(handles,'p');
-end;
+end
 if(~isempty(handles))
     save_settings(handles,get_ini_file('w'));
-end;
+end
 
 log_user_info('quit');
 
@@ -2429,58 +2632,69 @@ function autoscale_images_Callback(hObject, eventdata, handles)
 
 global additional_settings;
 
-if isfield(handles,'p')
+if ~isfield(handles,'p')
+    fprintf(1,'*** Error: Load data first.\n');
+else
+    p = handles.p;    
+    
     if hObject==handles.autoscale_images
-        if isfield(handles.p,'im') 
-            %fprintf(1,'Autoscaling per-plane masses based on [%.3f %.3f] quantiles...', additional_settings.autoscale_quantiles);
-            % find the quantiles of the images
-            N=length(handles.p.im);
+        if isfield(p,'im')
+            N=length(p.im);
             for ii=1:N
-                tmp=handles.p.im{ii};
-                %tmpscale=round(quantile(double(tmp(:)),additional_settings.autoscale_quantiles));
-                tmpscale = round(find_image_scale(double(tmp(:))));
-                %if diff(tmpscale)==0
-                %    tmpscale = [min(tmp(:)) max(tmp(:))];
-                %end;
+                tmp=p.im{ii};
+                tmpscale = find_image_scale(double(tmp));
+                imscale_full{ii}=tmpscale;
                 % write this scale to the appropriate edit field
-                if ii<8, k=ii+32; else, k=76; end;
-                s=sprintf('set(handles.edit%d,''string'',''[%s %s]'');',...
-                    k, num2str(tmpscale(1)), num2str(tmpscale(2)));
-                eval(s);
-            end; 
+                if ii<8, k=ii+32; else, k=76; end
+                if ii<=8
+                    s=sprintf('set(handles.edit%d,''string'',''[%s %s]'');',...
+                        k, num2str(tmpscale(1)), num2str(tmpscale(2)));
+                    eval(s);
+                end
+            end
         else
             fprintf(1,'*** Warning: Masses not loaded. Cannot autoscale.\n');
-        end;
-    end;
+        end
+    end
     
     if hObject==handles.autoscale_accu_images
-        if isfield(handles.p,'accu_im')
-            %fprintf(1,'Autoscaling accummulated masses based on [%.3f %.3f] quantiles...', additional_settings.autoscale_quantiles);
-            % find the quantiles of the images
-            N=length(handles.p.accu_im);
+        if isfield(p,'accu_im')
+            if isfield(p,'mag_factor')
+                mf = p.mag_factor;
+            else
+                mf = 1;
+            end
+            % LP: 20-05-2021
+            % N=min([8 length(p.accu_im)]);
+            N=length(p.accu_im);
             for ii=1:N
-                tmp=handles.p.accu_im{ii};
-                %tmpscale=round(quantile(tmp(:),additional_settings.autoscale_quantiles));
-                tmpscale = round(find_image_scale(double(tmp(:))));
-                %if diff(tmpscale)==0
-                %    tmpscale = [min(tmp(:)) max(tmp(:))];
-                %end;
+                tmp=p.accu_im{ii};
+                tmpscale = find_image_scale(double(tmp));
+                if mf<=1 
+                    tmpscale = round(tmpscale);
+                    scale_format = '[%d %d]';
+                else
+                    scale_format = '[%.3f %.3f]';
+                end
+                imscale_full{ii}=tmpscale;
                 % write this scale to the appropriate edit field
-                if ii<8, k=ii+32; else, k=76; end;
-                s=sprintf('set(handles.edit%d,''string'',''[%s %s]'');',...
-                    k, num2str(tmpscale(1)), num2str(tmpscale(2)));
-                eval(s);
-            end;
+                if ii<8, k=ii+32; else, k=76; end
+                scale_string = sprintf(scale_format,tmpscale);
+                if ii<=8 
+                    s=sprintf('set(handles.edit%d,''string'',''%s'');',...
+                        k, scale_string);
+                    eval(s);
+                end
+            end
         else
-            fprintf(1,'*** Warning: Masses not accummulated. Cannot autoscale.\n');
-        end;
-    end;
-    
+            fprintf(1,'*** Warning: Masses not accumulated. Cannot autoscale.\n');
+        end
+    end
+    p.imscale_full = imscale_full;
+    handles.p = p;
+    guidata(hObject, handles);
     fprintf(1,'Done.\n');
-
-else
-    fprintf(1,'*** Error: Load data first.\n');
-end;
+end
 
 function additional_settings_gui_Callback(hObject, eventdata, handles)
 additional_settings_gui;
@@ -2491,11 +2705,14 @@ guidata(hObject, handles);
 
 function align_external_template_Callback(hObject, eventdata, handles)
 p = load_masses_parameters(handles);
+if ~isfield(p,'mag_factor')
+    p.mag_factor = 1;
+end
 if isfield(p,'fdir')
-    align_exernal_nanosims(1,p.fdir);
+    align_exernal_nanosims(1, p.fdir, p.mag_factor);
 else
     fprintf(1,'Error: File directory unknown. Please load and process a Cameca dataset first.\n');
-end;
+end
 
 function do_chain_analysis_Callback(hObject, eventdata, handles)
 % this is where I need to change things to make the chain analysis going
@@ -2516,8 +2733,8 @@ function remove_xyalign_Callback(hObject, eventdata, handles)
 if(isfield(handles,'p'))
     p = handles.p;
     fname = [p.fdir 'xyalign.mat'];
-    [p1 p2 p3]=fileparts(p.filename);
-    if exist(fname)
+    [~, p2, ~] = fileparts(p.filename);
+    if isfile(fname)
         a = questdlg(sprintf('Are you sure you want to remove the %s/xyalign.mat file from disk?',p2),...
             'Remove xyalign', 'Yes', 'No', 'Yes');
         switch a
@@ -2529,5 +2746,60 @@ if(isfield(handles,'p'))
         end
     else
         errordlg(sprintf('xyalign.mat not found in the %s subfolder. Nothing done.',p2),'File not found.');
-    end;
-end;
+    end
+end
+
+function remove_mat_folder_Callback(hObject, eventdata, handles)
+if(isfield(handles,'p'))
+    p = handles.p;
+    fname = [p.fdir 'mat'];
+    if isfolder(fname)
+        a = questdlg(sprintf('Are you sure you want to remove the mat folder from disk?'),...
+            'Remove mat folder', 'Yes', 'No', 'Yes');
+        switch a
+            case 'Yes'
+                rmdir(fname,'s');
+                fprintf(1,'Folder %s deleted.\n',fname);
+            case 'No'
+                fprintf(1,'Ok, I''ll keep it.\n');
+        end
+    else
+        errordlg(sprintf('mat subfolder not found in %s.\nNothing done.',p.fdir),'Folder not found.');
+    end
+end
+
+function backup_folder_Callback(hObject, eventdata, handles)
+if(isfield(handles,'p'))
+    p = handles.p;
+    [p1, foldername]=fileparts(p.filename);
+    bakname = [foldername '.zip'];
+    if isfolder(p1)
+        a = questdlg(sprintf('Are you sure you want to back up the processed data folder?'),...
+            'Remove mat folder', 'Yes', 'No', 'Yes');
+        switch a
+            case 'Yes'
+                global ZIP_COMMAND;
+                % create the zip-command and execute it
+                cmd = sprintf('!%s %s %s%s%s', ZIP_COMMAND, bakname, foldername, filesep, '*.*at');
+                cdir=pwd;
+                cd(p1);
+                eval(cmd);
+                fprintf(1,'Data backed up in %s.\n', [p1 filesep bakname]);
+                % if outtputG.pdf exists, copy it to the parent folder and
+                % change the filename
+                outG = [foldername filesep 'outputG.pdf'];
+                newoutG = [foldername '.pdf'];
+                if isfile(outG)
+                    copyfile(outG, newoutG,'f');
+                    fprintf(1,'OutputG.pdf copied to %s\n',[p1 filesep newoutG]);
+                elseif isfile(newoutG)
+                    fprintf(1,'Backup file %s already exists. Nothing done.\n',[p1 filesep newoutG]);
+                else
+                    fprintf(1,'OutputG.pdf not found. PDF backup not made.\n');
+                end
+                cd(cdir);                
+            case 'No'
+                fprintf(1,'Nothing done.\n');
+        end
+    end
+end

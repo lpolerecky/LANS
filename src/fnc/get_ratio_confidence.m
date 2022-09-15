@@ -7,16 +7,16 @@ ind_div=findstr('/',formula);
 ind_end=findstr(';',formula);
 denom=formula(ind_div+1:ind_end-1);
 s = ['conf = ', denom, ';'];
-if ~isempty(denom) & isempty(findstr(denom,'Np')) & isempty(findstr(denom,'cell_sizes')) & isempty(findstr(denom,'cell'))
+if ~isempty(denom) && isempty(findstr(denom,'Np')) && isempty(findstr(denom,'cell_sizes')) && isempty(findstr(denom,'cell'))
     
-    fprintf(1,'Estimating confidence of the ratio ... ');
+    %fprintf(1,'Estimating confidence of the ratio ... ');
     eval(s);
     if 0
         %conf = conf/max(conf(:));
         conf = log10(conf);
         ind = find(isinf(conf));
         conf(ind) = zeros(size(ind));
-    end;
+    end
     confim = conf;
 
     % now the scale
@@ -31,6 +31,6 @@ if ~isempty(denom) & isempty(findstr(denom,'Np')) & isempty(findstr(denom,'cell_
     ind = find(conf>1);
     conf(ind) = ones(size(ind));
 
-    fprintf(1,'Done.\n');
+    %fprintf(1,'Done.\n');
 
-end;
+end

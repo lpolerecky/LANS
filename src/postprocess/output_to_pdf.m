@@ -11,6 +11,8 @@ base_dir = s.base_dir;
 % specify the meta-file with the meta-instructions
 infile = s.metafile;
 
+global verbose
+
 if 0
     % specify the final output filename
     disp('Define output LaTeX file')
@@ -22,8 +24,8 @@ if 0
         %[pathstr, name, ext, versn] = fileparts(infile);
         %foutname = [pathstr,delimiter,name,'.tex'];
         foutname = [];
-    end;
-end;
+    end
+end
 
 % the output filename will have the same base-name as the metafile
 if(~isempty(s.metafile))
@@ -31,7 +33,7 @@ if(~isempty(s.metafile))
     foutname = [fdir, delimiter, fn, delimiter, fn, '.tex'];
 else
     foutname = [];
-end;
+end
 
 if(~isempty(foutname))
     % extract the directory names from the input meta-file
@@ -47,10 +49,10 @@ if(~isempty(foutname))
                 [token,remain]=strtok(tline);
                 j=j+1;
                 all_dirs{j}=strtok(remain);
-            end;
-        end;
+            end
+        end
         fclose(fid);
-    end;
+    end
 
     % generate the PDF-LaTeX file
     fn = foutname;
@@ -68,11 +70,13 @@ if(~isempty(foutname))
             fname = [base_dir,all_dirs{ii},delimiter,'outputG.tex'];
             bdir = [base_dir,all_dirs{ii}];
             bdir = regexprep(bdir,'\','/');
-        end;
-        disp(['* Processing file ',fname]);
+        end
+        if verbose 
+            disp(['Processing file ',fname]);
+        end
         if ii>1
             fprintf(fid,'\n\\newpage\n\n');
-        end;
+        end
         s=parseoutputtex(fname);
         % add the section with the current filename, also the label
         s1=regexprep(all_dirs{ii},'_','\\_');
@@ -83,13 +87,13 @@ if(~isempty(foutname))
             s{jj} = regexprep(s{jj},'0.45','0.42');
             s{jj} = regexprep(s{jj},'pdf','\\bdir/pdf');
             fprintf(fid,'%s\n',s{jj});
-        end;
+        end
     end
 
     fprintf(fid,'%s\n','\end{document}');
     fclose(fid);
-    fprintf(1,'*** Output written to %s\n',fn);
+    fprintf(1,'Output written to %s\n',fn);
     mepstopdf(fn,'pdflatex',0);
     mepstopdf(fn,'pdflatex',1);
     %disp('You can use pdflatex to generate a PDF file from it');
-end;
+end

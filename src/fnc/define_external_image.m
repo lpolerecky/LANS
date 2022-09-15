@@ -12,15 +12,19 @@ if isfield(p,'fdir')
             fprintf(1,'External image loaded: %s\n',fname);
             [a b c]=fileparts(fname);
             if strcmp(c,'.mat')
-                load(fname);
-                ext_im=im;
+                ei = load(fname);
+                if isfield(ei,'ext')
+                    ext_im=ei.ext.im;
+                else
+                    fprintf(1,'Error: unrecognized format. Check external image alignment.\n');
+                end
             else
                 ext_im=double(imread(fname));
                 ma = max(ext_im(:));
                 if ma>0
                     ext_im = ext_im/ma;
-                end;
-            end;
+                end
+            end
             figure;
             if size(ext_im,3)==1
                 %ext_im = ext_im(:,:,1);

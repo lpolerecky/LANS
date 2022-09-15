@@ -54,6 +54,8 @@ function yes_no_dialog_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for yes_no_dialog
 handles.output = 1;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 

@@ -89,6 +89,8 @@ else
     set(handles.figure1,'Name','Ratio display')
 end;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -227,11 +229,15 @@ function fid=display_images(im,scales,masses,n,handles,hObject,sr,im_conf)
 fid=handles.figure1;
 if(sr)
     disp('---');
-end;
+end
+
+global additional_settings;
+fontsize = additional_settings.defFontSize;
+font_gap = 1;
 
 % display masses in the array of plots predifined by the GUI
 for ii=1:min([length(im) 8])
-    switch ii,
+    switch ii
         case 2, ax=handles.axes2;
         case 3, ax=handles.axes3;
         case 4, ax=handles.axes4;
@@ -240,17 +246,17 @@ for ii=1:min([length(im) 8])
         case 7, ax=handles.axes7;
         case 8, ax=handles.axes8;            
         otherwise, ax=handles.axes1;
-    end;
-    axes(ax);
+    end
+    %axes(ax);
     if scales{ii}(1)==scales{ii}(2)
         scales{ii}(2)=scales{ii}(1)+1;
-    end;
+    end
     a = im{ii}(:,:,n);
     if iscell(im_conf)
         a_conf = im_conf{ii}(:,:,n);
     else
         a_conf = ones(size(a));
-    end;
+    end
     s = scales{ii};
     t = masses{ii};
     % if log-scale requested, adjust the scale so that 0 will become 1
@@ -258,33 +264,33 @@ for ii=1:min([length(im) 8])
         if s(1)==0
             if handles.name_prefix=='m'
                 s(1)=1;
-                if s(2)<10, s(1)=0.5; end;
+                if s(2)<10, s(1)=0.5; end
             else
                 s(1)=1e-4;
-            end;
-        end;
+            end
+        end
         %imagesc(log10(double(a)), log10(double(s)));
         %cmap = get(handles.popupmenu2,'value');
         cmap = get(handles.popupmenu2,'value');
-        imagesc_conf(log10(double(a)), log10(double(s(1))), log10(double(s(2))), a_conf, cmap);
-        title(['log(', t, ')'], 'FontSize',10,'fontweight','normal');
+        [~, ~, ~, cmap2] = imagesc_conf(log10(double(a)), log10(double(s(1))), log10(double(s(2))), a_conf, cmap, 0, ax);
+        title(ax,['log(', t, ')'], 'FontSize',fontsize,'fontweight','normal');
     else
         %imagesc(a, s);
         %cmap = get(handles.popupmenu2,'value');
         cmap = get(handles.popupmenu2,'value');
-        imagesc_conf(a, s(1), s(2), a_conf, cmap);
-        title(t,'FontSize',9,'fontweight','normal');
-    end;
+        [~, ~, ~, cmap2] = imagesc_conf(a, s(1), s(2), a_conf, cmap, 0, ax);
+        title(ax,t,'FontSize',fontsize,'fontweight','normal');
+    end
     if(sr)
         a=im{ii};
         s1=sprintf('%s:\trange=[%.3f, %.3f]\tscale=[%.3f, %.3f]',masses{ii}, min(a(:)), max(a(:)),min(s),max(s));
         disp(s1);
-    end;
+    end
     %set(handles.axes1,'xtick',[],'ytick',[],'dataaspectratio',[1 1 1]);
-    set(ax,'dataaspectratio',[1 1 1],'xtick',[],'ytick',[],'box','on'); %,'FontSize',10);
+    %set(ax,'dataaspectratio',[1 1 1],'xtick',[],'ytick',[],'box','on'); %,'FontSize',10);
     %b=colorbar('location','SouthOutside','FontSize',8);
     %set(b,'OuterPosition',[0.105 0.005 0.8 0.0467]);
-end;
+end
 
 % display masses in a separate window that will be then exported as PNG
 if handles.flag
@@ -295,7 +301,7 @@ if handles.flag
     else
         noc=nim;
         jmax=1;
-    end;
+    end
     
     w=size(im{1},2);    
     h=size(im{1},1);    
@@ -313,72 +319,122 @@ if handles.flag
                     a_conf = double(im_conf{k}(:,:,n));
                 else
                     a_conf = ones(size(a));
-                end;
+                end
                 s=double(scales{k});
                 if get(handles.checkbox2,'value')==1
                     if s(1)==0
                         if handles.name_prefix=='m'
                             s(1)=1;
-                            if s(2)<10, s(1)=0.5; end;                            
+                            if s(2)<10
+                                s(1)=0.5;
+                            end
                         else
                             s(1)=1e-4;
-                        end;
-                    end;
+                        end
+                    end
                     a=log10(a);
                     s=log10(s);
-                end;
-                ims=size(clut,1)*(a-min(s))/(max(s)-min(s));
+                end
+                ims=size(cmap2,1)*(a-min(s))/(max(s)-min(s));
                 ind=find(ims<0);
-                if ~isempty(ind), ims(ind)=zeros(size(ind)); end;
-                ind=find(ims>size(clut,1));
-                if ~isempty(ind), ims(ind)=size(clut,1)*ones(size(ind)); end;
+                if ~isempty(ind)
+                    ims(ind)=zeros(size(ind)); 
+                end
+                ind=find(ims>size(cmap2,1));
+                if ~isempty(ind)
+                    ims(ind)=size(cmap2,1)*ones(size(ind));
+                end
                 immat((jj-1)*h+[1:h],(ii-1)*w+[1:w])=ims;
                 immat_conf((jj-1)*h+[1:h],(ii-1)*w+[1:w])=a_conf;
-            end;
-        end;
-    end;
-    % display the assembled image
-    f31=my_figure(31);
-    fpos=get(f31,'position');
-    a = imagesc_conf(immat, min(immat(:)), max(immat(:)), immat_conf, cmap);
-    %imagesc(immat);
-    %colormap(cmap);
+            end
+        end
+    end
     
-    set(gca,'xtick',[],'ytick',[],'box','off');
-    % add mass names and scale
-    k=0;
-    for jj=1:jmax
-        for ii=1:noc
-            k=k+1;
-            if k<=nim
-                if k==1
-                    s=sprintf(' (%dx%d)',w,h);
-                else
-                    s=[];
-                end;
-                if handles.name_prefix=='m' %max(scales{k})>1
-                    t=text((ii-1)*w+1,(jj-1)*h+1,sprintf('%s [%d %d]%s',masses{k},scales{k},s),...
-                    'HorizontalAlignment','left','VerticalAlignment','top',...
-                    'BackgroundColor',[1 1 1],'Fontsize',8);
-                else
-                    t=text((ii-1)*w+1,(jj-1)*h+1,sprintf('%s [%.1e %.1e]%s',masses{k},scales{k},s),...
-                    'HorizontalAlignment','left','VerticalAlignment','top',...
-                    'BackgroundColor',[1 1 1],'Fontsize',8);
-                end;
-            end;
-        end;
-    end;
-    global additional_settings;
-    pf = additional_settings.print_factors(1);
-    w=7;
-    set(f31,'PaperPosition',[0.25 0.5 pf*1.3*w pf*w]);
-    set(f31,'Position',[fpos(1:2) noc*200 jmax*200]);
-    set(f31,'toolbar','none');
-    set(gca,'position',[0.0 0.0 1 1]);
-    set(gca,'DataAspectRatio',[1 1 1]);
-    set(f31,'PaperPositionMode','auto')
+    % convert from indexed image to rgb, so that we can apply hue
+    % modulation and recolor the annotation areas to white    
+    im2=ind2rgb(round(immat),cmap2);
+    
+    % add hue modulation
+    for jj=1:size(im2,3)
+        im2(:,:,jj) = im2(:,:,jj).*immat_conf;
+    end
+    immat = im2;
+    
+    % add white areas for annotations
+    %fac = round(h/128);
+    fac = (h/128);
+    im2 = ones(size(immat,1)+round((jmax+1)*(fontsize+2*font_gap)*fac),size(immat,2), size(immat,3));
+    for jj=1:size(immat,3)
+        im2([1:h]+round((fontsize+2*font_gap)*fac),:,jj) = immat([1:h],:,jj);
+        if jmax>1
+            im2([1:h]+h+round(2*(fontsize+2*font_gap)*fac),:,jj) = immat([1:h]+h,:,jj);
+        end
+    end
+    %immat = im2;
+    % display the assembled image
+    %cmap = get(handles.popupmenu2,'value');
+    %def_cmat = get_colormap(cmap);
+    % convert from indexed image to rgb, so that we can recolor the
+    % annotation areas to white
+    %im2=ind2rgb(round(immat),def_cmat);
+    % recolor the annotation areas to white
+    %for jj=1:(jmax+1)
+    %    ind = [1:round((fontsize+2*font_gap)*fac)] + round((jj-1)*(h+(fontsize+2*font_gap)*fac));
+    %    im2(ind,:,1)=1;
+    %    im2(ind,:,2)=1;
+    %    im2(ind,:,3)=1;
+    %end
+    im = im2;
+    [f31, ax31] = my_figure(31);
+    fpos=get(f31,'position');
+    %a = imagesc_conf(immat, min(immat(:)), max(immat(:)), immat_conf, cmap);
+    im31 = findall(ax31,'type','Image');
+    if isempty(im31)
+        if isempty(ax31)
+            ax31=subplot(1,1,1);
+        end
+        image(im);
+        %colormap(cmap);    
+        set(ax31,'xtick',[],'ytick',[],'box','off',...
+            'xcolor',0.999*[1 1 1],'ycolor',0.999*[1 1 1]);
+        % add mass names and scale
+        k=0;
+        for jj=1:jmax
+            for ii=1:noc
+                k=k+1;
+                if k<=nim
+                    t=text((ii-1)*w+w/2,...
+                        round((jj-1)*(h+fac*(fontsize+2*font_gap))+(fontsize/2+font_gap)*fac+0),...
+                        sprintf('%s [%d %d]',masses{k},[floor(scales{k}(1)) ceil(scales{k}(2))]),...
+                        'HorizontalAlignment','center','VerticalAlignment','middle',...
+                        'Fontsize',fontsize,'FontName','Helvetica');
+                end
+            end
+        end
+        pf = additional_settings.print_factors(1);
+        ww=7;
+        set(f31,'PaperPosition',[0.25 0.5 pf*1.3*ww pf*ww]);
+        set(f31,'Position',[fpos(1:2) 200*[noc size(im,1)/h]]);
+        set(f31,'toolbar','none');
+        set(ax31,'position',[0.0 0.0 1 1]);
+        set(ax31,'DataAspectRatio',[1 1 1]);
+        set(f31,'PaperPositionMode','auto')        
+    else
+        set(im31,'CData',im);
+    end
+    s=sprintf('%dx%dpix n=%d',w,h,n);
+    t31 = findobj(ax31,'tag','bottom_title');    
+    if isempty(t31)
+        t=text(noc/2*w,...
+               round(jmax*(h+fac*(fontsize+2*font_gap))+(fontsize/2+font_gap)*fac+0),...
+               s,...
+               'HorizontalAlignment','center','VerticalAlignment','middle',...
+               'Fontsize',fontsize,'FontName','Helvetica','tag','bottom_title');
+    else
+        set(t31,'String',s);
+    end
     fid = f31;    
-end;
+end
 a=0;
 
 
@@ -408,11 +464,11 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 % as PNG, to 1.
 handles.flag=1;
 % create output dir
-outdir = [handles.fdir 'frames/'];
-if ~isdir(outdir)
+outdir = [handles.fdir 'frames' filesep];
+if ~isfolder(outdir)
     mkdir(outdir);
     fprintf(1,'Directory %s created\n',outdir);
-end;
+end
 % export mass images
 if get(handles.checkbox3,'value')==1
     % export all, starting from the first frame
@@ -428,20 +484,20 @@ if get(handles.checkbox3,'value')==1
             fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
         else
             fout = [outdir handles.name_prefix '-' getid(i,3,1) '.png'];
-        end;
+        end
         print(fid,fout,'-dpng');
         %print_figure(f1,fout,additional_settings.print_factors(6));
         fprintf(1,'Frame %d exported as %s\n',i,fout);
         fid=pushbutton5_Callback(hObject, eventdata, handles);
         i=str2num(get(handles.text1,'String'));
-    end;
+    end
     % export last frame and jump to the start
     fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
     if get(handles.checkbox2,'value')==1
         fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
     else
         fout = [outdir handles.name_prefix '-' getid(i,3,1) '.png'];
-    end;
+    end
     print(fid,fout,'-dpng');
     fprintf(1,'Frame %d exported as %s\n',i,fout);
     fid=pushbutton7_Callback(hObject, eventdata, handles);
@@ -453,10 +509,10 @@ else
         fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
     else
         fout = [outdir handles.name_prefix '-' getid(i,3,1) '.png'];
-    end;
+    end
     print(fid,fout,'-dpng');
     fprintf(1,'Frame %d exported as %s\n',i,fout);
-end;
+end
 
 handles.flag = 0;
 guidata(hObject, handles);

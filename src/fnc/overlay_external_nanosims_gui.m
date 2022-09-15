@@ -64,6 +64,8 @@ handles.ratios = r;
 
 set(handles.listbox1,'string',r);
     
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 

@@ -62,6 +62,8 @@ set(handles.figure1,'Name','Additional Look@NanoSIMS settings');
 % Choose default command line output for additional_settings_gui
 handles.output = handles.additional_settings;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -271,6 +273,8 @@ if isequal(get(hObject,'CurrentKey'),'return')
     figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
 end    
 
+%%
+
 function fill_objects(h)
 switch h.additional_settings.scale_bar_pos
     case 1, set(h.radiobutton1,'value',1);
@@ -331,7 +335,49 @@ end;
 if isfield(h.additional_settings,'colormap')
     set(h.popupmenu1,'Value',h.additional_settings.colormap);
 end;
+if isfield(h.additional_settings,'view_pdf')
+    set(h.checkbox15,'value',h.additional_settings.view_pdf);
+end;
+if isfield(h.additional_settings,'include_colorbar_label')
+    set(h.checkbox17,'value',h.additional_settings.include_colorbar_label);
+end;
+if isfield(h.additional_settings,'apply_1e3_factor')
+    set(h.checkbox14,'value',h.additional_settings.apply_1e3_factor);
+end;
+if isfield(h.additional_settings,'smooth_masses_kernelsize')
+    set(h.edit15,'String',num2str(h.additional_settings.smooth_masses_kernelsize));
+end;
+if isfield(h.additional_settings,'smooth_esi_kernelsize')
+    set(h.edit16,'String',num2str(h.additional_settings.smooth_esi_kernelsize));
+end;
 
+switch h.additional_settings.title_position
+    case 1, set(h.radiobutton11,'value',1);
+    case 2, set(h.radiobutton12,'value',1);
+    case 3, set(h.radiobutton13,'value',1);
+    case 4, set(h.radiobutton14,'value',1);
+    case 0, set(h.radiobutton15,'value',1);
+end;
+if isfield(h.additional_settings,'fill_title_background')
+    set(h.checkbox12,'value',h.additional_settings.fill_title_background);
+end;
+if isfield(h.additional_settings,'title_background_color')
+    set(h.edit13,'String',num2str(h.additional_settings.title_background_color));
+end;
+if isfield(h.additional_settings,'title_font_size_color')
+    set(h.edit14,'String',num2str(h.additional_settings.title_font_size_color));
+end;
+if isfield(h.additional_settings,'calculate_LWfactor')
+    set(h.checkbox18,'Value',h.additional_settings.calculate_LWfactor);
+end;
+if isfield(h.additional_settings,'calculate_perimeter')
+    set(h.checkbox19,'Value',h.additional_settings.calculate_perimeter);
+end;
+if isfield(h.additional_settings,'calculate_roi_variability')
+    set(h.checkbox20,'Value',h.additional_settings.calculate_roi_variability);
+end;
+
+%%
 
 function h=get_values(h)
 
@@ -454,9 +500,88 @@ else
     d.colormap = 1;
 end;
 
+if isfield(h,'checkbox15')
+    d.view_pdf = get(h.checkbox15,'value');
+else
+    d.view_pdf = 0;
+end;
+
+if isfield(h,'checkbox17')
+    d.include_colorbar_label = get(h.checkbox17,'value');
+else
+    d.include_colorbar_label = 1;
+end;
+
+if isfield(h,'checkbox14')
+    d.apply_1e3_factor = get(h.checkbox14,'value');
+else
+    d.apply_1e3_factor = 0;
+end;
+
+if isfield(h,'edit15')
+    d.smooth_masses_kernelsize = str2num(get(h.edit15,'String'));
+else
+    d.smooth_masses_kernelsize = [5 1];
+end;
+
+if isfield(h,'edit16')
+    d.smooth_esi_kernelsize = str2num(get(h.edit16,'String'));
+else
+    d.smooth_esi_kernelsize = [1 1];
+end;
+
+if get(h.radiobutton11,'value')==1
+    d.title_position = 1;
+elseif get(h.radiobutton12,'value')==1
+    d.title_position = 2;
+elseif get(h.radiobutton13,'value')==1
+    d.title_position = 3;
+elseif get(h.radiobutton14,'value')==1
+    d.title_position = 4;
+elseif get(h.radiobutton15,'value')==1
+    d.title_position = 0;
+else
+    d.title_position = 0;
+end
+
+if isfield(h,'checkbox12')
+    d.fill_title_background = get(h.checkbox12,'value');
+else
+    d.fill_title_background = 0;
+end
+
+if isfield(h,'edit13')
+    d.title_background_color = get(h.edit13,'String');
+else
+    d.title_background_color = 'w';
+end
+
+if isfield(h,'edit14')
+    d.title_font_size_color = get(h.edit14,'String');
+else
+    d.title_font_size_color = '14k';
+end
+
+if isfield(h,'checkbox18')
+    d.calculate_LWfactor = get(h.checkbox18,'value');
+else
+    d.calculate_LWfactor = 1;
+end
+
+% added 19.05.2018
+if isfield(h,'checkbox19')
+    d.calculate_perimeter = get(h.checkbox19,'value');
+else
+    d.calculate_perimeter = 0;
+end
+if isfield(h,'checkbox20')
+    d.calculate_roi_variability = get(h.checkbox20,'value');
+else
+    d.calculate_roi_variability = 0;
+end
+
 h.additional_settings = d;
 fprintf(1,'Additional output settings updated.\n');
-
 
 % --- Executes during object deletion, before destroying properties.
 function figure1_DeleteFcn(hObject, eventdata, handles)

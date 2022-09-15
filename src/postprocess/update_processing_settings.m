@@ -15,37 +15,37 @@ if(isempty(s.xscale1))
 else
     %set(h.edit19,'string',sprintf('[%s %s]',num2str(s.xscale1(1)),num2str(s.xscale1(2))));
     set(h.edit19,'string',s.xscale1);
-end;
+end
 if(isempty(s.yscale1))
     set(h.edit20,'string','[]');
 else
     %set(h.edit20,'string',sprintf('[%s %s]',num2str(s.yscale1(1)),num2str(s.yscale1(2))));
     set(h.edit20,'string',s.yscale1);
-end;
+end
 if(isempty(s.xscale2))
     set(h.edit21,'string','[]');
 else
     %set(h.edit21,'string',sprintf('[%s %s]',num2str(s.xscale2(1)),num2str(s.xscale2(2))));
     set(h.edit21,'string',s.xscale2);
-end;
+end
 if(isempty(s.yscale2))
     set(h.edit23,'string','[]');
 else
     %set(h.edit23,'string',sprintf('[%s %s]',num2str(s.yscale2(1)),num2str(s.yscale2(2))));
     set(h.edit23,'string',s.yscale2);
-end;
+end
 if(isempty(s.xscale3))
     set(h.edit24,'string','[]');
 else
     %set(h.edit24,'string',sprintf('[%s %s]',num2str(s.xscale3(1)),num2str(s.xscale3(2))));
     set(h.edit24,'string',s.xscale3);
-end;
+end
 if(isempty(s.yscale3))
     set(h.edit25,'string','[]');
 else
     %set(h.edit25,'string',sprintf('[%s %s]',num2str(s.yscale3(1)),num2str(s.yscale3(2))));
     set(h.edit25,'string',s.yscale3);
-end;
+end
 set(h.edit13,'string',s.cellclasses);
 set(h.edit14,'string',s.cellcolors);
 set(h.edit15,'string',s.treatments);
@@ -60,14 +60,26 @@ if(isfield(s,'disp_errorbars'))
     set(h.checkbox13,'value',s.disp_errorbars);
 else
     set(h.checkbox13,'value',1);
-end;
+end
 if(isfield(s,'log_scale'))
     set(h.checkbox30,'value',s.log_scale);
 else
     set(h.checkbox30,'value',0);
-end;
+end
 if(isfield(s,'bw'))
     set(h.checkbox31,'value',s.bw);
 else
     set(h.checkbox31,'value',0);
-end;
+end
+
+% update also correction settings
+if isfield(s,'correction_settings')
+    global correction_settings;
+    correction_settings = s.correction_settings;
+    % make sure that the correction and rate calculation options 
+    % are by default set to 0 (=not applied) to avoid unintentional
+    % consequences 
+    correction_settings.correction_apply = zeros(1,6);
+    correction_settings.calculate_rate = zeros(1,6);
+    fprintf(1,'NOTE: Correction and rate calculation settings updated. Please verify.\n');
+end

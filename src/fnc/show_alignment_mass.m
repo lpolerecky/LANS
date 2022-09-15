@@ -1,7 +1,13 @@
 function handles = show_alignment_mass(handles)
 
 p1 = load_masses_parameters(handles);
-k=identifyMass(p1.mass,p1.alignment_mass);
+%k=identifyMass(p1.mass,p1.alignment_mass);
+[formula, ~, ~] = parse_formula_lans(p1.alignment_mass,p1.mass);
+m=cell(size(handles.p.im));
+for mi=1:length(m)
+    m{mi} = double(handles.p.im{mi});
+end
+eval(formula);
 
 % view the alignment mass and select which images should be deselected
 % switch k,
@@ -15,16 +21,16 @@ k=identifyMass(p1.mass,p1.alignment_mass);
 %     otherwise, 
       images=str2num(get(handles.edit12,'string'));
 % end;
-all_images=[1:size(handles.p.im{1},3)];
+all_images=[1:size(r,3)];
 if(isempty(images))
     images=all_images;
-end;
+end
 ind = setdiff(all_images,images);
 deselected=zeros(size(all_images));
 deselected(ind)=ones(size(ind));
 
 % open GUI for selecting the images and alignment region
-a=show_stack_win(handles.p.im{k},deselected);
+a=show_stack_win(r,deselected);
 
 if ~handles.p.planes_aligned
 
@@ -36,17 +42,29 @@ if ~handles.p.planes_aligned
     % images are to be accumulated
     if(isempty(setdiff(all_images,images)))
         images=[];
-    end;
+    end
 
     % update the images in the GUI
     handles = fillinfo_selected_images(images, handles);
 
     % update special region for alignment
-    xlim=a.region_x;
-    ylim=a.region_y;
-    set(handles.edit44,'string',['[',num2str(ceil(xlim(1))),':',num2str(floor(xlim(2))),']']);
-    set(handles.edit45,'string',['[',num2str(ceil(ylim(1))),':',num2str(floor(ylim(2))),']']);
+    xlim=round(a.region_x);
+    if xlim(1)<1
+        xlim(1) = 1;
+    end
+    if xlim(2)>p1.width
+        xlim(2)=p1.width;
+    end
+    ylim=round(a.region_y);
+    if ylim(1)<1
+        ylim(1) = 1;
+    end
+    if ylim(2)>p1.height
+        ylim(2)=p1.height;
+    end    
+    set(handles.edit44,'string',sprintf('[%d:%d]',xlim));
+    set(handles.edit45,'string',sprintf('[%d:%d]',ylim));
 
 else
     fprintf(1,'Alignment region and images NOT updated as the masses have been already aligned!\n');
-end;
+end

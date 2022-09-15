@@ -58,9 +58,9 @@ function add_remove_cells_tool_OpeningFcn(hObject, eventdata, handles, varargin)
 if nargin>3
     if strcmp(varargin{1},'ButtonDownFnc')
         fprintf(1,'Say hi\n');
-    end;
+    end
     
-end;
+end
 
 if(nargin>3)
     handles.maskmass = varargin{1};
@@ -75,12 +75,16 @@ if(nargin>3)
         ind=find((double(oc)>=double('0') & double(oc)<=double('9')) | double(oc)==double('.'));
         ind=setdiff([1:length(oc)],ind);
         handles.coc=oc(ind);
-    end;  
+    end
 
     handles.output = varargin{7};
     [a b c]=fileparts(varargin{7});
     global CELLSFILE 
     CELLSFILE = b;
+    
+    global shown_rgb;
+    shown_rgb=[0 0 0];
+    
     handles.bw = varargin{8};
     handles.ic = 1; % default interactive channel
     handles.cellfile = varargin{9};
@@ -92,8 +96,48 @@ if(nargin>3)
         handles.maskmass(ind)=min(handles.ps)*ones(size(ind));
         ind=find(handles.maskmass>max(handles.ps));
         handles.maskmass(ind)=max(handles.ps)*ones(size(ind));
+        shown_rgb(1)=1;
         fprintf(1,'Scaling of the ROI definition template image: [%f %f]\n',handles.ps);
-    end;
+    else
+        ic_set = 0;
+        if max(max(squeeze(handles.maskmass(:,:,1))))>0
+            shown_rgb(1)=1;
+            set(handles.hide_red,'checked','on');
+            handles.ic = 1;
+            set(handles.ic_red,'checked','on','enable','on');
+            ic_set = 1;            
+        else
+            set(handles.hide_red,'checked','off','enable','off');
+            set(handles.ic_red,'checked','off','enable','off');            
+        end
+        if max(max(squeeze(handles.maskmass(:,:,2))))>0
+            shown_rgb(2)=1;
+            set(handles.hide_green,'checked','on');
+            if ~ic_set
+                handles.ic = 2;
+                set(handles.ic_green,'checked','on','enable','on');
+                ic_set = 1;
+            end
+        else
+            set(handles.hide_green,'checked','off','enable','off');
+            set(handles.ic_green,'checked','off','enable','off');
+        end
+        if max(max(squeeze(handles.maskmass(:,:,3))))>0
+            shown_rgb(3)=1;
+            set(handles.hide_blue,'checked','on');
+            if ~ic_set
+                handles.ic = 3;
+                set(handles.ic_blue,'checked','on','enable','on');
+                ic_set = 1;
+            end
+        else
+            set(handles.hide_blue,'checked','off','enable','off');
+            set(handles.ic_blue,'checked','off','enable','off');
+        end  
+    end
+    
+    handles.mag_factor = varargin{10};
+    
     update_cell_outline(handles.axes1,handles.maskmass, handles.ps, ...
         handles.figure1,handles.maskimg, handles.coc, handles.bw,1);
     set(handles.figure1,'Name',['Define ROIs using image ',handles.mass]);
@@ -102,7 +146,14 @@ else
     handles.maskimg = ones(256,256);
     global CELLSFILE;
     handles.output = CELLSFILE;
-end;
+end
+
+set(handles.auto_class_update,'Checked',~isempty(handles.cellfile));
+if ~isempty(handles.cellfile)
+    fprintf(1,'NOTE: ROIs and ROI classification file are now linked. Update of ROIs will lead to automated update of ROI classification.\n');
+    fprintf(1,'      Use "Action -> Link ROI classification file" to change this behavior.\n');
+end
+
 handles.oldmaskimg = handles.maskimg;
 
 %set(handles.axes1,'xtick',[],'ytick',[],'box','on')
@@ -116,6 +167,8 @@ handles.cells_saved = 1;
 
 % Choose default command line output for add_remove_cells_tool
 %handles.maskfile = 'cells.mat';
+
+handles = update_gui_fontsize(handles);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -185,6 +238,9 @@ guidata(hObject, handles);
 
 if(a==2 | a==0)    
     %%uiresume(handles.figure1);
+    if isempty(handles)
+        handles.figure1 = gcf;
+    end
     figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
 end;
 
@@ -211,51 +267,58 @@ end
 function define_grid_Callback(hObject, eventdata, handles)
 
 im=handles.maskmass;
-fprintf(1,'Size of the image: %d x %d\n',size(im));
-a=input('Enter number of ROIs per image width (or height): ');
+fprintf(1,'Size of the image: %d x %d\n',size(im,1),size(im,2));
+a=input('Enter number of (square) grid cells per image width: ');
 a=double(a);
 if isempty(a)
     a=1;
-end;
-if a>size(im,2), a=size(im,2); end;
-if a<1, a=1; end;
-% calculate the positions of the ROI separators 
+end
+if a>size(im,2), a=size(im,2); end
+if a<1, a=1; end
+w=size(im,2);
+h=size(im,1);
+wg=ceil(w/a);
+% calculate the positions of the ROI separators
+e2=[0:wg:w+1];
+e1=[0:wg:h+1];
 e=linspace(0,size(im,2)+1,a+1);
-ind=[1:size(im,1)];
-maskimg=zeros(size(im));
+ind1=[1:h];
+ind2=[1:w];
+% mask defined by the grid
+maskimg_grid=zeros(size(im));
 cellid=0;
-for x=1:a
-    for y=1:a
-        i=find(ind>e(x) & ind<=e(x+1));
-        j=find(ind>e(y) & ind<=e(y+1));
-        indx=ind(i);
-        indy=ind(j);
+for x=1:(length(e2)-1)
+    for y=1:(length(e1)-1)
+        i=find(ind2>e2(x) & ind2<=e2(x+1));
+        j=find(ind1>e1(y) & ind1<=e1(y+1));
+        indx=ind2(i);
+        indy=ind1(j);
         if ~isempty(indx) & ~isempty(indy)
             cellid=cellid+1; 
-            maskimg(indy,indx)=cellid*ones(length(indy),length(indx));
-        end;
-    end;
-end;
+            maskimg_grid(indy,indx)=cellid*ones(length(indy),length(indx));
+        end
+    end
+end
 
 if 0
     figure;
-    imagesc(maskimg); colorbar; colormap(clut(256));
+    imagesc(maskimg_grid); colorbar; colormap(clut(256));
     a=0;
-end;
+end
 
-if strcmp(get(handles.auto_class_update,'checked'),'on') & ~isempty(handles.cellfile)
+if strcmp(get(handles.auto_class_update,'checked'),'on') && ~isempty(handles.cellfile)
     cellfile = [handles.fdir handles.cellfile];
     fid=fopen(cellfile,'w');
     if fid>0
-        for i=1:length(unique(maskimg))
+        for i=1:length(unique(maskimg_grid))
             fprintf(1,'%d\ti\n',i);
         end;
         fclose(fid);
         fprintf(1,'ROI classification updated in %s\n',cellfile);
-    end;
-end;
+    end
+end
 
-handles.maskimg = maskimg;
+handles.maskimg = maskimg_grid;
 handles.cells_saved = 0;
 guidata(hObject, handles);
 
@@ -384,20 +447,21 @@ if(boundary_type==1)
     [added_cell ind] = roi2cell(h, 0);
     if isempty(handles.maskimg)
         handles.maskimg = zeros(size(handles.maskmass));
-    end;
+    end
     handles.maskimg = add_cell(handles.maskimg, added_cell);
     handles.cells_saved = 0;
     [handles.maskimg,indc]=rearrange_sort_cells(handles.maskimg);
     autoupdate_cell_classification(handles.maskimg, ind, ...
             handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
-end;
+end
 
 guidata(hObject, handles);
 
 update_cell_outline(handles.axes1,handles.maskmass, handles.ps, ...
         handles.figure1,handles.maskimg, handles.coc, handles.bw,...
         strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+delete(h);
     
 %%uiwait(handles.figure1);
 
@@ -426,6 +490,7 @@ guidata(hObject, handles);
 update_cell_outline(handles.axes1,handles.maskmass, handles.ps, ...
         handles.figure1,handles.maskimg, handles.coc, handles.bw,...
         strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+delete(h);
     
 %%uiwait(handles.figure1);
 
@@ -466,22 +531,22 @@ else
         boundary_type=1;
     else
         boundary_type = 0;
-    end;
-end;
+    end
+end
 
 % add the newly defined roi object to the list of all valid roi objects
 if boundary_type~=2
     [added_cell ind] = roi2cell(h, boundary_type);
     if isempty(handles.maskimg)
         handles.maskimg = zeros(size(handles.maskmass));
-    end;
+    end
     handles.maskimg = add_cell(handles.maskimg, added_cell);
     handles.cells_saved = 0;
     [handles.maskimg,indc]=rearrange_sort_cells(handles.maskimg);
     autoupdate_cell_classification(handles.maskimg, ind, ...
             handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
-end; 
+end
 
 %t1=now();
 
@@ -491,6 +556,7 @@ guidata(hObject, handles);
 update_cell_outline(handles.axes1,handles.maskmass, handles.ps, ...
         handles.figure1,handles.maskimg, handles.coc, handles.bw,...
         strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+delete(h);
 
 %%uiwait(handles.figure1);
 %uiwait(handles.figure1);
@@ -505,9 +571,10 @@ update_cell_outline(handles.axes1,handles.maskmass, handles.ps, ...
 
 
 function zoomin_tool_Callback(hObject,eventdata,handles)
-h = zoom;
-%if strcmp(get(hObject,'checked'),'off')
-if strcmp(h.Enable,'off')
+
+if strcmp(get(hObject,'checked'),'off')
+    h = zoom;
+%if strcmp(h.Enable,'off')
     fprintf(1,'**************************************************************\n')
     fprintf(1,'Select the zoomed-in region in the image, THEN\n');
     fprintf(1,'Select Zoom -> "Zoom DISABLE" to quit the zoom-in mode, THEN\n');
@@ -521,40 +588,107 @@ if strcmp(h.Enable,'off')
     set(hObject,'label','Zoom DISABLE');
     set(handles.figure1,'Color',[1 1 1]*0.6);
     set(handles.text1,'BackgroundColor',[1 1 1]*0.6);
+    set(hObject,'Checked','on');
 else
-    h.Enable = 'off';
-%    zoom off;
-    %set(hObject,'checked','off', 'label', 'Zoom ENABLE');
-    set(hObject,'label','Zoom ENABLE');
+    %h.Enable = 'off';
+    zoom off;
+    set(hObject,'checked','off', 'label', 'Zoom ENABLE');
+    %set(hObject,'label','Zoom ENABLE');
     set(handles.figure1,'Color',[1 1 1]*0);
     set(handles.text1,'BackgroundColor',[1 1 1]*0);
-end;
+    global newxLim newyLim;
+    xlim(newxLim);
+    ylim(newyLim);
+    
+    % update ROI outlines within the viewed area
+    update_ROI_outlines_within_viewed_area(handles,newxLim, newyLim);
+    
+end
 
 function myprecallback(obj,evd)
-%disp('A zoom is about to occur.');
+global newxLim newyLim;
+newxLim = get(evd.Axes,'XLim');
+newyLim = get(evd.Axes,'YLim');
+%fprintf(1,'PreCall: X-Limits and Y-Limits are [%.2f %.2f] [%.2f %.2f]\n',newxLim,newyLim);
 
 function mypostcallback(obj,evd)
-newLim = get(evd.Axes,'XLim');
-fprintf(1,'The new X-Limits are [%.2f %.2f]\n',newLim);
-%msgbox(sprintf('The new X-Limits are [%.2f %.2f].',newLim));
-% this does not work as intended, so I give up on this
-%h = zoom;
-%h.Enable = 'off';
+global newxLim newyLim;
+newxLim = get(evd.Axes,'XLim');
+newyLim = get(evd.Axes,'YLim');
+fprintf(1,'New X-Limits and Y-Limits are [%.2f %.2f] [%.2f %.2f]\n',newxLim,newyLim);
 
 
 function zoomout_tool_Callback(hObject,eventdata,handles)
-fprintf(1,'Click on the image to zoom out\n');
-xlim([1 size(handles.maskimg,2)]);
-ylim([1 size(handles.maskimg,1)]);
-%zoom out;
+%fprintf(1,'Click on the image to zoom out\n');
+xlim([0.5 size(handles.maskimg,2)+0.5]);
+ylim([0.5 size(handles.maskimg,1)+0.5]);
+global newxLim newyLim;
+newxLim = xlim;
+newyLim = ylim;
+% update ROI outlines within the viewed area
+update_ROI_outlines_within_viewed_area(handles,newxLim, newyLim);
+
 
 function zoomout_after_ROIdef_Callback(hObject,eventdata,handles)
 if(strcmp(get(hObject,'Checked'),'on'))
     set(hObject,'Checked','off');
 else
     set(hObject,'Checked','on');
-end;
+end
+% update ROI outlines within the viewed area
+update_ROI_outlines_within_viewed_area(handles,newxLim, newyLim);
 
+function hide_rgb_Callback(hObject,eventdata,handles)
+if hObject == handles.hide_red
+    if strcmp(get(handles.hide_red,'checked'),'on')
+        set(handles.hide_red,'Checked','off','Label','Red hidden');
+    else
+        set(handles.hide_red,'Checked','on','Label','Red shown');
+    end
+elseif hObject == handles.hide_green
+    if strcmp(get(handles.hide_green,'checked'),'on')
+        set(handles.hide_green,'Checked','off','Label','Green hidden');
+    else
+        set(handles.hide_green,'Checked','on','Label','Green shown');
+    end
+elseif hObject == handles.hide_blue
+    if strcmp(get(handles.hide_blue,'checked'),'on')
+        set(handles.hide_blue,'Checked','off','Label','Blue hidden');
+    else
+        set(handles.hide_blue,'Checked','on','Label','Blue shown');
+    end
+end
+global shown_rgb;
+shown_rgb = [strcmp(get(handles.hide_red,'checked'),'on'),...
+    strcmp(get(handles.hide_green,'checked'),'on'),...
+    strcmp(get(handles.hide_blue,'checked'),'on')];
+guidata(hObject, handles);
+rgb = zeros(size(handles.maskmass));
+for i=1:size(rgb,3)
+    if sum(shown_rgb)==1
+        rgb(:,:,i) = handles.maskmass(:,:,find(shown_rgb==1));
+    else
+        if shown_rgb(i)
+            rgb(:,:,i) = handles.maskmass(:,:,i);
+        end
+    end
+end
+ch = handles.axes1.Children;
+k=[];
+for i=1:length(ch)
+    if strcmp(get(ch(i),'type'),'image')
+        k=i;
+        break;
+    end
+end
+if ~isempty(k)
+    ch = ch(k);
+    set(ch,'CData',rgb);
+end
+
+% update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
+%      handles.figure1,handles.maskimg, handles.coc, handles.bw,...
+%      strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
 
 function ic_red_Callback(hObject,eventdata,handles)
 set(handles.ic_red,'Checked','on');
@@ -578,19 +712,45 @@ handles.ic = 3;
 guidata(hObject, handles);
 
 function auto_class_update_Callback(hObject,eventdata,handles)
-if(strcmp(get(handles.auto_class_update,'Checked'),'off'))
-    set(handles.auto_class_update,'Checked','on');
+global CELLSFILE
+def_file = [handles.fdir CELLSFILE '.dat'];
+fprintf(1,'\n*** Select ROIs classification file (default %s)\n    Press cancel to unlink the ROI classification file.\n',def_file);
+[FileName,newdir,newext] = uigetfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+if(FileName~=0)
+   cellfile = [newdir, FileName];
+   handles.cellfile = cellfile;
 else
-   set(handles.auto_class_update,'Checked','off');
-end;
-   
-function ButtonDownFcn(hObject, eventdata, handles)
+   handles.cellfile = [];
+end
+set(handles.auto_class_update,'Checked',~isempty(handles.cellfile));
+if strcmp(get(handles.auto_class_update,'Checked'),'on')
+    fprintf(1,'ROIs file: %s\n', [handles.fdir handles.output]);
+    fprintf(1,'ROIs classification file: %s\n', handles.cellfile);    
+    fprintf(1,'ROIs and ROIs classifications are now LINKED.\n');
+else
+    fprintf(1,'ROIs and ROIs classifications are now UNLINKED.\n');
+end
+guidata(hObject, handles);
 
-%fprintf(1,'Mouse button pressed\n')
+function ButtonDownFcn(hObject, eventdata, handles)
+cp = round(get(gca,'CurrentPoint'));
+img=handles.maskimg;
+if cp(1,1)>0 && cp(1,1)<=size(img,2) && cp(1,2)>0 && cp(1,2)<=size(img,1)
+    roi_id = img(cp(1,2),cp(1,1));
+    roi_pix = length( find(img==roi_id) );
+    on_roi = sprintf(' on PIXEL [x,y]=[%d,%d] (ROI %d, size %d pixels)', cp(1,1:2), roi_id, roi_pix);
+else
+    on_roi = [];
+end
+fprintf(1,'Mouse button pressed%s\n',on_roi);
+
 
 function KeyPressFcn(hObject, eventdata, handles)
 character_type=get(handles.figure1,'CurrentCharacter');
-fprintf(1,'Key %d pressed\n',double(character_type))
+global verbose
+if verbose
+    fprintf(1,'Key %d pressed\n',double(character_type))
+end
 
 % --------------------------------------------------------------------
 function interactive_thresholding_Callback(hObject, eventdata, handles)
@@ -635,7 +795,7 @@ while(m==1 | m==3 | m==30 | m==31 | m==28 | m==29 | m=='h' | m=='l')
 
     if(isempty(m)) % i.e. Enter was pressed
         m=13;
-    end;
+    end
     if(m~=13 & m~=27)
 
         if(m==1)
@@ -643,39 +803,41 @@ while(m==1 | m==3 | m==30 | m==31 | m==28 | m==29 | m=='h' | m=='l')
             if(isempty(pt1))
                 pt1=plot(xp,yp,'wx');
                 pt2=plot(xp,yp,'ko');
+                set(pt1,'Tag','roi_boundary');
+                set(pt2,'Tag','roi_boundary');
             else
                 set(pt1,'xdata',xp,'ydata',yp);
                 set(pt2,'xdata',xp,'ydata',yp);
-            end;
+            end
             xb=[-1 1 1 -1]'+xp;
-            yb=[1 1 -1 -1]'+yp;
-        end;
+            yb=[1 1 -1 -1]'+yp;            
+        end
         if(xp<1)
             xp=1;
         end
         if(xp>size(Maskimg,2))
             xp=size(Maskimg,2);
-        end;
+        end
         if(yp<1)
             yp=1;
         end
         if(yp>size(Maskimg,1))
             yp=size(Maskimg,1);
-        end;
+        end
         if(m==30 | m==31 | m=='h' | m=='l')
             if(m==30 | m=='h')
                 handles.thr=handles.thr-0.01;
             else
                 handles.thr=handles.thr+0.01;
-            end;
+            end
             if(handles.thr>1)
                 handles.thr=1;
-            end;
+            end
             if(handles.thr<0.01)
                 handles.thr=0.01;
-            end;
+            end
             fprintf(1,'Current threshold: %.2f\n',handles.thr);
-        end;
+        end
 
         if(m==1 | m==3 | m==30 | m==31 | m=='h' | m=='l')
 
@@ -690,27 +852,33 @@ while(m==1 | m==3 | m==30 | m==31 | m==28 | m==29 | m=='h' | m=='l')
             [BW2,idx] = bwselect(BW,xp,yp,4);
             if(~isempty(idx))
                 fprintf(1,'Size of the ROI: %d pixels.\n',length(idx));
-                [B,L] = bwboundaries(BW2,'noholes');
-                xb=B{1}(:,1); yb=B{1}(:,2);
+                % just before finding the ROI outline, resize ROI by
+                % mag_fac, so that the outline will go AROUND the pixels
+                mag_fac = 1;
+                %BW2=imresize(BW2,mag_fac,'method','nearest');
+                %B=bwboundaries(p4,'holes');
+                B = bwboundaries(BW2,'noholes');
+                boundary = double(B{1}+(mag_fac-1)/2)/mag_fac;
+                xb=boundary(:,1); yb=boundary(:,2);
             else
                 disp('add_remove_cells warning: Defined cell is empty! Select another pixel.');
                 yb=[-1 1 1 -1]+xp;
                 xb=[1 1 -1 -1]+yp;
-            end;
-        end;
+            end
+        end
 
         if(m==28 | m==29)
             if(m==28)
                 diam=-1;
             else
                 diam= 1;
-            end;
+            end
             if(left_right_arrow_first_time)
                 % do not increase diameter of the circumscribed ellipse
                 % when the left/right arrow was pressed for the first time
                 diam=0;
                 left_right_arrow_first_time=0;
-            end;
+            end
             c=[yb,xb]';
             [A, cnt] = MinVolEllipse(c, .01);
             if(sum([isinf(A(:)) isnan(A(:))])==0)
@@ -721,10 +889,10 @@ while(m==1 | m==3 | m==30 | m==31 | m==28 | m==29 | m=='h' | m=='l')
                 b=b+diam;
                 if(a<=2)
                     a=2;
-                end;
+                end
                 if(b<=2)
                     b=2;
-                end;
+                end
                 D(1,1)=1/a^2;
                 D(2,2)=1/b^2;
                 A=U*D*V';
@@ -748,11 +916,12 @@ while(m==1 | m==3 | m==30 | m==31 | m==28 | m==29 | m=='h' | m=='l')
 
         if(isempty(pb))
             pb=plot(yb,xb,[handles.coc,'-']);
+            set(pb,'Tag','roi_boundary');
         else
             set(pb,'xdata',yb,'ydata',xb);
-        end;
+        end
         
-    end;
+    end
     
     % bring the focus back from the command window to the GUI
     figure(handles.figure1);
@@ -779,7 +948,7 @@ if(m==13)
     autoupdate_cell_classification(handles.maskimg, ind, ...
         handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
-end;
+end
 
 % Update handles structure
 guidata(hObject, handles);
@@ -796,20 +965,64 @@ ps = handles.ps;
 for ii=1:size(maskmass,3)
     maskmass(:,:,ii) = ps(ii,2)-maskmass(:,:,ii);
     ps(ii,:) = sort(ps(ii,2)-ps(ii,:));
-end;
+end
 handles.maskmass = maskmass;
 handles.ps = ps;
-update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
-    handles.figure1,handles.maskimg, handles.coc, handles.bw,...
-    strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+global shown_rgb;
+rgb = zeros(size(handles.maskmass));
+for i=1:size(rgb,3)
+    if sum(shown_rgb)==1
+        rgb(:,:,i) = handles.maskmass(:,:,find(shown_rgb==1));
+    else
+        if shown_rgb(i)
+            rgb(:,:,i) = handles.maskmass(:,:,i);
+        end
+    end
+end
+ch = handles.axes1.Children;
+k=[];
+for i=1:length(ch)
+    if strcmp(get(ch(i),'type'),'image')
+        k=i;
+        break;
+    end
+end
+if ~isempty(k)
+    ch = ch(k);
+    set(ch,'CData',rgb);
+    if size(rgb,3)==1
+        set(handles.axes1,'CLim',ps);
+    end
+end
+
+% update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
+%     handles.figure1,handles.maskimg, handles.coc, handles.bw,...
+%     strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
 if strcmp(get(hObject,'Checked'),'off')
     set(hObject,'Checked','on');
 else
     set(hObject,'Checked','off');
-end;
+end
 guidata(hObject, handles);
 
+function change_coc_Callback(hObject,eventdata,handles)
+a=inputdlg('Enter color for ROI outlines (one of: wkrgbcmy)','LANS input',1,{handles.coc});
+a=cell2mat(a);
+if isempty(intersect(a,'wkrgbcmy')), a = 'w'; end;
+handles.coc = a;
+guidata(hObject, handles);
 
+ch = handles.axes1.Children;
+k=[];
+for i=1:length(ch)
+    if strcmp(get(ch(i),'type'),'line')
+        set(ch(i),'Color',a);
+    end
+end
+
+% update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
+%     handles.figure1,handles.maskimg, handles.coc, handles.bw,...
+%     strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
 
 function split_rois_by_watershed_Callback(hObject, eventdata, handles)
 Maskimg = handles.maskmass(:,:,handles.ic);
@@ -843,32 +1056,38 @@ end;
 function split_rois_by_grid_Callback(hObject, eventdata, handles)
 
 im=handles.maskmass;
-fprintf(1,'Size of the image: %d x %d\n',size(im));
-a=input('Enter number of grid cells per image width (or height): ');
+fprintf(1,'Size of the image: %d x %d\n',size(im,1),size(im,2));
+a=input('Enter number of (square) grid cells per image width: ');
 a=double(a);
 if isempty(a)
     a=1;
-end;
-if a>size(im,2), a=size(im,2); end;
-if a<1, a=1; end;
-% calculate the positions of the ROI separators 
+end
+if a>size(im,2), a=size(im,2); end
+if a<1, a=1; end
+w=size(im,2);
+h=size(im,1);
+wg=ceil(w/a);
+% calculate the positions of the ROI separators
+e2=[0:wg:w+1];
+e1=[0:wg:h+1];
 e=linspace(0,size(im,2)+1,a+1);
-ind=[1:size(im,1)];
+ind1=[1:h];
+ind2=[1:w];
 % mask defined by the grid
 maskimg_grid=zeros(size(im));
 cellid=0;
-for x=1:a
-    for y=1:a
-        i=find(ind>e(x) & ind<=e(x+1));
-        j=find(ind>e(y) & ind<=e(y+1));
-        indx=ind(i);
-        indy=ind(j);
+for x=1:(length(e2)-1)
+    for y=1:(length(e1)-1)
+        i=find(ind2>e2(x) & ind2<=e2(x+1));
+        j=find(ind1>e1(y) & ind1<=e1(y+1));
+        indx=ind2(i);
+        indy=ind1(j);
         if ~isempty(indx) & ~isempty(indy)
             cellid=cellid+1; 
             maskimg_grid(indy,indx)=cellid*ones(length(indy),length(indx));
-        end;
-    end;
-end;
+        end
+    end
+end
 
 if 0
     figure;
@@ -900,11 +1119,10 @@ if ~isempty(handles.maskimg)
         ind = find(maskimg_orig==ii);
         maskimg_new(ind) = maskimg_new(ind) + tmp_rois(ind) + min_v;
         min_v = max(maskimg_new(:));
-        
-    end;
+    end
 else
     maskimg_new = maskimg;
-end;
+end
 
 if 0
     figure;
@@ -942,6 +1160,7 @@ set(handles.axes1,'xlim',xlim1, 'ylim',ylim1);
 
 c = getPosition(h);
 fprintf(1,'Recognizing which cells were split. Patience please.\n');
+t1=clock;
 
 % find out which pixels in c overlap with a defined cell
 CELLS = handles.maskimg;
@@ -1075,7 +1294,11 @@ ind = find(origc>0);
 M = size(CELLS,1);
 N = size(CELLS,2);
 for ii=1:length(ind)
-    x = floor( ind(ii)/M )+1;
+    if rem(ind(ii),M)==0
+        x = ind(ii)/M;
+    else
+        x = floor( ind(ii)/M )+1;
+    end;
     y = ind(ii) - M*(x-1);
     indx = [-1:1]+x;
     indx = indx(find(indx>0 & indx<=N));
@@ -1090,6 +1313,11 @@ if tp
     figure(3)
     imagesc(VCELLS);
 end;
+t2=clock;
+global verbose
+if verbose
+    fprintf(1,'split_by_line_Callback: %.3fs\n',etime(t2,t1));
+end
 
 hm = rearrange_sort_cells(VCELLS);
 
@@ -1113,8 +1341,8 @@ if(~isempty(handles.cellfile))
         if(~isempty(newind)) % & ii~=oldc)
             %autoupdate_cell_classification(hm, ind, handles.cellfile, handles.auto_class_update);
             cid2(ii)='i';
-        end;
-    end;
+        end
+    end
 
     % save the new cells IDs and classes 
     % determine the name of the new classification file
@@ -1149,6 +1377,7 @@ guidata(hObject, handles);
 update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
     handles.figure1,handles.maskimg, handles.coc, handles.bw,...
     strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+delete(h);
 
 %%uiwait(handles.figure1);
 
@@ -1424,9 +1653,14 @@ CELLS = handles.maskimg;
 l3=CELLS;
 ind=[];
 vc=[];
-disp('*** Interactive removal of a ROI.');
-disp(' - Left-click        = select ROI;');
-disp(' - Right-click       = remove selected ROI;');
+if ~isempty(handles.cellfile)
+    [cidu,cc,cid,cnum,ss]=load_cell_classes(handles.cellfile,0);
+else
+    cid = [];
+end
+disp('*** Interactive removal of a ROI or a pixel in a ROI.');
+disp(' - Left-click        = select ROI (pixel);');
+disp(' - Right-click       = remove selected ROI (pixel);');
 disp(' - Esc               = cancel action;');
 
 set(gcf, 'pointer', 'hand');
@@ -1447,42 +1681,73 @@ while(m==1 | m==3)
 
         if(m==1)
             xp=round(x2); yp=round(y2);
-            if(xp<1), xp=1; end;
-            if(xp>size(l3,2)), xp=size(l3,2); end;
-            if(yp<1), yp=1; end;
-            if(yp>size(l3,1)), yp=size(l3,1); end;
+            if(xp<1), xp=1; end
+            if(xp>size(l3,2)), xp=size(l3,2); end
+            if(yp<1), yp=1; end
+            if(yp>size(l3,1)), yp=size(l3,1); end
             vc=l3(yp,xp);
             if(vc>0)
-                disp(['ROI ',num2str(vc),' selected.']);
+                indr=find(CELLS==vc);
+                if ~isempty(cid)
+                    fprintf(1,'ROI %d (size %d, class %s) @ PIXEL [%d,%d] selected.\n', vc, length(indr), cid(vc),xp,yp);
+                else
+                    fprintf(1,'ROI %d (size %d) @ PIXEL [%d,%d] selected.\n',vc,length(indr),xp,yp);
+                end
             else
                 fprintf(1,'No valid ROI selected.\n');
-            end;
-        end;
+            end
+        end
 
         if(m==3)
             
-            ind=find(l3==vc);
-            if(vc>0 & ~isempty(ind))
-                l3(ind)=zeros(size(ind));
-            end;
-            fprintf(1,'ROI %d removed\n',vc);
+            if hObject == handles.Remove % remove ROI
+                ind=find(l3==vc);  
+                if vc>0 & ~isempty(ind)
+                    l3(ind)=zeros(size(ind));
+                end
+                fprintf(1,'ROI %d removed\n',vc);
             
-            % remove selected cell and update everything            
-            handles.maskimg = rearrange_sort_cells(l3);
-            autoupdate_cell_classification(handles.maskimg, ind, ...
-                handles.cellfile, handles.auto_class_update,vc);
-            handles.cells_saved = 0;                                                
-            update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
-                handles.figure1,handles.maskimg, handles.coc, handles.bw,...
-                strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
-            m=13; % behave as if Enter was pressed now; this will quit the loop
+                % remove selected cell and update everything            
+                handles.maskimg = rearrange_sort_cells(l3);
+                autoupdate_cell_classification(handles.maskimg, ind, ...
+                    handles.cellfile, handles.auto_class_update,vc);
+                handles.cells_saved = 0;                                                
+                update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
+                    handles.figure1,handles.maskimg, handles.coc, handles.bw,...
+                    strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+                m=13; % behave as if Enter was pressed now; this will quit the loop
+            elseif hObject == handles.remove_pixel
+                ind=find(l3==vc);
+                if length(ind)==1
+                    % one pixel that constitutes a ROI cannot be removed
+                    % like this, but must be removed through ROI-removal
+                    fprintf(1,'WARNING: This pixel forms a ROI.\n');
+                    fprintf(1,'  Please use Remove ROI interactively from the menu to remove it.\n');
+                else                   
+                    l3(yp,xp)=0;
+                    % check whether removal of a pixel resulted in a change
+                    % of ROIs
+                    l3r = bwlabel(l3,8);               
+                    l3r = rearrange_sort_cells(l3r);
+                    changed_rois = setdiff(unique(l3r(ind)),0);
+                    ind1 = (xp-1)*size(CELLS,1)+yp;
+                    handles.maskimg = l3r;
+                    autoupdate_cell_classification(handles.maskimg, ind1, ...
+                        handles.cellfile, handles.auto_class_update,vc,changed_rois);
+                    handles.cells_saved = 0;
+                    update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
+                        handles.figure1,handles.maskimg, handles.coc, handles.bw,...
+                        strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
+                    m=13; % behave as if Enter was pressed now; this will quit the loop
+                end                
+            end
             
-        end;
+        end
        
     else
         fprintf(1,'Finished with no ROI removed.\n');
-    end;
-end;
+    end
+end
 
 set(gcf, 'pointer', 'arrow');
 
@@ -1500,73 +1765,122 @@ Maskimg=handles.maskimg;
 fdir = handles.fdir;
 global CELLSFILE MAT_EXT;
 
-if(~isempty(Maskimg))
+if hObject == handles.save_resized_cells
+    % first, account for magnification, if needed
+    mf = handles.mag_factor;
+    if mf~=1
+        Maskimg = imresize(Maskimg,1/mf,'method','nearest');
+        % some small cells may have been removed, so make sure that the
+        % final Maskimg contains properly sorted cells
+        Maskimg = rearrange_sort_cells(Maskimg);
+    end
+end
+
+% default output
+handles.output = CELLSFILE;
+
+if ~isempty(Maskimg)
+    
     a=yes_no_dialog('title','Should the ROIs really be saved?',...
         'stringa',sprintf('Yes, store them as %s',[CELLSFILE MAT_EXT]),...
         'stringb','Yes, but under a different name.',...
         'stringc','Cancel.');
-
-    %disp(['returned: ',num2str(a)]);
-    
+            
     if(a==1)
+        % save in the default file
         fout=[fdir CELLSFILE MAT_EXT];
-        % save cells in the mat format
-        eval(['save ',fout,' -v6 Maskimg']);        
-        disp(['ROIs saved as ',fout]);
-        handles.cells_saved = 1;
-        handles.output = CELLSFILE;
-        CELLSFILE=handles.output;
-        % save also as a png file
-        [p f]=fileparts(fout);
-        fout=[p delimiter f '.png'];
-        % convert indexed image to rgb, otherwise saving as png will fail
-        % if number of ROIs>256
-        rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))+1));
-        imwrite(rgb,fout);
-        fprintf(1,'ROIs exported as %s\n',fout);
-    end;
+        if exist(fout)
+            options.Default = 'Cancel';
+            options.Interpreter = 'none';
+            choice = questdlg(sprintf('File %s already exists. What do you want to do?',[CELLSFILE MAT_EXT]),...
+                'LANS warning',...
+                'Overwrite','Cancel',options);
+                
+        else
+            choice = 'Overwrite';
+        end
+        
+        switch choice
+            case 'Overwrite'
+                save(fout,'Maskimg','-v6');
+                fprintf(1,'ROIs saved as %s\n',fout);
+                handles.cells_saved = 1;
+                if hObject == handles.save_cells
+                    CELLSFILE=handles.output;
+                end
+                % export also in PNG
+                [p f]=fileparts(fout);
+                fout=[p delimiter f '.png'];
+                % convert indexed image to rgb, otherwise saving as png will fail
+                % if number of ROIs>256
+                rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))+1));
+                imwrite(rgb,fout);
+                fprintf(1,'ROIs exported as %s\n',fout);
+            case 'Cancel'
+                fprintf(1,'ROIs not saved.\n');
+        end        
+        
+    end
+    
     if(a==2)
+        % make a backup, just in case, and do nothing
         fout=[fdir '_' CELLSFILE MAT_EXT];
-        % save cells in the mat format
-        eval(['save ',fout,' -v6 Maskimg']);
-        disp(['As a precaution, ROIs were also saved as ',fout]);
+        save(fout,'Maskimg','-v6');
+        fprintf(1,'As a precaution, ROIs were backed up in %s\n',fout);
         handles.cells_saved = 0;
-        handles.output = ['_' CELLSFILE];        
-    end;
+        %handles.output = ['_' CELLSFILE];        
+    end
+    
     if(a==0)
         % save the cells into a user specified file
         [FileName,newdir,newext] = uiputfile(['*' MAT_EXT], 'Choose ROIs output file', fdir);
         if(FileName~=0)
-            foutname = [newdir, FileName];
-            handles.output = FileName;
+            fout = [newdir, FileName]; %fout=[fdir CELLSFILE MAT_EXT];
+%             if exist(fout)
+%                 options.Default = 'Cancel';
+%                 options.Interpreter = 'none';
+%                 choice = questdlg(sprintf('File %s already exists. What do you want to do?',[FileName]),...
+%                     'LANS warning',...
+%                     'Overwrite','Cancel',options);
+% 
+%             else
+%                 choice = 'Overwrite';
+%             end
+%             
+%             switch choice
+%                 case 'Overwrite'
+                    save(fout,'Maskimg','-v6');
+                    fprintf(1,'ROIs saved in %s\n',fout);
+                    handles.cells_saved = 1;
+                    [p f]=fileparts(fout);
+                    handles.output = f;                                
+                    % export also in PNG
+                    fout=[p delimiter f '.png'];
+                    % convert indexed image to rgb, otherwise saving as png will fail
+                    % if number of ROIs>256
+                    rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))+1));
+                    imwrite(rgb,fout);
+                    fprintf(1,'ROIs exported as %s\n',fout);
+                % case 'Cancel'
         else
-            % default
-            foutname = [fdir, CELLSFILE MAT_EXT];
-            handles.output = CELLSFILE;
-        end;
-        eval(['save ',foutname,' -v6 Maskimg']);   
-        disp(['ROIs saved as ',foutname]);
-        handles.cells_saved = 1;
-        %CELLSFILE=handles.output;
-        % save also as a png file
-        [p f]=fileparts(foutname);
-        fout=[p delimiter f '.png'];
-        % convert indexed image to rgb, otherwise saving as png will fail
-        % if number of ROIs>256
-        rgb=ind2rgb(uint16(Maskimg),clut(max(Maskimg(:))+1));
-        imwrite(rgb,fout);
-        fprintf(1,'ROIs exported as %s\n',fout);
-        CELLSFILE=f;
-    end;       
+            fprintf(1,'ROIs not saved.\n');
+        end
+    end
     
     % Update handles structure
     guidata(hObject, handles);
     %uiwait(handles.figure1);
 else
     disp(['No cells defined as yet.']);
-end;
+end
 
-
+function add_remove_rgb_channel(hObject, eventdata, handles)
+% get to the image data
+% c=hObject.Parent.Parent.Children;
+% im=c(2).Children;
+% imdata = im(3).CData;
+% 
+% fprintf(1,'Hello\n');
 
 % --------------------------------------------------------------------
 function display_cells_Callback(hObject, eventdata, handles)
@@ -1574,118 +1888,213 @@ function display_cells_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if isfield(handles,'maskimg')
-    oldcells=handles.maskimg;
-else
-    oldcells = [];
-end;
+be_verbous = 1;
 
-cf = handles.cellfile;
-if ~isempty(cf)
-    [unique_classes,cc,cid,cnum,ss]=load_cell_classes(cf);
-else
-    unique_classes='i';
-    cnum = setdiff(unique(handles.maskimg(:)),0);
-    cid = char(unique_classes*ones(size(cnum)));
-    %unique_classes=[];
-end;
+if hObject == handles.display_roi_outlines
+    % display cell outlines in a separate window, together with the maskimg.
 
-if(~isempty(oldcells))
-    %[handles.maskimg indc] = rearrange_sort_cells(oldcells);
-    if(sum(abs(oldcells(:)-handles.maskimg(:)))>0)
-        % if rearranging cells returned different cells (e.g., because the small
-        % ones were removed), set the saved-flag to 0, so that the user will be
-        % prompted with the save/don't save question.
-        handles.cells_saved = 0;
-    end;
+    % first, account for magnification, if needed
+    mf = handles.mag_factor;
+    mi = handles.maskimg;
+    if mf~=1
+        if be_verbous
+            fprintf(1,'Accounting for magnification...');
+        end
+        mi = imresize(mi,1/mf,'method','nearest');
+        mi = imresize(mi,mf,'method','nearest');
+        if be_verbous
+            fprintf(1,'done.\n');
+        end
+    end
 
-    guidata(hObject, handles);
+    % find which cells are in the present possibly zoomed-in view. I do
+    % to speed up the drawing of the ROI outlines, which may take long if
+    % there are many cells.
+    xl=round(get(handles.axes1,'xlim'));
+    yl=round(get(handles.axes1,'ylim'));
+    xl=[xl(1):xl(2)];
+    xl = xl(xl>0); xl = xl(xl<=size(mi,2));
+    yl=[yl(1):yl(2)];
+    yl = yl(yl>0); yl = yl(yl<=size(mi,1));
+    % crop mi and maskmass, again, to speed up the process and save memory
+    mi = mi(yl,xl);
+    maskmass = handles.maskmass;
+    maskmass = maskmass(yl,xl,:);
+    ucells = setdiff(unique(mi),0);
+    miu = zeros(size(mi));
+    for i=1:length(ucells)
+        ind = find(mi==ucells(i));
+        miu(ind) = ucells(i);
+    end
+    % display the outlines of the cells in current view in a separate window, together with the maskmass    
+    fig11=figure(111); set(fig11,'color',[0 0 0]); ax1=subplot(1,1,1);
+    update_cell_outline(ax1,maskmass, handles.ps, ...
+            fig11, miu, handles.coc, handles.bw,1);
+    set(ax1,'XtickLabel',num2str(get(ax1,'Xtick')'+xl(1)-1));
+    set(ax1,'YtickLabel',num2str(get(ax1,'Ytick')'+yl(1)-1));
+    xlabel('Pixels in zoomed-in image','color',[1 1 1])
+    ylabel('Pixels in zoomed-in image','color',[1 1 1])    
+    title(sprintf('ROI outlines, corrected for magnification (m=%.2f)',mf),...
+        'color',[1 1 1]);
+% tests
+%     m11 = uimenu(fig11,'Text','View RGB');
+%     mitem1 = uimenu(m11,'Text','Hide red','Checked','off','Accelerator','1',...
+%         'Tag','show_red');
+%     mitem1.MenuSelectedFcn = @(hObject,eventdata,handles)add_remove_cells_tool('add_remove_rgb_channel',hObject,eventdata,guidata(hObject));
+%     mitem2 = uimenu(m11,'Text','Hide green','Checked','off','Accelerator','2',...
+%         'Tag','show_green');
+%     mitem2.MenuSelectedFcn = @(hObject,eventdata,handles)add_remove_cells_tool('add_remove_rgb_channel',hObject,eventdata,guidata(hObject));
+%     mitem3 = uimenu(m11,'Text','Hide blue','Checked','off','Accelerator','3',...
+%         'Tag','show_blue');
+%     mitem3.MenuSelectedFcn = @(hObject,eventdata,handles)add_remove_cells_tool('add_remove_rgb_channel',hObject,eventdata,guidata(hObject));
     
-    mim = handles.maskimg;
-    b=[];
-    if ~isempty(unique_classes)
 
-        %fprintf(1,'Enter letters of the ROI classes that you want to display?\n');
-        %fprintf(1,'Make a choice from one or more of these (%s) or enter empty for all.\n',unique_classes(:)');
-        %a=input('Choice: ','s');
-        %if isempty(a), a=unique_classes(:)'; end;
-        
-        if strcmp(char(unique_classes(:)),'i')
-            uc = '';
-        else
-            uc = char(unique_classes(:))';
-        end;
-        
-        x=inputdlg('Enter ROI classes or ROI IDs, separated by space. Empty for all.','ROI ID''s or ROI classes to be displayed',1,{uc});
-        if isempty(x)
-            a = num2str(cnum');
-        else
-            a = x{1};
-            if isempty(a)
-                a = num2str(cnum');
-            end;
-        end;
-        
-        b = strsplit(a,' ');
-        
-        % gather ID's of ROIs that will be displayed
-        ind = [];
-        for ii=1:length(b)
-            [bnum, bstat] = str2num(b{ii});
-            % in case b{ii} was 'i', which is an imaginary unit, correct
-            % the output of str2num
-            if strcmp(b{ii},'i')
-                bnum = [];
-                bstat = 0;
-            end;            
-            if bstat
-                % b{ii} contains numbers
-                ind = [ind; bnum(:)];
-            else
-                % b{ii} contains letters
-                for jj=1:length(b{ii})
-                    ind = [ind; find(cid==b{ii}(jj))];
-                end;
-            end;
-        end;
-        ind = unique(ind);
-        
-%         if isempty(str2num(a)) | strcmp(a,'i')
-%             % user entered letters
-%             ind=[];
-%             for ii=1:length(a)
-%                 class=a(ii);
-%                 ind = [ind; find(cid==class)];
-%             end;
-%         else
-%             % user entered ID numbers of ROIs
-%             ind = str2num(a);
-%         end;
-        
-        % remove pixels with ROIs whose class was not selected
-        b = setdiff(cnum,ind);
-        if ~isempty(b)
-            for ii=1:length(b)
-                ind = find(mim==b(ii));
-                mim(ind) = zeros(size(ind));
-            end;
-        end;
-        
-    end;
+elseif hObject == handles.display_cells
     
-    % display the rois
-    my_figure(10);    
-    imagesc(mim,[0 max(mim(:))+1]); colormap(clut(max(mim(:))+1));
-    if isempty(b), 
-        addCellNumbers(10,handles.maskimg); 
+    if isfield(handles,'maskimg')
+        oldcells=handles.maskimg;
     else
-        addCellNumbers(10,mim);
-    end;
-    set(gca,'DataAspectRatio',[1 1 1]);%,'xtick',[],'ytick',[]);
-else
-    disp(['No cells defined as yet.']);
-end;
+        oldcells = [];
+    end
 
+    cf = handles.cellfile;
+    if ~isempty(cf)
+        [unique_classes,cc,cid,cnum,ss]=load_cell_classes(cf);
+    else
+        unique_classes='i';
+        cnum = setdiff(unique(handles.maskimg(:)),0);
+        cid = char(unique_classes*ones(size(cnum)));
+        %unique_classes=[];
+    end
+
+    if(~isempty(oldcells))
+        %[handles.maskimg indc] = rearrange_sort_cells(oldcells);
+        if(sum(abs(oldcells(:)-handles.maskimg(:)))>0)
+            % if rearranging cells returned different cells (e.g., because the small
+            % ones were removed), set the saved-flag to 0, so that the user will be
+            % prompted with the save/don't save question.
+            handles.cells_saved = 0;
+        end
+
+        guidata(hObject, handles);
+
+        mim = handles.maskimg;
+        b=[];
+        if ~isempty(unique_classes)
+
+            if strcmp(char(unique_classes(:)),'i')
+                uc = '';
+            else
+                uc = char(unique_classes(:))';
+            end
+
+            x=inputdlg('Enter ROI classes (letters) or ROI IDs (numbers), separated by space. Empty for all.',...
+                'ROI ID''s or ROI classes to be displayed',1,{uc});
+            if isempty(x)
+                a = num2str(cnum');
+            else
+                a = x{1};
+                if isempty(a)
+                    a = num2str(cnum');
+                end
+            end
+
+            b = strsplit(a,' ');
+
+            % gather ID's of ROIs that will be displayed
+            ind = [];
+            for ii=1:length(b)
+                [bnum, bstat] = str2num(b{ii});
+                % in case b{ii} was 'i', which is an imaginary unit, correct
+                % the output of str2num
+                if strcmp(b{ii},'i')
+                    bnum = [];
+                    bstat = 0;
+                end
+                if bstat
+                    % b{ii} contains numbers
+                    ind = [ind; bnum(:)];
+                else
+                    % b{ii} contains letters
+                    for jj=1:length(b{ii})
+                        ind = [ind; find(cid==b{ii}(jj))];
+                    end
+                end
+            end
+            ind = unique(ind);
+
+            % remove pixels with ROIs whose class was not selected
+            b = setdiff(cnum,ind);
+            if ~isempty(b)
+                for ii=1:length(b)
+                    ind = find(mim==b(ii));
+                    mim(ind) = zeros(size(ind));
+                end
+            end
+
+        end
+
+        % display the rois
+        f10=findobj('tag','fig_current_rois');
+        f10_was_open = ~isempty(f10);        
+        %f10_was_open = ~(ishandle(fignum) && strcmp(get(fignum, 'type'), 'figure'));
+        if ~f10_was_open
+            % if figure 110 was not yet created, create a new one and place
+            % it right next to the ROI definition tool
+            fpos = get(handles.figure1,'Position');
+            f10 = my_figure(110);
+            f10pos = get(f10,'Position');
+            f10pos(1) = fpos(1)+fpos(3)+1;
+            f10pos(2:4) = fpos(2:4);
+            set(f10,'Position',f10pos,'tag','fig_current_rois');
+            set(f10,'color',[0 0 0]); 
+            ax1=subplot(1,1,1);            
+        else
+            % if figure 110 was already created, assume it's placement is
+            % fine, and just return a handle to it
+            %f10=figure(fignum);
+            %f10=findobj('tag','fig_current_rois');
+            ax1=get(f10,'Children');
+        end        
+        
+        imr = findobj(ax1,'tag','roi_image');
+        cmap2=clut(max(mim(:))+1);
+        if isempty(imr)
+            imr=imagesc(mim,[0 max(mim(:))+1]); 
+            set(imr,'tag','roi_image','HandleVisibility','on');
+        else
+            set(imr,'CData', mim);
+        end
+        set(ax1,'Colormap',cmap2);
+        set(ax1,'CLim', [0 max(mim(:))+1]);
+        %set(imr,'CDataMapping','direct');
+            
+        if isempty(b)
+            addCellNumbers(ax1,handles.maskimg); 
+        else
+            addCellNumbers(ax1,mim);
+        end
+        
+        set(ax1,'xcolor',[1 1 1],'ycolor',[1 1 1],...
+            'DataAspectRatio',[1 1 1],'FontSize',8,'color',0.0*[1 1 1]);    
+        title(ax1,'Currently defined ROIs (same color=same ROI)','color',[1 1 1]);%,'FontSize',8);
+        xlabel(ax1,'Pixels','color',[1 1 1])
+        ylabel(ax1,'Pixels','color',[1 1 1])
+        
+    else
+        disp(['No cells defined as yet.']);
+    end
+    
+    if ~f10_was_open
+        % for some reason, when f10 was not open, activating of the main
+        % GUI window did not work without this pause
+        pause(0.1);
+    end
+    figure(handles.figure1);
+    
+end
+
+            
 % --------------------------------------------------------------------
 function Action_menu_Callback(hObject, eventdata, handles)
 % hObject    handle to Action_menu (see GCBO)
@@ -1693,7 +2102,24 @@ function Action_menu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 function add_cells_help_Callback(hObject, eventdata, handles)
-if hObject == handles.what_to_do    
+if hObject == handles.what_do_they_show
+    helpdlg({'ROI outlines connect the *middle points* of the pixels at the edge of the defined ROIs. Therefore,';
+        '1. If a ROI consists of one pixel, it''s outline will not be visible.';
+        '2. If a ROI consists of 2 pixels, it''s outline will be a line connecting the middle points of these two pixels.';
+        '3. If a ROI consists of 3 pixels that do not lie on a line, it''s outline will be a triangle, etc.',
+        '',
+        'To display the *actual pixels* of the defined ROIs, select *Display ROIs with ROI ID''s* from the *Display ROIs* menu.',
+        '1. You can specify ID numbers of the ROIs that you want to display.',
+        '2. If you have defined and seleted ROI classification, you can specify the classes of ROIs that you want to display.',
+        '3. To save these ROIs, choose *Save ROIs* from the *Save* menu.',
+        '',
+        'If you *enlarged the resolution* of the images used as the ROI definition template, the ROI outlines will be displayed with this magnification factor accounted for.',
+        '1. Note that ROIs with size lower than the magnification factor will disappear. This is correct, as such ROIs would not consitute valid ROIs in the original (un-resized) nanoSIMS data.',
+        '2. To display these ROIs, choose *Display magnification-corrected ROI outlines* from the *Display ROIs* menu.',
+        '3. To save these ROIs, choose *Save magnification-corrected ROIs* from the *Save* menu.'
+        },...
+        'What do ROI outlines show?');
+elseif hObject == handles.what_to_do    
     helpdlg({'1. Use the Action menu to access the various ways for defining, drawing, splitting, removing and merging ROIs.';
         '2. Note that presently there is NO *undo* function implemented.';
         '3. When needed, *display* the presently defined ROIs using the Display ROIs item from the menu. As a rule, the ROIs are colored and sorted so that their centers increase from left to right.';
@@ -1742,3 +2168,52 @@ elseif hObject == handles.draw_roi_inside_roi
         'Therefore, if you want to draw *a ROI within a ROI*, you should draw the larger "outside" ROI *before* drawing the smaller "inside" ROI.'},...
         'How to draw a ROI inside a ROI?');
 end;
+
+function move_view_Callback(hObject,eventdata,handles)
+fprintf(1,'*** Interactive centering of view field of view\n');
+fprintf(1,'Left-click on the image to center the view to the clicked point.\n');
+fprintf(1,'Right-click, Esc or Enter to stop.\n');
+
+global newxLim newyLim
+set(gcf, 'pointer', 'cross');
+
+m=1; p=[];
+while m~=3 & m~=13 & m~=27
+        
+    [x y m ax] = my_ginput(handles.figure1);
+    x=round(x);
+    y=round(y);
+    if isempty(m)
+        m=3;
+    end
+
+    if m==1
+        dx = diff(newxLim);
+        dy = diff(newyLim);
+        newxLim = x+dx/2*[-1 1];
+        newyLim = y+dx/2*[-1 1];
+        set(ax,'xlim',newxLim,'ylim',newyLim);
+        
+        % update ROI outlines within the viewed area
+        update_ROI_outlines_within_viewed_area(handles,newxLim, newyLim)
+        
+    end
+    
+end
+
+set(gcf, 'pointer', 'arrow');
+
+
+function update_ROI_outlines_within_viewed_area(handles,newxLim, newyLim)
+maskimg_cropped = zeros(size(handles.maskimg));
+yint = [round(newyLim(1)):round(newyLim(2))];
+xint = [round(newxLim(1)):round(newxLim(2))];
+yint = yint(find(yint>0 & yint<=size(handles.maskimg,1)));
+xint = xint(find(xint>0 & xint<=size(handles.maskimg,2)));
+maskimg_cropped(yint, xint) = handles.maskimg(yint, xint);
+b=findobj(handles.axes1,'Tag','roi_boundary');
+if ~isempty(b)
+    delete(b);
+end
+addCellOutline(handles.axes1,maskimg_cropped,handles.coc,1);
+%addCellOutline(handles.axes1,maskimg_cropped,handles.coc,handles.mag_factor);

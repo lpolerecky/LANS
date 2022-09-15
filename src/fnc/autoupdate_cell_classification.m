@@ -1,6 +1,18 @@
-function autoupdate_cell_classification(CELLS, ind, cellfile, auto_class_update, vc)
+function autoupdate_cell_classification(CELLS, ind, cellfile, auto_class_update, vc, changed_rois)
+
+t1=clock;
+
+if nargin<5
+    vc=[];
+end
+if nargin>5
+    chr = changed_rois;
+else
+    chr = vc;
+end
+
 if(~isempty(cellfile))
-    % determine ID of the added cell
+    % determine ID of the added/removed cell
     if(~isempty(ind))
         new_cell_id = median(CELLS(ind));
     else
@@ -28,15 +40,27 @@ if(~isempty(cellfile))
         % update cell classification by removing the letter at the position of
         % the removed cell
         [cidu,cc,cid,cnum,ss]=load_cell_classes(cellfile);
-        if(vc>1)
-            cid2=cid(1:vc-1,1);
+        if length(ind)>1
+            if(vc>1)
+                cid2=cid(1:vc-1,1);
+            else
+                cid2=[];
+            end;
+            if(length(cid)>vc)
+                cid2=[cid2; cid((vc+1):length(cid),1)];
+            end;
         else
-            cid2=[];
-        end;
-        if(length(cid)>vc)
-            cid2=[cid2; cid((vc+1):length(cid),1)];
-        end;
-    end;
+            % a pixel removal caused a ROI to be split, so now we need to
+            % assign the classes to the new ROIs 
+            % first, remove the roi that was changed
+            cid2 = cid(setdiff([1:length(cid)],vc));
+            % now insert at the positions of changed rois the class of the
+            % changed roi
+            for i=1:length(chr)
+                cid2 = [cid2(1:(chr(i)-1)); cid(vc); cid2(chr(i):end)];
+            end
+        end
+    end
 
     % store the updated classification
     % determine the name of the new classification file
@@ -62,4 +86,10 @@ if(~isempty(cellfile))
     fclose(fid);    
     fprintf(1,'Classification in %s updated.\n',new_cellfile);
     
-end;
+end
+
+t2=clock;
+global verbose
+if verbose
+    fprintf(1,'autoupdate_cell_classification.m: %.3fs\n',etime(t2,t1));    
+end

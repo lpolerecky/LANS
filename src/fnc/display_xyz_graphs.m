@@ -1,4 +1,4 @@
-function display_xyz_graphs(R, Ra, oall, p, opt1, cellfile, handles)
+function display_xyz_graphs(R, Ra, oall, p, opt1, cellfile, handles, Rnom, Rdenom)
 % display also x-y-z graphs, if requested
 
 i1=str2num(my_get(handles.edit59,'string'));
@@ -19,16 +19,19 @@ end;
 if opt1(9)
     if(i1>0 & i2>0 & i3>0)
         x=R{i1}; xl=p.special{i1}; xs=p.special_scale{i1};
+        xnom=Rnom{i1}; xdenom=Rdenom{i1};
         y=R{i2}; yl=p.special{i2}; ys=p.special_scale{i2};
+        ynom=Rnom{i2}; ydenom=Rdenom{i2};
         z=R{i3}; zl=p.special{i3}; zs=p.special_scale{i3};
+        znom=Rnom{i3}; zdenom=Rdenom{i3};
         if ~isempty(x) & ~isempty(y) & ~isempty(z)
             if(opt1(8))
                 dx=oall{i1}(:,5); 
                 dy=oall{i2}(:,5); 
                 dz=oall{i3}(:,5); 
-                special_x = Ra{i1}; % it's the same as oall{i1}(:,4)
-                special_y = Ra{i2};
-                special_z = Ra{i3};
+                special_x = oall{i1}(:,4);
+                special_y = oall{i2}(:,4);
+                special_z = oall{i3}(:,4);
             end;
         else
             error_flag = 1;
@@ -38,13 +41,15 @@ if opt1(9)
         if(i1>0 & i2>0)
             plot3d=0;
             x=R{i1}; xl=p.special{i1}; xs=p.special_scale{i1};
+            xnom=Rnom{i1}; xdenom=Rdenom{i1};
             y=R{i2}; yl=p.special{i2}; ys=p.special_scale{i2};
+            ynom=Rnom{i2}; ydenom=Rdenom{i2};
             if ~isempty(x) & ~isempty(y) & ~isempty(oall)
                 if(opt1(8))
                     dx=oall{i1}(:,5); 
                     dy=oall{i2}(:,5); 
-                    special_x = Ra{i1};
-                    special_y = Ra{i2};
+                    special_x = oall{i1}(:,4);
+                    special_y = oall{i2}(:,4);
                 end;
             else
                 error_flag = 1;
@@ -53,13 +58,15 @@ if opt1(9)
         if(i1>0 & i3>0)
             plot3d=0;
             x=R{i1}; xl=p.special{i1}; xs=p.special_scale{i1};
+            xnom=Rnom{i1}; xdenom=Rdenom{i1};
             y=R{i3}; yl=p.special{i3}; ys=p.special_scale{i3};
+            ynom=Rnom{i3}; ydenom=Rdenom{i3};
             if ~isempty(x) & ~isempty(y) & ~isempty(oall)
                 if(opt1(8))
                     dx=oall{i1}(:,5); 
                     dy=oall{i3}(:,5); 
-                    special_x = Ra{i1};
-                    special_y = Ra{i3};
+                    special_x = oall{i1}(:,4);
+                    special_y = oall{i3}(:,4);
                 end;
             else
                 error_flag = 1;
@@ -68,13 +75,15 @@ if opt1(9)
         if(i2>0 & i3>0)
             plot3d=0;
             x=R{i2}; xl=p.special{i2}; xs=p.special_scale{i2};
+            xnom=Rnom{i2}; xdenom=Rdenom{i2};
             y=R{i3}; yl=p.special{i3}; ys=p.special_scale{i3};
+            ynom=Rnom{i3}; ydenom=Rdenom{i3};
             if ~isempty(x) & ~isempty(y) & ~isempty(oall)
                 if(opt1(8))
                     dx=oall{i2}(:,5); 
                     dy=oall{i3}(:,5); 
-                    special_x = Ra{i2};
-                    special_y = Ra{i3};
+                    special_x = oall{i2}(:,4);
+                    special_y = oall{i3}(:,4);
                 end;
             else
                 error_flag = 1;
@@ -114,7 +123,9 @@ if opt1(9)
 
             % plot 3d graph of x-y-z, for all pixels
             if(opt1(7))
-                my_figure(38);
+                %my_figure(38);
+                figure(38);
+                ax=subplot(1,1,1);
                 if ~isempty(cid)
                     % find pixels that belong to different ROI classes and
                     % plot them in different colors
@@ -176,13 +187,14 @@ if opt1(9)
                 end;
                 if(opt1(4))
                     set(gca,'xscale','log','yscale','log','zscale','log');
+                    fprintf(1,'WARNING: note that data-points with zero values are NOT visible in the log-log scatter plot.\n');
                 end;
                 if opt1(10)
                     % export the data in case the user wants to use it for
                     % post-processing
                     xyfile0=[xl,'-vs-',yl,'-vs-',zl];
+                    xyfile0=convert_string_for_texoutput(xyfile0);
                     xyfile=[xyfile0,'-pix.dat'];
-                    xyfile=convert_string_for_texoutput(xyfile);
                     fdir = [p.fdir,'dat'];
                     if ~isdir(fdir)
                         mkdir(fdir);
@@ -199,8 +211,8 @@ if opt1(9)
                 if opt1(11)
                     % export this figure as eps
                     xyfile0=[xl,'-vs-',yl,'-vs-',zl];
+                    xyfile0=convert_string_for_texoutput(xyfile0);
                     xyfile=[xyfile0,'-pix.eps'];
-                    xyfile=convert_string_for_texoutput(xyfile);
                     fdir = [p.fdir,'eps'];
                     if ~isdir(fdir)
                         mkdir(fdir);
@@ -214,11 +226,16 @@ if opt1(9)
 
             % plot the x-y-z graph for all ROIs
             if(opt1(8))
-                my_figure(39);
+                %my_figure(39);
+                figure(39);
+                ax=subplot(1,1,1);
                 hold off;
                 if(isempty(cidu))
                     plot3(special_x,special_y,special_z,'o','MarkerSize',12);
-                    my_errorbar3(special_x,special_y,special_z,dx/2,dy/2,dz/2,'b');
+                    global additional_settings;
+                    if additional_settings.display_error_bars
+                        my_errorbar3(special_x,special_y,special_z,dx/2,dy/2,dz/2,'b');
+                    end
                     hold on;
                     leg='all ROIs';
                 else
@@ -230,15 +247,18 @@ if opt1(9)
                             hold on;
                             jleg=jleg+1;
                             leg{jleg}=['ROIs ',cidu(ii)];
-                        end;
-                    end;
-                    for ii=1:length(cidu)
-                        if ismember(cidu(ii),i4)
-                            ind=find(cid==cidu(ii));
-                            my_errorbar3(special_x(ind),special_y(ind),special_z(ind),dx(ind)/2,dy(ind)/2,dz(ind)/2,cc(ii));
-                        end;
-                    end;
-                end;
+                        end
+                    end
+                    global additional_settings;
+                    if additional_settings.display_error_bars
+                        for ii=1:length(cidu)
+                            if ismember(cidu(ii),i4)
+                                ind=find(cid==cidu(ii));
+                                my_errorbar3(special_x(ind),special_y(ind),special_z(ind),dx(ind)/2,dy(ind)/2,dz(ind)/2,cc(ii));
+                            end
+                        end
+                    end
+                end
                 % add also the ROI numbers next to the points
                 for ii=1:length(special_x)
                     if isempty(cid) 
@@ -246,24 +266,25 @@ if opt1(9)
                     else
                         if ismember(cid(ii),i4)
                             text(special_x(ii),special_y(ii),special_z(ii),num2str(ii),'horizontalalignment','center','FontSize',8);
-                        end;
-                    end;
-                end;
+                        end
+                    end
+                end
                 xlabel(['x=' xl],'FontSize',defFontSize); 
 				ylabel(['y=' yl],'FontSize',defFontSize); 
 				zlabel(['z=' zl],'FontSize',defFontSize);
                 set(gca,'FontSize',defFontSize,'box','on');
                 if opt1(15)
                     add_title(p.fdir, additional_settings.title_length, defFontSize);
-                end;
+                end
                 if ~isempty(leg)
                     legend(leg,'Location','east'); 
                     legend(gca,'boxoff'); 
-                end;                
+                end
                 set(gcf,'color',[1 1 1])
                 if(opt1(4))
                     set(gca,'xscale','log','yscale','log','zscale','log');
-                end;
+                    fprintf(1,'WARNING: note that data-points with zero values are NOT visible in the log-log scatter plot.\n');
+                end
                 %axis tight
                 if opt1(11)
                     % export this figure as eps
@@ -274,49 +295,90 @@ if opt1(9)
                     if ~isdir(fdir)
                         mkdir(fdir);
                         fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-                    end;
+                    end
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
                     print_figure(figure(39),xyfile,additional_settings.print_factors(2));
                     mepstopdf(xyfile,'epstopdf');
-                end;
-            end;
+                end
+            end
 
         else
 
             % plot 2d graph of x-y, for all pixels
             if(opt1(7))
-                my_figure(38);
+                %f38=my_figure(38);
+                f38=figure(38);
+                ax=subplot(1,1,1);
                 if ~isempty(cid)
                     % find pixels that belong to different ROI classes and
                     % plot them in different colors
                     % include only classes specified in the "Classes" field
                     xall=[]; yall=[]; class=[];
                     jleg=0;
+                    CVx = []; CVy = [];
                     for j=1:length(cidu)
                         if ismember(cidu(j),i4)
                             jleg=jleg+1;
                             ind = find(cid==cidu(j));
                             xc=[]; yc=[];
+                            xc_nom = []; xc_denom = [];
+                            yc_nom = []; yc_denom = [];                            
                             for i=1:length(ind)
                                 indc = find(p.Maskimg == ind(i));
                                 xc = [xc; x(indc)];
                                 yc = [yc; y(indc)];
-                            end;
+                                if ~isempty(xnom) && ~isempty(xdenom) && ~isempty(ynom) && ~isempty(ydenom)
+                                    xc_nom = [xc_nom; xnom(indc)];
+                                    xc_denom = [xc_denom; xdenom(indc)];
+                                    yc_nom = [yc_nom; ynom(indc)];
+                                    yc_denom = [yc_denom; ydenom(indc)];
+                                else
+                                    if i==1
+                                        fprintf(1,'Numerator or denominator empty. Nothing can be displayed.\n')
+                                    end
+                                end
+                            end
                             if ~isempty(xc)
+                                figure(f38);
                                 if jleg==1
                                     hold off;
                                 else
                                     hold on;
-                                end;
+                                end                           
                                 plot(xc,yc,[cc(j),'.']);
-                            end;
-                            leg{jleg}=['ROIs ',cidu(j)];
+                            end
+                            leg{jleg}=cidu(j);
                             xall=[xall; xc];
                             yall=[yall; yc];
                             class = [class; j*ones(length(xc),1)];
-                        end;
-                    end;
-                    if ~isempty(leg), legend(leg); legend(gca,'boxoff'); end;
+
+                            %% added 20-05-2018
+                            % calculate variability of the ratios among
+                            % pixels within ROIs of a given class
+                            % NOTE: only "pure" ratios are supported (e.g.
+                            % 13C/12C, or 1215N/12C14N), because for more
+                            % complicated formulas the formula for the
+                            % nominator and denominator is difficult to
+                            % figure out and thus may me incorrect (see
+                            % calculate_R_images.m)
+                            if additional_settings.calculate_roi_variability
+                                if ~isempty(xc_nom) && ~isempty(xc_denom)
+                                    CVx(jleg,1:5) = get_variability_in_roi(xc_nom,xc_denom,xl,cidu(j),[cc(j),'.'],80+j);
+                                end
+                                if ~isempty(yc_nom) && ~isempty(yc_denom)
+                                    CVy(jleg,1:5) = get_variability_in_roi(yc_nom,yc_denom,yl,cidu(j),[cc(j),'.'],90+j);
+                                end
+                            end
+                            
+                            % activate f38
+                            figure(f38);
+                            
+                        end
+                    end
+                    
+                    figure(f38);
+                    if ~isempty(leg), legend(leg); legend(gca,'boxoff'); end
+                                                                    
                 else
                     % if no ROI classes were defined, just plot values for
                     % all pixels in ROIs
@@ -326,13 +388,42 @@ if opt1(9)
                         ind=find(p.Maskimg>0);
                         xall=x(ind);
                         yall=y(ind);
+                        if ~isempty(xnom) && ~isempty(xdenom) && ~isempty(ynom) && ~isempty(ydenom)
+                            xc_nom = xnom(ind); xc_denom = xdenom(ind);
+                            yc_nom = ynom(ind); yc_denom = ydenom(ind);
+                        else
+                            fprintf(1,'Numerator or denominator empty. Nothing can be displayed.\n')
+                        end
                     else
                         xall=x(:); yall=y(:);
-                    end;
+                        if ~isempty(xnom) && ~isempty(xdenom) && ~isempty(ynom) && ~isempty(ydenom)
+                            xc_nom = xnom(:); xc_denom = xdenom(:);
+                            yc_nom = ynom(:); yc_denom = ydenom(:);                        
+                        else
+                            fprintf(1,'Numerator or denominator empty. Nothing can be displayed.\n')
+                        end
+                    end
                     class = ones(length(xall),1);
+                    
+                    %% added 20-05-2018
+                    % calculate variability of the ratios among
+                    % pixels within ROIs of a given class
+                    if additional_settings.calculate_roi_variability
+                        if ~isempty(xc_nom) && ~isempty(xc_denom)
+                            CVx = get_variability_in_roi(xc_nom,xc_denom,xl,cidu(j),[cc(j),'.'],80+j);
+                        end
+                        if ~isempty(yc_nom) && ~isempty(yc_denom)
+                            CVy = get_variability_in_roi(yc_nom,yc_denom,yl,cidu(j),[cc(j),'.'],90+j);
+                        end
+                    end
+                    
+                    leg{1} = 'a';                    
+                    figure(f38);
                     hold off;
                     plot(xall,yall,'.');
+                    
                 end;
+                
                 % set the labels and scaling
                 xlim(xs);
                 ylim(ys);
@@ -348,6 +439,7 @@ if opt1(9)
                 yy=yall;                
                 if(opt1(4))
                     set(gca,'xscale','log','yscale','log');
+                    fprintf(1,'WARNING: note that data-points with zero values are NOT visible in the log-log scatter plot.\n');
                     % log-transform values, for later 2D histogram plotting
                     ind_log=find(xall>0 & yall>0);
                     xx=log10(xall(ind_log));
@@ -368,6 +460,8 @@ if opt1(9)
                     %xlim(xlims);
                     %ylim(ylims);
                 end;
+                
+                % plot data also as a 2D-histogram
                 f2d=plot_2Dhist(xx,yy,xlims,ylims,50,48,xl,yl,opt1(4));
                 if opt1(10)
                     % export the data in case the user wants to use it for
@@ -388,6 +482,7 @@ if opt1(9)
                     fclose(fid);
                     fprintf(1,'Data exported to %s\n',xyfile);
                 end;
+                
                 if opt1(11)
                     % export this figure as eps                
                     xyfile0=[xl,'-vs-',yl];
@@ -409,15 +504,44 @@ if opt1(9)
                     print_figure(f2d,xyfile,additional_settings.print_factors(2)*[6/5 1]);
                     mepstopdf(xyfile,'epstopdf');
                 end;
-            end;
+                
+                % save the within-ROI variability results
+                if additional_settings.calculate_roi_variability
+                    fprintf(1,'Within-ROI variability results saved in:\n');
+                    fout = [p.fdir 'dat' delimiter convert_string_for_texoutput(xl) '_cv.dat'];
+                    fid = fopen(fout,'w');
+                    fprintf(fid,'# Coefficient of variability (CV=sqrt(VAR)/MEAN): %s\n',xl);
+                    fprintf(fid,'# class\texp.\tmodel.1\tmodel.2\tunexpl.1\tunexpl.2\n');
+                    for i=1:size(CVx,1)
+                        fprintf(fid,'%c\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n',leg{i},CVx(i,:));
+                    end
+                    fclose(fid);
+                    fprintf(1,'%s: %s\n',xl,fout);
+                    fout = [p.fdir 'dat' delimiter convert_string_for_texoutput(yl) '_cv.dat'];
+                    fid = fopen(fout,'w');
+                    fprintf(fid,'# Coefficient of variability (CV=sqrt(VAR)/MEAN): %s\n',yl);
+                    fprintf(fid,'# class\texp.\tmodel.1\tmodel.2\tunexpl.1\tunexpl.2\n');
+                    for i=1:size(CVy,1)
+                        fprintf(fid,'%c\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n',leg{i},CVy(i,:));
+                    end
+                    fclose(fid);
+                    fprintf(1,'%s: %s\n',yl,fout);
+                end
+                
+            end
             
             % plot the x-y graph for all ROIs
             if(opt1(8))                
-                my_figure(39);
+                %f2=my_figure(39);
+                f2=figure(39);
+                ax=subplot(1,1,1);
                 hold off;
                 if(isempty(cidu))
                     plot(special_x,special_y,'o','MarkerSize',14);
-                    my_errorbar2(special_x,special_y,dx/2,dy/2,'b');
+                    global additional_settings;
+                    if additional_settings.display_error_bars
+                        my_errorbar2(special_x,special_y,dx/2,dy/2,'b');
+                    end
                     hold on;
                     leg=[]; %'all ROIs';
                 else
@@ -430,15 +554,18 @@ if opt1(9)
                             hold on;
                             ileg=ileg+1;
                             leg{ileg}=['ROIs ',cidu(ii)];
-                        end;
-                    end;
-                    for ii=1:length(cidu)
-                        ind=find(cid==cidu(ii));
-                        if ismember(cidu(ii),i4)
-                            my_errorbar2(special_x(ind),special_y(ind),dx(ind)/2,dy(ind)/2,cc(ii));
-                        end;
-                    end;
-                end;
+                        end
+                    end
+                    global additional_settings;
+                    if additional_settings.display_error_bars
+                        for ii=1:length(cidu)
+                            ind=find(cid==cidu(ii));
+                            if ismember(cidu(ii),i4)
+                                my_errorbar2(special_x(ind),special_y(ind),dx(ind)/2,dy(ind)/2,cc(ii));
+                            end
+                        end
+                    end
+                end
                 % add also the ROI numbers next to the points
                 for ii=1:length(special_x)
                     if isempty(cid)
@@ -446,19 +573,20 @@ if opt1(9)
                     else
                         if ismember(cid(ii),i4) 
                             text(special_x(ii),special_y(ii),num2str(ii),'horizontalalignment','center','FontSize',10);
-                        end;
-                    end;
-                end;
+                        end
+                    end
+                end
                 xlabel(xl,'FontSize',defFontSize); 
 				ylabel(yl,'FontSize',defFontSize);
                 if ~isempty(leg), legend(leg); legend(gca,'boxoff'); end;
                 set(gca,'FontSize',defFontSize);
                 if opt1(15)
                     add_title(p.fdir, additional_settings.title_length, defFontSize);
-                end;
+                end
                 if(opt1(4))
                     set(gca,'xscale','log','yscale','log');
-                end;                
+                    fprintf(1,'WARNING: note that data-points with zero values are NOT visible in the log-log scatter plot.\n');
+                end
                 if opt1(11)
                     % export this figure as eps
                     xyfile0=[xl,'-vs-',yl];
@@ -468,15 +596,39 @@ if opt1(9)
                     if ~isdir(fdir)
                         mkdir(fdir);
                         fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-                    end;
+                    end
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
+                    % make the button invisible during printing
+                    fb = findobj('tag','fit_button');
+                    if ~isempty(fb)
+                        set(fb,'Visible','off');
+                    end
                     print_figure(figure(39),xyfile,additional_settings.print_factors(2));
                     mepstopdf(xyfile,'epstopdf');
-                end;
-            end;
+                    if ~isempty(fb)
+                        set(fb,'Visible','on');
+                    end                    
+                end
+                
+                % add button for fitting data
+                %a=0;
+                if ~isempty(f2)
+                    fb = findobj('tag','fit_button');
+                    if isempty(fb)
+                        btn1 = uicontrol(f2,'Style', 'pushbutton', 'String', 'Fit data',...
+                            'Units','normalized', 'Position', [0.002 0.002 0.15 0.05],...
+                            'BackgroundColor',[0 0.6 0],'ForegroundColor',[1 1 1],'FontWeight', 'bold', ...
+                            'Callback', @getstats_in_2D_plot,'tag','fit_button',...
+                            'Tooltip','Draw a polygon and calculate statistics on data inside it.');
+                    end    
+                end
+                
+            end
 
-        end;
-        fprintf(1,'*** Note: Length of the error-bars corresponds to Poisson error.\n');
+        end
+        if opt1(8)
+            fprintf(1,'*** Note: Length of the error-bars corresponds to Poisson standard error.\n');
+        end
     
     else
         

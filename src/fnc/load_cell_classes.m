@@ -1,8 +1,16 @@
-function [cidu,cc,cid,cnum,ss]=load_cell_classes(fncells)
+function [cidu,cc,cid,cnum,ss]=load_cell_classes(fncells,be_verbose)
+
+if nargin>1
+    bv=be_verbose;
+else
+    bv=1;
+end;
 
 if(exist(fncells)==2)
     % load the cell types from the file
-    disp(['Loading ROI classes from ',fncells]);
+    if bv
+        disp(['Loading ROI classes from ',fncells]);
+    end;
     fid=fopen(fncells,'r');
     A = fscanf(fid,'%d %c',[2,inf]);
     fclose(fid);

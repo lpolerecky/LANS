@@ -17,9 +17,11 @@ else
     end;        
 end;
 
+global CELLSFILE MAT_EXT
+
 % load the currently stored cells
-disp(['Cells loaded from ',p.fdir,'cells.mat']);
-c=load([p.fdir,'cells.mat']);
+disp(['ROIs loaded from ',p.fdir,CELLSFILE,MAT_EXT]);
+c=load([p.fdir,CELLSFILE,MAT_EXT]);
 CELLS=c.Maskimg;
 Maskimg=CELLS;
 
@@ -65,8 +67,8 @@ if(method==5)
     else
         newdir='';
     end;
-    disp('Select file with the cell shape');
-    [FileName,newdir,newext] = uigetfile('*.mat', 'Select CELL shape', workdir);
+    disp('Select file with the ROI shape');
+    [FileName,newdir,newext] = uigetfile('*.mat', 'Select ROI shape', workdir);
     if(FileName~=0)
         imfile1 = [newdir, FileName];
         eval(['load ',imfile1]);
@@ -75,8 +77,8 @@ if(method==5)
         % center cell outline
         cello = cello - ones(size(cello,1),1) * mean(cello,1);
     end;
-    disp('Select file with the cell centers');
-    [FileName,newdir,newext] = uigetfile('*.mat', 'Select CELL centers', workdir);
+    disp('Select file with the ROI centers');
+    [FileName,newdir,newext] = uigetfile('*.mat', 'Select ROI centers', workdir);
     if(FileName~=0)
         imfile2 = [newdir, FileName];
         eval(['load ',imfile2]);
@@ -92,7 +94,7 @@ if(method==5)
     cp=plot(c(:,1),c(:,2),'ro');
     happy=0;
     while(~happy)
-        disp('Define cell centers.');
+        disp('Define ROI centers.');
         disp('*** Left-click=select point; Right-click=confirm point; ESC=finish ***');
         m=1;
         pt=[];
@@ -139,7 +141,7 @@ if(method==5)
                 end;           
             end;
         end;
-        happy=input('Should currently defined cells be saved to cells.mat?  (yes=1, no=0, continue=2): ');
+        happy=input('Should currently defined ROIs be saved to cells.mat?  (yes=1, no=0, continue=2): ');
     end;
     if(happy)
         % construct the CELLS image
@@ -161,7 +163,7 @@ if(method==5)
         end;
         Maskimg=l3;
         eval(['save ',imfile2, ' c -v6']);
-        disp(['New cell centers saved into ',imfile2]);
+        disp(['New ROIs centers saved into ',imfile2]);
     end;
 end;
 

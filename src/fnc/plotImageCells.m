@@ -1,4 +1,4 @@
-function [CELLS,f,a,b]=plotImageCells(f,IM,CELLS,fdir,mass_,outline_color,imscale,...
+function [CELLS,f,a,b, ax]=plotImageCells(f,IM,CELLS,fdir,mass_,outline_color,imscale,...
     opt1,opt3,export_flag,scale,title_,cellfile,images,planes,imconf)
 % Plot image IM, together with the cell outline (CELLS, if non-empty), as a
 % nicely formatted image. 
@@ -41,7 +41,7 @@ else
     o3=0;
 end;
 
-% find out scaling of the image
+%% find scaling of the image
 sf=1;
 if nargin>6    
     if ischar(imscale)        
@@ -52,14 +52,14 @@ if nargin>6
                 ma=imscale(:,2);
             else
                 for ii=1:size(IM,3)
-                    a = find_image_scale(IM(:,:,ii),o1(4),0);
+                    a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),0,[]);
                     mi(ii,1)=a(1);
                     ma(ii,1)=a(2);
                 end;
             end;        
         else    % if autoscale requested
             for ii=1:size(IM,3)
-                a = find_image_scale(IM(:,:,ii),o1(4),0);
+                a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),0,[]);
                 mi(ii,1)=a(1);
                 ma(ii,1)=a(2);
             end;
@@ -72,7 +72,7 @@ if nargin>6
             end;
         else
             for ii=1:size(IM,3)
-                a = find_image_scale(IM(:,:,ii),o1(4),0);
+                a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),1,[]);
                 mi(ii,1)=a(1);
                 ma(ii,1)=a(2);
             end;
@@ -83,7 +83,7 @@ else
         mi=0; ma=1;
     else
         for ii=1:size(IM,3)
-            a = find_image_scale(IM(:,:,ii),o1(4),0);
+            a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),0,[]);
             mi(ii,1)=a(1);
             ma(ii,1)=a(2);
         end;
@@ -100,13 +100,15 @@ for ii=1:length(ma)
     end;
 
     % for small range, values will be multiplied by 1000
-    if((ma(ii)-mi(ii))<0.02)
-        fac(ii)=1e3;
-    elseif (ma(ii)-mi(ii))>1e4
-        fac(ii) = 1e-3;
+    if (ma(ii)-mi(ii))<=1e3 | (ma(ii)-mi(ii))>=1e4
+        fac(ii)=10^ceil(-log10(ma(ii)-mi(ii)));
     else
         fac(ii) = 1;
     end;
+    if ~additional_settings.apply_1e3_factor
+        fac(ii) = 1.000;
+    end;
+    
 end;
 
 % define default export_flag, if not defined
@@ -129,27 +131,20 @@ else
     conf = ones(size(IM,1),size(IM,2));
 end;
 
-% if debugging, smooth image
-%IM=medfilt2(IM,[3 3]);
-%IM=wiener2(IM,[3 3]);
-
 % if "zero values outside cells" checked
 if( ~isempty(CELLS) & o1(2) )
     ind=find(CELLS==0);
     IM(ind)=zeros(size(ind));
 end;
 
+%% open figure where the image will be displayed
 % set the default figure position to the middle of the screen if the figure
 % does not exist, or leave it as it is if it does exist.
 if(ishandle(f))
     fpos=my_get(f,'Position');
 else
     FigPos=get(0,'DefaultFigurePosition');
-	FigPos(3:4)=1.0*FigPos(4)*[1 1];
-    %FigWidth = FigPos(3);
-    %FigHeight = FigPos(4);
-    %FigPos(3) = FigHeight*0.9;
-    %FigPos(4) = FigHeight*0.9;
+	FigPos(3:4)=1.2*FigPos(4)*[1 1];
     ScreenUnits=get(0,'Units');
     set(0,'Units','pixels');
     ScreenSize=get(0,'ScreenSize');
@@ -163,12 +158,16 @@ IM_orig=IM;
 mass_orig=mass_;
 mima_orig=[mi ma];
 
-% log10-transform the image and scale, if requested, but not if it is a cells image
-if o1(4) & ~strcmp(mass_,'cells')
+%% log10-transform the image and scale, if requested, but not if it is a cells image
+if o1(4) && ~strcmp(mass_,'cells')
     fac=1;
-    if isempty(findstr(mass_,'log'))
-        mass_=['log(',mass_,')'];
-    end;
+    
+    % LP: this was incorrect if only log-representation of the data is
+    % displayed
+    %if isempty(findstr(mass_,'log'))
+    %    mass_=['log(',mass_,')'];
+    %end
+    
     % calculate image logarithm, but only if it is not an RGB image, because
     % 1) RGB has been already log10-transformed in the calculate_RGB_image function
     % 2) RGB should not be log10-transformed if it is an external image
@@ -182,19 +181,23 @@ if o1(4) & ~strcmp(mass_,'cells')
         ma=log10(ma);
         t2=now;
         %fprintf(1,'Conversion to log took %.3fs\n',(t2-t1)*24*3600);
-    end;
-end;
+    end
+end
 
-% display the image, if requested
-if o1(6)
+%% display the image, if requested
+if o1(6) && prod(mi<ma)
     f=figure(f);
 	set(f,'Units','pixels');
     set(f,'Position',fpos);
     set(f,'ToolBar','none','MenuBar','none','Name',mass_);
-        
-    %set(f,'units','characters');
     
-    subplot(1,1,1); hold off;
+    fc=get(f,'Children');
+    ind_ax=find(isgraphics(fc,'Axes'));
+    if ~isempty(ind_ax)
+        ax = fc(ind_ax);
+    else
+        ax=subplot(1,1,1); hold off;
+    end
     
     if(size(IM,3)>1)
         % transform image according to the scale and display it
@@ -206,127 +209,126 @@ if o1(6)
             ind=find(tmp>1);
             tmp(ind)=ones(size(ind));
             IM(:,:,ii)=tmp;
-        end;
+        end
         a=imagesc(IM);
         xt_auto = [];
         xtl_auto = [];
         colmap = get_colormap(additional_settings.colormap);
     else
         % display image with the specified scale (fac is 1 or 1e3)
-        if mi==0 & ma==-Inf, ma=1, end;
+        if mi==0 && ma==-Inf, ma=1; end
         if o3==0            
             cmap=additional_settings.colormap;
         elseif o3==1
             cmap=2;
-        end;
-        [a xt_auto xtl_auto colmap] = imagesc_conf(IM*fac, fac*mi, fac*ma, conf, cmap, additional_settings.color_bar_pos);
-    end;
+        end
+        
+        [a, xt_auto, xtl_auto, colmap, b, ~] = imagesc_conf(IM*fac, fac*mi, fac*ma, conf, ...
+            cmap, additional_settings.color_bar_pos, ax, o1(4));
+    end
     
-    % 'dataaspectratio',[1 1 1],
-    
-    set(gca,'xtick',[],'ytick',[],'dataaspectratio',[1 1 1]); 
+    %set(ax,'xtick',[],'ytick',[],'dataaspectratio',[1 1 1]); 
 
     % add scale line
     if ~strcmp(mass_,'cells')
         add_scale_line(xyscale,IM,oc);
-    end;
+    end
     
     % add title
-    orig_title=title_;
-    if(strcmp(title_,' ') | isempty(title_))
-        titlestr=mass_;
-    else
-        if strcmp(mass_,'cells')
-            titlestr=[title_ ' : ROIs'];
-        else
-            titlestr=[title_,' : ',mass_];
-        end;
-    end;
-    if fac~=1
-        if(strcmp(title_,' ') | isempty(title_))
-            titlestr = [num2str(fac),'*',mass_];
-        else
-            titlestr=[title_,' : ',num2str(fac),'x',mass_];
-        end;
-    end;
-    % trim the title so that it's not too long
-    if(length(titlestr)>additional_settings.title_length)
-        titlestr=['...',titlestr([(length(titlestr)-additional_settings.title_length):length(titlestr)])];
-    end;
-    if o1(15)
-        tith=title(titlestr,'interpreter','none','fontweight','normal','FontSize',defFontSize);
-    else
-        tith=[];
-    end;
+    add_image_title(ax,title_,mass_,fac,size(IM),o1(15));
     
     % add cell outline, if requested
-    if(o1(1) & ~isempty(CELLS))
-        CELLS=addCellOutline(f,CELLS,oc);
+    if(o1(1) && ~isempty(CELLS))
+        CELLS=addCellOutline(ax,CELLS,oc);
         % hack for Jana (clasify cells faster)
         if 0
             addCellNumbers(f,CELLS);
-        end;
-    end;
+        end
+    else
+        roib = findobj(ax,'tag','roi_boundary');
+        if ~isempty(roib)
+            delete(roib);
+        end
+    end
 
-    % add colorbar, but not when plotting cells
+    % set axis and colorbar position nicely
     if(size(IM,3)==1)
-        if ~strcmp(mass_,'cells')
-            if additional_settings.color_bar_pos==2
-                sfac=size(IM,1)/size(IM,2);
-                xylim='x';
-                if sfac<=1
-                    set(gca,'Position',[0.1 0.11+0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
-                    b=colorbar('location','SouthOutside');                                              
-                    set(b,'Position',[0.14 0.08+0.5*0.8*(1-sfac) 0.72 0.02]);
-                else
-                    set(gca,'Position',[0.1+0.5*0.8*(1-1/sfac) 0.11 0.8/sfac 0.8]);
-                    b=colorbar('location','SouthOutside');                                          
-                    set(b,'Position',[0.14+0.5*0.72*(1-1/sfac) 0.08 0.72/sfac 0.02]);
-                end;                          
-            elseif additional_settings.color_bar_pos==1
-                sfac=size(IM,1)/size(IM,2);
-                xylim='y';
-                if sfac<=1
-                    set(gca,'Position',[0.04 0.11 + 0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
+        global CELLSFILE
+                        
+        if additional_settings.color_bar_pos==2
+
+            % colorbar at the bottom
+            sfac=size(IM,1)/size(IM,2);
+            xylim='x';
+            if sfac<=1
+                set(ax,'Position',[0.1 0.13+0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
+                if isempty(b)
+                    b=colorbar('location','SouthOutside');
+                end
+                set(b,'Position',[0.14 0.1+0.5*0.8*(1-sfac) 0.72 0.02]);
+            else
+                set(ax,'Position',[0.1+0.5*0.8*(1-1/sfac) 0.11 0.8/sfac 0.8]);
+                if isempty(b)
+                    b=colorbar('location','SouthOutside');
+                end
+                set(b,'Position',[0.14+0.5*0.8*(1-1/sfac) 0.08 0.68/sfac 0.02]);
+            end  
+            set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
+                'TickDirection', 'out', ...
+                'TickLabels', xtl_auto);
+
+        elseif additional_settings.color_bar_pos==1
+
+            % colorbar on the right
+            sfac=size(IM,1)/size(IM,2);
+            xylim='y';
+            if sfac<=1
+                set(ax,'Position',[0.04 0.09 + 0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
+                if isempty(b)
                     b=colorbar('location','EastOutside');
-                    set(b,'Position',[0.86 0.11 + 0.5*0.8*(1-sfac) 0.02 0.8*sfac]);
-                else
-                    set(gca,'Position',[0.04+0.5*0.8*(1-1/sfac) 0.11 0.8/sfac 0.8]);
-                    gcap=get(gca,'Position');
-                    b=colorbar('location','EastOutside');                    
-                    set(b,'Position',[gcap(1)+gcap(3)+0.02 0.11 0.02 0.8]);
-                end;
-            end;
-            if additional_settings.color_bar_pos==2 | additional_settings.color_bar_pos==1
-                set(b,'FontSize',defFontSize);
-            end;
-        end;
+                end
+                set(b,'Position',[0.86 0.13 + 0.5*0.8*(1-sfac) 0.02 0.72*sfac]);
+            else
+                set(ax,'Position',[0.04+0.5*0.8*(1-1/sfac) 0.11 0.8/sfac 0.8]);
+                gcap=get(ax,'Position');
+                if isempty(b)
+                    b=colorbar('location','EastOutside');
+                end
+                set(b,'Position',[gcap(1)+gcap(3)+0.02 0.11 0.02 0.8]);
+            end
+            set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
+                'TickDirection', 'out', ...
+                'TickLabels', xtl_auto);
+
+        end
+
+        if additional_settings.color_bar_pos==2 || additional_settings.color_bar_pos==1
+            set(b,'FontSize',defFontSize);
+            if ~additional_settings.include_colorbar_label
+                set(b,'YTick','');
+            end
+        end
+
+        % remove colorbar from ROIs image
+        if strcmp(mass_,CELLSFILE)
+            if ~isempty(b)
+                delete(b)
+            end
+        end
+        
         % set the correct colormap
-        if(min(IM(:))==max(IM(:)) | o3)
+        if(min(IM(:))==max(IM(:)) || o3)
             colormap(get_colormap(2));
         else
             %colormap(get_colormap(additional_settings.colormap));
             colormap(colmap);
-        end;   
-        % arrange the colorbar xticks/labels nicely, but only if conf is
-        % not applicable
-        if prod(conf(:))~=1 & ~strcmp(mass_,'cells')
+        end   
+        
+        % improve the arrangement of the colorbar xticks/labels nicely, but
+        % only if hue intensity modulation is applicable
+        if 0 && prod(conf(:))~=1 && ~strcmp(mass_,'cells') && ~isempty(b)
             % current lim of the colorbar
             xl=get(b,[xylim 'lim']);            
-            % calculate desired ticks positions
-%             dy = (ma-mi)/5;
-%             if dy<0
-%                 precis = -ceil(log10(dy));
-%                 dy = round(dy*10^precis)/10^precis;
-%             else
-%                 precis = -floor(log10(dy));
-%                 dy = round(dy*10^precis)/10^precis;
-%             end;
-%             yt = fliplr([ma:-dy:(mi-dy)]);
-%             ind = find(yt>=mi & yt<=ma);
-%             yt = yt(ind);
-%             if min(yt)-mi>(dy/2), yt=[mi yt]; end;
-            
             yt = xt_auto;
             ytp = (yt/fac-mi)/(ma-mi);
             xtnew = ytp*diff(xl)+xl(1);
@@ -334,62 +336,74 @@ if o1(6)
             % center all ticklabels, to ensure that the locations and
             % strings match well (only relevant for xticklabels)
             if xylim=='x'
-                    for kk=1:size(xtl_auto,1)
+                for kk=1:size(xtl_auto,1)
                     sk = xtl_auto(kk,:);
-                    if iscell(sk), sk=sk{1}; end;
+                    if iscell(sk)
+                        sk=sk{1};
+                    end
                     indsp=findstr(sk,' ');
                     if length(indsp)>0
                         numsp=ceil(length(indsp)/2);
                         sknew=[' '*ones(1,numsp) sk(1:indsp(numsp))];
                         xtl_auto(kk,1:length(sknew)) = sknew;
-                    end;
-                end;
-            end;
+                    end
+                end
+            end
             set(b,[xylim,'ticklabel'],xtl_auto);
-            
-            
-%             if 0
-%                 xtl = ['xtl = num2str(yt'',''%.' num2str(precis) 'f'');'];
-%                 eval(xtl);
-%             else
-%                 xtl = num2str(yt'*fac);
-%                 if size(xtl,2)>4
-%                     xtl = num2str(round(yt'*10)/10*fac);
-%                 end;
-%             end;
-%             set(b,[xylim 'ticklabel'],xtl);
-        end;
+            if ~additional_settings.include_colorbar_label
+                set(b,[xylim 'tick'],'');
+            end
+        end
     else
-        set(gca,'dataaspectratio',[1 1 1]);
-    end;    
+        set(ax,'dataaspectratio',[1 1 1]);
+    end 
     
     % bring window to the front
     figure(f);
     
-end;
+    fitb=findobj(f,'tag','fit_button');
+    if ~isempty(fitb)
+        delete(fitb);
+    end
+    
+else
+    
+    if mi>=ma
+        fprintf(1,'WARNING: incorrect image scale. MAX must be greater than MIN.\n');
+    end
+    
+end
 
 
 % plot also histogram of the pixel values belonging to cells 
 % do it for all defined cell types
-if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,'cell'))
+if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
     
     % define number of bins in the histogram, depending on the unique
     % values in IM
     if(length(unique(IM(:)))<60)
         hbins = 10;
     else
-        hbins = 20;
+        hbins = 40;
     end;
     
     fncells=cellfile;
     
     % generate the histograms
     
-    if matversion >= 2015
-        f1=my_figure(f.Number+10);  % in Matlab 2015 or higher
-    else
+    if isa(f,'numeric')
         f1=my_figure(f+10);
-    end;
+    else
+        f1=my_figure(f.Number+10);
+    end
+    
+%     if matversion >= 2015
+%         f1=my_figure(f.Number+10);  % in Matlab 2015 or higher
+%     else
+%         f1=my_figure(f+10);
+%     end;
+
+    ax=subplot(1,1,1);
     hold off; 
     
     if(exist(fncells)==2)
@@ -407,13 +421,14 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,'cell'))
             d=IM(pix);
             ind=find(d>mi & d<ma);            
             if(~isempty(ind))
-                [h(:,ii)]=histc(d(ind),xout);
-                fprintf(1,'cells %c: mean +/- std =\t%.3e\t%.3e\n',...
-                    char(cidu(ii)),mean(d(ind)),std(d(ind)));
+                dind = d(ind);
+                [h(:,ii)]=histc(dind,xout);
+                fprintf(1,'cells %c: [mean, std, q0.05, q0.95] =\t%.3e\t%.3e\t%.3e\t%.3e\n',...
+                    char(cidu(ii)),mean(dind),std(dind),quantile(dind,[0.05 0.95]));
                 plot(xout,h(:,ii),[cc(ii),'o-']); 
                 hold on
                 leg{ii}=char(cidu(ii));
-                s=sprintf('%s: %.2e (SD=%.2e)',leg{ii},mean(d(ind)),std(d(ind)));
+                s=sprintf('%s: %.2e (SD=%.2e)',leg{ii},mean(dind),std(dind));
                 leg{ii}=s;
             end;
         end;
@@ -441,13 +456,16 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,'cell'))
         ind=find(d>mi & d<ma);
         xout=linspace(mi,ma,hbins);
         if(~isempty(ind))
-            [h]=histc(d(ind),xout);
+            dind = d(ind);
+            [h]=histc(dind,xout);
             h=h(:);
             bar(xout,h);            
             leg{1}='all pixels';
-            s=sprintf('%s: %.2e +/- %.2e  ',leg{1},mean(d(ind)),std(d(ind)));
+            s=sprintf('%s: %.2e (SD=%.2e)',leg{1},mean(dind),std(dind));
             legend(s);
-            disp(s);
+            %disp(s);
+            fprintf(1,'%s: [mean, std, q0.05, q0.95] =\t%.3e\t%.3e\t%.3e\t%.3e\n',...
+                    leg{1},mean(dind),std(dind),quantile(dind,[0.05 0.95]));                
         end;
         
     end;
@@ -507,16 +525,17 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,'cell'))
             fout=[newdir,a,'-h.png'];
             print(f1,fout,'-dpng');
             disp(['Histogram plotted as ',fout]);
-        end;
-    end;
+        end
+    end
     
-end;
+end
 
 % export the data as BW Tiff image as well, if B&W option was selected
 if (o1(6) & o3 & additional_settings.export_tif) & ef
     
-    % make a 16-bit dataset
-    maxbw=2^16-1;
+    Nbits = 8;
+    % make a Nbits-bit dataset
+    maxbw=2^Nbits-1;
     expim=(IM-mi)/(ma-mi)*maxbw;
     ind=find(expim<0);
     expim(ind)=zeros(size(ind));
@@ -528,15 +547,19 @@ if (o1(6) & o3 & additional_settings.export_tif) & ef
     if(~isdir(newdir))
         mkdir(newdir);
         fprintf(1,'Directory %s did not exist, so it was created.\n',newdir);        
-    end;
+    end
     
     % generate the output filename and export
     a=convert_string_for_texoutput(mass_);
     fout=[newdir,a,'.tif'];
-    imwrite(uint16(expim),fout,'tif','Compression','none');
-    fprintf(1,'16-bit image exported as %s\n',fout);
+    if Nbits==16
+        imwrite(uint16(expim),fout,'tif','Compression','none');
+    elseif Nbits==8
+        imwrite(uint8(expim),fout,'tif','Compression','none');
+    end
+    fprintf(1,'%d-bit image exported as %s\n',Nbits, fout);
     
-end;
+end
 
 % export in matlab format for future post-processing
 if ef & o1(6)
@@ -558,14 +581,26 @@ if ef & o1(6)
             noplanes =  length(images);
         else
             noplanes = length(planes);
-        end;
+        end
         vscale=mima_orig;
         IM=IM_orig;
         save(fout,'IM','CELLS','xyscale','noplanes','vscale','-v6');
-        fprintf(1,'Variables IM, CELLS, NOPLANES, XYSCALE and VSCALE saved to %s\n',fout);        
-    end;
+        fprintf(1,'Variables IM, CELLS, NOPLANES, XYSCALE and VSCALE saved to %s\n',fout);
+        if 0
+            % export as CSV (only use when providing raw data for publishing)
+            fcsv=[matdir,a,'.csv'];
+            % matlab exports the data in a strange way, so I implement my
+            % own export
+            fmt=(ones(size(IM,2),1).*double('%.4e\t'))'; % 5 significant digits precision should be sufficient
+            fmt=[char(fmt(:))' '\n'];
+            fid=fopen(fcsv,'w');
+            fprintf(fid,fmt,IM');
+            fclose(fid);
+            fprintf(1,'Variable IM exported to %s\n',fcsv);
+        end
+    end
     
-end;
+end
 
 if o1(6)
     figure(f);

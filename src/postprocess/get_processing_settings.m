@@ -39,3 +39,7 @@ s.logscale.y3 = my_get(h.checkbox12,'value');
 %s.additional_settings = h.additional_settings;
 s.log_scale = my_get(h.checkbox30,'value');
 s.bw = my_get(h.checkbox31,'value');
+
+% save also correction settings
+global correction_settings;
+s.correction_settings = correction_settings;

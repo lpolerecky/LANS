@@ -20,7 +20,7 @@ all_cell_types = regexprep(s.cellclasses,' ','');
 % the ratios in the ROIs.
 %reprocess_im_files(fname,all{1},base_dir,cells_file);
 
-% the output filename will be stored in the directory of the same name as the the metafile;
+% the output filename will be stored in the directory of the same name as the metafile;
 % for each variable, the output filename will be the same as the variable
 if(~isempty(s.metafile))
     [fdir, fn, fext] = fileparts(s.metafile);
@@ -49,12 +49,16 @@ if(~isempty(foutname))
     % generate the PDF-LaTeX file for each variable
     
     fntex = [];
+    logscale = struct2cell(s.logscale);
     for m=1:6
         if(length(all{1})>=m)
             if(~isempty(all{1}{m}))
                 if(~strcmp(lower(all{1}{m}),'x') & ~strcmp(lower(all{1}{m}),'y') & ~strcmp(lower(all{1}{m}),'l2d'))
                     ms = all{1}{m};
                     ms=convert_string_for_texoutput(ms);
+                    if logscale{m}==1
+                        ms = ['log(',ms,')'];
+                    end;
                     fntex{m} = [foutname delimiter ms '.tex'];
                 end;
             end;
@@ -87,7 +91,7 @@ if(~isempty(foutname))
                 fprintf(1,'File %s does not exist. No cells defined.\n',ctmp);
                 c.Maskimg=0;
             end;
-            ms = all{1}{m};
+            ms = all{j}{m};
             switch m,
                 case 1, scale=s.xscale1; lscale=s.logscale.x1;
                 case 2, scale=s.yscale1; lscale=s.logscale.y1;
@@ -96,8 +100,8 @@ if(~isempty(foutname))
                 case 5, scale=s.xscale3; lscale=s.logscale.x3;
                 case 6, scale=s.yscale3; lscale=s.logscale.y3;
             end;
-
-            if(strcmp(lower(ms),'size'))
+            
+            if(strcmpi(ms,'size'))
                 
                 % when variable=size, use the cells.pdf image
                 ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,CELLSFILE];
@@ -105,12 +109,12 @@ if(~isempty(foutname))
                 ext='.pdf';
                 %ext='.png';
                 
-                if ~exist([pathstr,delimiter,name,ext]) | ~isempty(str2num(scale))
+                if ~exist([pathstr,delimiter,name,ext]) || ~isempty(str2num(scale))
                     % the ROIs outlines were not yet created, so do it now
                     opt1=zeros(1,16);
                     opt1([1 6 10 11 15])=1;
-                    plotImageCells(10,ones(size(c.Maskimg)),c.Maskimg,[base_dir,fname{j} delimiter],'cells',...
-                        'r-',[0 1],opt1,0,0,30, fname{j}, [], [],[]);
+                    plotImageCells(10,nan(size(c.Maskimg)),c.Maskimg,[base_dir,fname{j} delimiter],'cells',...
+                        'k-',[0 1],opt1,0,0,30, fname{j}, [], [],[]);
                     addCellNumbers(10,c.Maskimg,'k');                                           
                     exportImageCells(10,[base_dir fname{j}],CELLSFILE,'eps', ...
                             additional_settings.print_factors(7));
@@ -139,6 +143,10 @@ if(~isempty(foutname))
                 ms=convert_string_for_texoutput(ms);
                 mtmp=[base_dir,fname{j},delimiter,'mat',delimiter,ms,'.mat'];
 
+                if lscale
+                    ms = ['log(' ms ')'];
+                end
+                
                 % load matlab file containing the special image and re-print it
                 % with a new scale (if the scale is defined or set to
                 % auto), or use the already exported pdf file (if the scale
@@ -162,8 +170,11 @@ if(~isempty(foutname))
                             xyscale=50;
                         end;
                         plotImageCells(10,v.IM,c.Maskimg,[base_dir,fname{j}],title_,[s.outline_color,'-'],scale,...
-                            [s.include_outline s.zero_outside 0 lscale 0 1 0 0 0 0 1 0 0 0 1],s.bw,0,...
+                            [s.include_outline s.zero_outside 0 lscale 0 1 0 0 0 0 1 0 0 0 1],0,0,...
                             xyscale,fname{j},s.cellfile,0,0);
+                        %if lscale==1
+                        %    ms = ['log(',ms,')'];
+                        %end;
                         exportImageCells(10,[base_dir,fname{j}],ms,'eps',...
                             additional_settings.print_factors(1));                                               
                 

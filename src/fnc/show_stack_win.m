@@ -76,6 +76,8 @@ handles.output.deselected = handles.deselected;
 handles.output.region_x = get(handles.axes1,'xlim');;
 handles.output.region_y = get(handles.axes1,'ylim');;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -253,12 +255,13 @@ axes(handles.axes1);
 mins=str2num(get(handles.edit1,'string'));
 maxs=str2num(get(handles.edit2,'string'));
 imagesc(im,[mins, maxs]);
+global additional_settings;
 %set(handles.axes1,'xtick',[],'ytick',[],'dataaspectratio',[1 1 1]);
-set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',10);
-b=colorbar('FontSize',10);
+set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',additional_settings.defFontSize);
+b=colorbar('FontSize',additional_settings.defFontSize);
 %set(b,'OuterPosition',[0.105 0.005 0.8 0.0467]);
 %colormap(clut);
-global additional_settings;
+
 colormap(get_colormap(additional_settings.colormap));
 
 

@@ -1,8 +1,8 @@
 function my_errorbar3(x,y,z,dx,dy,dz,col)
 
-global additional_settings;
+%global additional_settings;
 
-if additional_settings.display_error_bars
+%if additional_settings.display_error_bars
 
     % add error bars to the graph
     hold on;
@@ -10,8 +10,8 @@ if additional_settings.display_error_bars
     my_plotline3([x(:) x(:)]',[y(:)-dy(:) y(:)+dy(:)]',[z(:) z(:)]',[col,'-']);
     my_plotline3([x(:) x(:)]',[y(:) y(:)]',[z(:)-dz(:) z(:)+dz(:)]',[col,'-']);
 
-else
+%else
     
-    fprintf(1,'*** WARNING: Error bars not displayed. This can be modified through Preferences -> additional output options.\n');
+    %fprintf(1,'*** WARNING: Error bars not displayed. This can be modified through Preferences -> additional output options.\n');
     
-end;
+%end

@@ -69,6 +69,8 @@ handles = display_selected_mass(hObject,handles,1);
 % Choose default command line output for depth_profiles_masses_gui
 handles.output = hObject;
 
+handles = update_gui_fontsize(handles);
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -118,7 +120,12 @@ if ~isempty(handles.data)
                 pfit(ii)=plot(x,polyval(polyfit(x,y,p),x),[colors{ii}(1) '-'],'LineWidth',1);
             else
                 pfit(ii)=plot(x,exp(polyval(polyfit(x,log(y),1),x)),[colors{ii}(1) '-'],'LineWidth',1);
-            end;
+            end
+            if additional_settings.display_trend_lines
+                set(pfit(ii),'visible','on');
+            else
+                set(pfit(ii),'visible','off');
+            end
         else
             pfit(ii)=0;
         end;
@@ -138,7 +145,7 @@ if ~isempty(handles.data)
     handles.pfit = pfit;
     
     % make the graph look nicer for printing
-    set(handles.axes1,'xlim',[0 max(x)+1]);
+    set(handles.axes1,'xlim',[min(x)-1 max(x)+1]);
     xlabel('plane number', 'FontSize',defFontSize);
     title('total counts accumulated over ROI', 'FontSize',defFontSize, 'fontweight','normal');
     if get(handles.checkbox102,'value')

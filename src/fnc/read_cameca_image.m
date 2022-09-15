@@ -26,7 +26,7 @@ if nargin>3
     handles = hndls;
 else
     handles = [];
-end;
+end
 
 im=[]; planes = []; p = [];
 imfile_existed=0;
@@ -57,7 +57,7 @@ if load_accumulated ~= 2
 
         % unzip the zipped im file
         global UNZIP_COMMAND;    
-        fprintf(1,'Unzipping %s ... ',[name, ext]);    
+        fprintf(1,'\nUnzipping %s ... ',[name, ext]);    
         s = ['!' UNZIP_COMMAND ' ' name ext];
         cdir=pwd;
         cd(pathstr);

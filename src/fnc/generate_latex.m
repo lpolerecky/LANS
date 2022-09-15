@@ -8,31 +8,29 @@ fdir=fixdir(p.fdir);
 jj=0;
 
 % include mass images
-for ii=1:8
-    [tf cb]=get_tf_cb_masses(handles,ii);
-    sf=get(tf,'string');
+for ii=1:length(p.accu_im)
+    [sf, cb]=get_tf_cb_masses(handles,ii);
     tf = [fdir,ext,delimiter,sf,'.',ext];
-    if( ~isempty(sf) & exist(tf) & get(cb,'value') )
+    if( ~isempty(sf) && exist(tf) && cb )
         jj=jj+1;
         ep{jj}=sf;
-    end;
-end;
+    end
+end
 
 % include ratio images
 kk=0;
 for ii=1:8
-    [tf cb]=get_tf_cb_ratios(handles,ii);
-    sf=get(tf,'string');
+    [sf, cb]=get_tf_cb_ratios(handles,ii);
     % substitute / or * in sf with - for filename
     sf=convert_string_for_texoutput(sf);    
     tf = [fdir,ext,delimiter,sf,'.',ext];
-    if(~isempty(sf) & exist(tf) & get(cb,'value'))
+    if (~isempty(sf) && exist(tf) && cb)
         jj=jj+1;
         kk=kk+1;
         ep{jj}=[sf];
         dp{kk}=[sf];
-    end;
-end;
+    end
+end
 
 % add ROI image
 global CELLSFILE
@@ -40,12 +38,12 @@ tf = [fdir,ext,delimiter,CELLSFILE,'.',ext];
 if(exist(tf))
     jj=jj+1;
     ep{jj}=CELLSFILE;
-end;
+end
 tf = [fdir,ext,delimiter,CELLSFILE,'-c','.',ext];
 if(exist(tf))
     jj=jj+1;
     ep{jj}=[CELLSFILE,'-c'];
-end;
+end
 
 % add also rgb images and graphs generated during the processing
 vs=dir([fdir,ext,delimiter,'*-vs-*.',ext]);
@@ -53,40 +51,38 @@ for ii=1:length(vs)
     [pathstr, name] = fileparts(vs(ii).name);
     jj=jj+1;
     ep{jj}=name;
-end;
+end
 
 % add depth profiles of masses
-for ii=1:8
-    [tf cb]=get_tf_cb_masses(handles,ii);
-    sf=get(tf,'string');
+for ii=1:length(p.accu_im)
+    [sf, cb]=get_tf_cb_masses(handles,ii);
     tf = [fdir,ext,delimiter,sf,'-z.',ext];
-    if( ~isempty(sf) & exist(tf) & get(cb,'value') & get(handles.checkbox61,'value') )
+    if( ~isempty(sf) && exist(tf) && cb && get(handles.checkbox61,'value') )
         jj=jj+1;
         ep{jj}=[sf, '-z'];
-    end;
-end;
+    end
+end
 
 % add histograms and depth profiles
 for ii=1:8
-    [tf cb]=get_tf_cb_ratios(handles,ii);
-    sf=get(tf,'string');
+    [sf, cb]=get_tf_cb_ratios(handles,ii);
     % substitute / or * in sf with - for filename
     sf=convert_string_for_texoutput(sf);
     tf = [fdir,ext,delimiter,sf,'-h.',ext];
-    if( ~isempty(sf) & exist(tf) & get(cb,'value') & get(handles.checkbox36,'value') )
+    if( ~isempty(sf) && exist(tf) && cb && get(handles.checkbox36,'value') )
         jj=jj+1;
         kk=kk+1;
         ep{jj}=[sf,'-h'];
         dp{kk}='';
-    end;
+    end
     tf = [fdir,ext,delimiter,sf,'-z.',ext];
-    if( ~isempty(sf) & exist(tf) & get(cb,'value') & get(handles.checkbox61,'value') )
+    if( ~isempty(sf) && exist(tf) && cb && get(handles.checkbox61,'value') )
         jj=jj+1;
         kk=kk+1;
         ep{jj}=[sf,'-z'];
         dp{kk}='';
-    end;
-end;
+    end
+end
 
 % add lateral profiles graphs
 vs=dir([fdir,ext,delimiter,'*-*lp*.',ext]);
@@ -94,51 +90,50 @@ for ii=1:length(vs)
     [pathstr, name] = fileparts(vs(ii).name);
     jj=jj+1;
     ep{jj}=name;
-end;
+end
 
 % add statistical rank-graphs
 for ii=1:8
-    [tf cb]=get_tf_cb_ratios(handles,ii);
-    sf=get(tf,'string');
+    [sf, cb]=get_tf_cb_ratios(handles,ii);
     % substitute / or * in sf with - for filename
     sf=convert_string_for_texoutput(sf);
     tf = [fdir,ext,delimiter,'*', sf,'-lev-*.',ext];
     rfile = dir(tf);
     for rfi=1:length(rfile)
         tfile = [fdir,ext,delimiter,rfile(rfi).name];
-        if(~isempty(sf) & exist(tfile) & get(cb,'value') & get(handles.checkbox60,'value'))
+        if(~isempty(sf) && exist(tfile) && cb && get(handles.checkbox60,'value'))
             jj=jj+1;
             kk=kk+1;
             [rfiled, rfilef]=fileparts(tfile);
             ep{jj}=[rfilef];
             dp{kk}='';
-        end;
-    end;
+        end
+    end
     tf = [fdir,ext,delimiter,'*', sf,'-anova-*.',ext];
     rfile = dir(tf);
     for rfi=1:length(rfile)
         tfile = [fdir,ext,delimiter,rfile(rfi).name];
-        if(~isempty(sf) & exist(tfile) & get(cb,'value') & get(handles.checkbox60,'value'))
+        if(~isempty(sf) && exist(tfile) && cb && get(handles.checkbox60,'value'))
             jj=jj+1;
             kk=kk+1;
             [rfiled, rfilef]=fileparts(tfile);
             ep{jj}=[rfilef];
             dp{kk}='';
-        end;
-    end;
+        end
+    end
     tf = [fdir,ext,delimiter,'*', sf,'-kw-*.',ext];
     rfile = dir(tf);
     for rfi=1:length(rfile)
         tfile = [fdir,ext,delimiter,rfile(rfi).name];
-        if(~isempty(sf) & exist(tfile) & get(cb,'value') & get(handles.checkbox60,'value'))
+        if(~isempty(sf) && exist(tfile) && cb && get(handles.checkbox60,'value'))
             jj=jj+1;
             kk=kk+1;
             [rfiled, rfilef]=fileparts(tfile);
             ep{jj}=[rfilef];
             dp{kk}='';
-        end;
-    end;
-end;
+        end
+    end
+end
 
 % generate graphics output
 tout = [fdir,'outputG.tex'];
@@ -151,28 +146,28 @@ fprintf(fid,'\\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}\n\\be
 fprintf(fid,'\\begin{center}\n\\begin{tabular}{cc}\n');
 %size_option='width=0.42\textwidth';
 sfac = handles.p.height/handles.p.width;
-if sfac>=1
+if 0 && sfac>=1
     size_option='height=0.3\textheight';
 else
-    size_option='width=0.49\textwidth';
-end;
+    size_option='width=0.45\textwidth';
+end
 for ii=1:ceil(nf/2)
     jj=(ii-1)*2+1;
     if(jj<=nf)
         fprintf(fid,'\\includegraphics[%s]{%s/%s} & ',size_option,ext,ep{jj});
-    end;
+    end
     jj=ii*2;
     if(jj<=nf)
         fprintf(fid,'\\includegraphics[%s]{%s/%s} \\\\\n',size_option,ext,ep{jj});
-    end;      
+    end
     fprintf(fid,'\\end{tabular}\n');
     if(jj<nf)
         fprintf(fid,'\\begin{tabular}{cc}\n');
-    end;
-end;
+    end
+end
 fprintf(fid,'\\end{center}\n\\end{document}');
 fclose(fid);
-disp(['Graphical LaTeX output generated in ',tout]);
+fprintf(1,'LaTeX output generated in %s\n',tout);
 
 % convert the LaTeX file to PDF (compile it twice, just in case)
 mepstopdf(tout,'pdflatex',0,0);
@@ -188,15 +183,15 @@ fprintf(fid,'\\documentclass[12pt,a4paper]{article}\n');
 fprintf(fid,'\\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}\n\\usepackage{longtable}\n\\begin{document}\n');
 fprintf(fid,'\\small\n\\begin{center}\n');
 for ii=1:length(dp)
-    if(~strcmp(dp{ii},'cells-c') & ~strcmp(dp{ii},'cells') )
+    if(~strcmp(dp{ii},'cells-c') && ~strcmp(dp{ii},'cells') )
         if ~isempty(dp{ii}) 
             a = [fdir 'tex' delimiter dp{ii} '.tex'];
             if exist(a)==2
                 fprintf(fid,'\\input{tex/%s}\n',dp{ii});
-            end;
-        end;
-    end;
-end;
+            end
+        end
+    end
+end
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{document}');
 fclose(fid);
@@ -204,61 +199,71 @@ disp(['LaTeX output generated in ',tout]);
 mepstopdf(tout,'pdflatex',0,0);
 mepstopdf(tout,'pdflatex',1,1);
 % disp(['You can convert it to PDF using "pdflatex output2.tex"']);
-end;
+end
 
 
-function [tf cb]=get_tf_cb_masses(handles,ii)    
+function [tf, cb]=get_tf_cb_masses(handles,ii)    
+if ii<=8
+    switch ii
+        case 1
+            tf=handles.edit3;
+            cb=handles.checkbox25;
+        case 2
+            tf=handles.edit4;
+            cb=handles.checkbox26;
+        case 3
+            tf=handles.edit5;
+            cb=handles.checkbox27;
+        case 4
+            tf=handles.edit6;
+            cb=handles.checkbox28;
+        case 5
+            tf=handles.edit7;
+            cb=handles.checkbox29;
+        case 6
+            tf=handles.edit8;
+            cb=handles.checkbox30;
+        case 7
+            tf=handles.edit9;
+            cb=handles.checkbox31;
+        case 8
+            tf=handles.edit74;
+            cb=handles.checkbox70;
+    end
+    tf = get(tf,'String');
+    cb = get(cb,'value');
+else
+    tf = handles.p.mass{ii};
+    cb = 1;
+end
+    
+
+function [tf, cb]=get_tf_cb_ratios(handles,ii)
 switch ii
-    case 1,
-        tf=handles.edit3;
-        cb=handles.checkbox25;
-    case 2,
-        tf=handles.edit4;
-        cb=handles.checkbox26;
-    case 3,
-        tf=handles.edit5;
-        cb=handles.checkbox27;
-    case 4,
-        tf=handles.edit6;
-        cb=handles.checkbox28;
-    case 5,
-        tf=handles.edit7;
-        cb=handles.checkbox29;
-    case 6,
-        tf=handles.edit8;
-        cb=handles.checkbox30;
-    case 7,
-        tf=handles.edit9;
-        cb=handles.checkbox31;
-    case 8,
-        tf=handles.edit74;
-        cb=handles.checkbox70;
-end;
-
-function [tf cb]=get_tf_cb_ratios(handles,ii)
-switch ii
-    case 1,
+    case 1
         tf=handles.edit20;
         cb=handles.checkbox32;
-    case 2,
+    case 2
         tf=handles.edit21;
         cb=handles.checkbox33;
-    case 3,
+    case 3
         tf=handles.edit22;
         cb=handles.checkbox34;
-    case 4,
+    case 4
         tf=handles.edit23;
         cb=handles.checkbox35;
-    case 5,
+    case 5
         tf=handles.edit53;
         cb=handles.checkbox46;
-    case 6,
+    case 6
         tf=handles.edit54;
         cb=handles.checkbox47;
-    case 7,
+    case 7
         tf=handles.edit55;
         cb=handles.checkbox48; 
-    case 8,
+    case 8
         tf=handles.edit56;
         cb=handles.checkbox72; 
-end;
+end
+tf = get(tf,'String');
+cb = get(cb,'value');

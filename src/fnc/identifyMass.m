@@ -5,5 +5,5 @@ for ii=1:length(masses)
     if strcmp(mass,masses{ii})
         k=ii;
         break;
-    end;
-end;
+    end
+end

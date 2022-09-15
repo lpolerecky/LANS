@@ -15,7 +15,7 @@ if nargin>1
     afp=ask_for_planes;
 else
     afp=0;
-end;
+end
 
 % some definitions
 b8=2^8;
@@ -44,7 +44,7 @@ hsize = read_bytes(fid, 8, num_bytes, ttype, reverse_bytes, b8);
 if hsize>2e6
    reverse_bytes = ~reverse_bytes;
    offset = 412+1*192+56;
-end;
+end
 
 % read all the parameters in the header, at the positions specified in the
 % documentation
@@ -89,7 +89,7 @@ if 0
         no_used, beam_blanking, pulverisation, pulve_duration, auto_cal_in_anal, ...
         autocal, sig_reference, sigref, nb_mass);
     fclose(ftmp);
-end;
+end
 
 % find the names and masses of the detected ions (I had to figure this out
 % by trial and error, as the documentation did not really correspond to the
@@ -111,13 +111,13 @@ for ii=0:(nb_mass-1)
                 case 14, mn='14C';
                 case 33, mn='33S';
                 otherwise, mn=[num2str(round(at_mass(1,ii+1))) 'AU'];
-            end;
+            end
             mass_name{ii+1} = mn;
         else
             mass_name{ii+1} = remove_blanks(m1);
-        end;
-    end;
-end;
+        end
+    end
+end
 
 % for some unknown reason, the offset for reading the masses is not
 % consistent between files produced in different laboratories, leading to
@@ -134,9 +134,9 @@ if sum(at_mass)==0
             mass_name{ii+1}='Esi';
         else
             mass_name{ii+1} = remove_blanks(m1);
-        end;
-    end;
-end;    
+        end
+    end
+end 
 
 % 
 % read other properties of the images
@@ -165,7 +165,7 @@ m_nNY_high = read_bytes(fid, 676+288*nb_mass+144*nb_poly+48, 2, ttype, reverse_b
 % understand why the data are not compatible... :(
 if ( (m_nNX_high-m_nNX_low+1)>0 ) & m_nNX_max>0
     raster = raster * (m_nNX_high-m_nNX_low+1)/m_nNX_max;
-end;
+end
 
 %% this is used when the full binary data is going to be read
 
@@ -174,7 +174,7 @@ if pixel_size == 2
     bin_format = 'uint8';
 else
     bin_format = 'ushort';
-end;
+end
 
 % for some unknown reason, if the measurement was interrupted, n_planes may
 % be equal to 0. in this case calculate the number of truly stored planes
@@ -182,7 +182,7 @@ end;
 if n_planes == 0   
     fileInfo = dir(ff);
     n_planes=round((fileInfo.bytes-hsize)/(width*height*pixel_size*n_images));
-end;
+end
 
 % true number of detected planes
 Nptrue = n_planes;
@@ -192,7 +192,7 @@ fprintf(1,'Total number of detected masses: %d\n',length(mass_name));
 dwell_time_factor = ceil(length(mass_name)/8);
 if dwell_time_factor>1
     fprintf(1,'Number of detected masses is greater than 8. Dwell time will be corrected by a factor of %d\n',dwell_time_factor);
-end;
+end
 
 % position of the 1st byte of the 1st plane of the 1st mass
 p1 = hsize;
@@ -207,7 +207,7 @@ if afp
     if isempty(pm)
         pm=[1:length(mass_name)];
         pm_selected_empty=1;
-    end;
+    end
     mass_name = {mass_name{pm}};
     at_mass = at_mass(pm);
 
@@ -222,12 +222,12 @@ if afp
         ind=find(pp<=Nptrue);
         pp=pp(ind);
         Np=length(pp);
-    end;
+    end
 else
     Np=Nptrue;
     pp=[1:Np];
     pm=1:nb_mass;
-end;
+end
 fprintf(1,'Number of planes to be loaded: %d\n',Np);
 
 % now read the image data for all selected masses and planes from byte p1
@@ -259,7 +259,7 @@ for ii=1:Nptrue
             else
                 % when data have been stored under Unix
                 d=d1*b8+d2;
-            end;
+            end
             a=vec2mat(d,width);
 
             % for debugging, set this to 1 if you want to display every read image
@@ -271,64 +271,76 @@ for ii=1:Nptrue
                 colormap(gray);            
                 pause(0.5);
                 input('Press enter to continue');
-            end;
+            end
 
         else
 
             fprintf(1,'No data for plane %d\n',ii);
             a=[];
 
-        end;
+        end
 
         % fill the matrices of the masses
         if nb_mass==1
             tmpim = uint16(a); %double(a);
         else
             tmpim{jj} = uint16(a); %double(a);
-        end;
+        end
 
-    end;
+    end
 
     % if the currently read plane is in the selected list of planes, and
     % the currently mass in the selected list of masses, 
     % add it to im{jj}(:,:,:) at index kk, for all masses
     if sum(ismember(pp,ii))>0
-        kk=kk+1;
-        %for jj=1:nb_mass
-        for jj=1:length(pm)
-            if nb_mass==1
-                im{jj}(:,:,kk) = tmpim;
-            else
-                im{jj}(:,:,kk) = tmpim{pm(jj)};
-            end;
-        end;
-        fprintf(1,'%d ',ii);
-        if mod(kk,30)==0
-            fprintf(1,'\n');
-        end;
+        for ll=1:sum(ismember(pp,ii)) % sometimes one may want to load certain planes more than once (e.g., if a plane is corrupt)
+            kk=kk+1;
+            %for jj=1:nb_mass
+            for jj=1:length(pm)
+                if nb_mass==1
+                    im{jj}(:,:,kk) = tmpim;
+                else
+                    im{jj}(:,:,kk) = tmpim{pm(jj)};
+                end
+            end
+            fprintf(1,'%3d ',ii);
+            if mod(kk,30)==0
+                fprintf(1,'\n');
+            end
+        end
     else
         if ii==(pp(end)+1)
             fprintf(1,'\nPlease be patient until the im file is fully processed.\n');
-        end;
-    end;
+        end
+    end
     if ii==Nptrue
         fprintf(1,'\nDone.\n');
-    end;
+    end
     
-end;
+end
 
 fclose(fid);
 
-[pathstr, name, ext] = fileparts(ff);
-if length(pp)==Nptrue & length(pm)==nb_mass
+% change output folder name if a subset of planes was loaded
+[pathstr, name] = fileparts(ff);
+if length(pp)==Nptrue && length(pm)==nb_mass
     p.filename = [pathstr delimiter name];
 else
     s=[];
     if length(pp)<Nptrue
         s=sprintf('_p%d-%d',pp(1),pp(end));
-    end;         
+    end         
     p.filename = sprintf('%s%c%s',pathstr,delimiter,name,s);
-end;
+end
+
+% rearrange data if peak-switching was used
+if length(mass_name)>length(unique(mass_name))
+    % this happens when peak switching is used to measure more than 8
+    % masses per scan
+    [im, mass_name, nb_mass, Nptrue] = rearrange_raw_image_data(im, mass_name);
+    pm=1:nb_mass;
+    pp=[1:Nptrue];
+end
     
 %fprintf(1,'Done.\n%d planes (%d-%d) stored.\n',kk,pp(1),pp(end));
 
