@@ -37,10 +37,10 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 4. Quantification and export of **isotope and element ratios** 
 
     - ratios defined through an expression (e.g., 13C/12C, 13C/(12C+13C))
-    - images (various colormaps, ROI outlines can be included, hue intensity can be modulated)
+    - scatter plots of ROI-specific ratios (color-coded based on ROI classification)
+    - ratio images (various colormaps, ROI outlines can be included, hue intensity can be modulated)
     - lateral and depth profiles (incl. depth variation of a lateral profile)
     - histograms
-    - scatter plots (color-coded based on ROI classification)
     - image overlays (combined into an RGB image or a 3D surface plot)
     - results exported as text and graphics
 
@@ -52,8 +52,8 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 
 6. Processing of **multiple** nanoSIMS datasets (aka "metafile processing")
 
-    - export of images and image overlays
     - scatter plots (interactive)
+    - images and image overlays
     - statistical analysis of ROIs, ROI classes, and treatments
     - depth profiles in ROIs
     - automated reprocessing of previously processed datasets
@@ -62,10 +62,11 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 
     - image alignment done within LANS
 
-## Extra features and functions
+## LANS manual
 
-  - Folow this link for the description of [extra features and functions](man/lans_extras.md) of LANS.
-  - Folow this link for see [useful tips and tricks](man/lans_tips.md).
+LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0).
+
+Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 2011), it is the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading about *extra features and functions* described in `LANS-extras.pdf`.
 
 ## Download & update
 
@@ -101,7 +102,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
     - Enter `lookatnanosims` in Matlab console. This should open the main LANS 
       graphical user interface, as shown below.
 
-<center><img src="man/figures/lans-main-GUI.png" width="300"></img></center>
+<center><img src="man/figures/lans-main-GUI.png" alt="Main GUI of LANS"></img></center>
 
 ## Acknowledgement
 

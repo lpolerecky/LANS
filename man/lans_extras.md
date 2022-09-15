@@ -1,2 +1,0 @@
-# New features of LANS
-
