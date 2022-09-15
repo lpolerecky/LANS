@@ -101,7 +101,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
     - Enter `lookatnanosims` in Matlab console. This should open the main LANS 
       graphical user interface, as shown below.
 
-<center><img src="man/figures/lans-main-GUI.png" width="300"></center>
+<center><img src="man/figures/lans-main-GUI.png" width="300"></img></center>
 
 ## Acknowledgement
 
