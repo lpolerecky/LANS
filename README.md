@@ -70,7 +70,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 ## Download & update
 
   - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the *program* folder and then select the file `LANS-latest-src.zip`.
-  - If you are already using LANS and want to update it to the newest version, run `lans_webupdate` in Matlab console.
+  - If you are already using LANS and want to update it to the newest version, enter `lans_webupdate` in Matlab console.
   - Of course, you can download LANS from the folder [src](src) in this repository.
 
 ## Installation instructions
