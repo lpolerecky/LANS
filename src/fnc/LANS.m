@@ -2023,8 +2023,8 @@ else
                 p.accu_im{i} = a/(mf^2);
             end
         
-            msg1 = sprintf('Images resized by a factor %.1f using the NEAREST method.',mf);
-            msg2 = sprintf('1. This also changed the ion counts by a factor %.2f. You may need to change the scale of the images to display them properly.',mf^2);
+            msg1 = sprintf('Images resized by a factor %.3f using the NEAREST method.',mf);
+            msg2 = sprintf('1. This also changed the ion counts by a factor %.4f. You may need to change the scale of the images to display them properly.',mf^2);
             msg3 = '2. Additionally, you may need to update the ROI image by reloading it from disk to account for this change in resolution.';
             warndlg({msg1,msg2,msg3},'LANS warning','modal');
         
