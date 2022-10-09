@@ -2010,7 +2010,7 @@ else
         mf = 1/round(1/mf);
     end
     
-    fprintf(1,'Using magnification factor %.1f\n',mf);
+    fprintf(1,'Using magnification factor %.3f\n',mf);
     
     if mf~=1
         
@@ -2118,7 +2118,7 @@ if size(ext_im,3)>1
     fprintf(1,'WARNING: External image was converted from RGB to gray scale.\n');
 end
 if ~isempty(ext_im)
-    [formula pois mass_index]=parse_formula_lans('ext',p.mass);
+    [~, ~, mass_index]=parse_formula_lans('ext',p.mass);
     if mass_index>length(p.mass)
         warndlg('External image added to the list of masses. You can now use it as EXT in any of the expressions.','For your information','modal');
     else
@@ -2128,16 +2128,19 @@ if ~isempty(ext_im)
     p.mass{mass_index} = 'ext';        
     p.imscale{mass_index} = find_image_scale(ext_im, 0);
     p.accu_im{mass_index} = ext_im;
-    a = zeros(size(ext_im,1),size(ext_im,2),size(p.im{1},3));
+    a = zeros(size(p.im{1}));
+    ext_resized = imresize(ext_im,1/p.mag_factor,'method','nearest');
+    % add the external image resized to the original size of the nanosims
+    % data as individual planes of the mass 'ext' (LP: 03-10-2022)
     for i=1:size(a,3)
-        a(:,:,i)=ext_im(:,:,1);
-    end;
+        a(:,:,i)=ext_resized;
+    end
     p.im{mass_index}=a;
     p.images{mass_index} = p.images{1};
     p.ext_im = ext_im;
 else
     % if empty ext_im, remove it from the list of masses, if it exists
-    [formula pois mass_index]=parse_formula_lans('ext',p.mass);
+    [~, ~, mass_index]=parse_formula_lans('ext',p.mass);
     if mass_index>1
         p.mass = {p.mass{1:mass_index-1}};
         p.imscale = {p.imscale{1:mass_index-1}};
@@ -2146,7 +2149,7 @@ else
         p.images = {p.images{1:mass_index-1}};
         if isfield(p,'ext_im')
             p = rmfield(p,'ext_im');
-        end;
+        end
         warndlg('External image removed from the list of masses. You may no longer use EXT in your expressions or overlay it with masses/ratios.','For your information','modal');
     end
 end
