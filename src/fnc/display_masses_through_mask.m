@@ -170,7 +170,9 @@ if opt1(3) || opt1(6) || opt1(10) || opt1(5) || opt1(13) || opt1(14)
             % extract the selected planes
             image_stack = p.im;            
             for ii=1:length(image_stack)
-                image_stack{ii} = image_stack{ii}(:,:,p.images{ii});
+                if ~isempty(p.images{ii})
+                    image_stack{ii} = image_stack{ii}(:,:,p.images{ii});
+                end
             end
             lateral_profile_gui(p.accu_im,p.imscale,p.mass,...
                 p.fdir,p.scale,...

@@ -796,6 +796,9 @@ elseif newext==5 % mat file (produced by LANS) selected
     a = load(handles.extimagefile);
     im =  a.IM;
     xyscale = a.xyscale;
+    if ~isfield(a,'mag_factor_used')
+        a.mag_factor_used = 1;
+    end
     mag_factor_used = a.mag_factor_used;
 else
     im=double(imread(handles.extimagefile));

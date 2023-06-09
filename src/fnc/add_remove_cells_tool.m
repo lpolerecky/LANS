@@ -279,8 +279,8 @@ w=size(im,2);
 h=size(im,1);
 wg=ceil(w/a);
 % calculate the positions of the ROI separators
-e2=[0:wg:w+1];
-e1=[0:wg:h+1];
+e2=[0:wg:w+10];
+e1=[0:wg:h+10];
 e=linspace(0,size(im,2)+1,a+1);
 ind1=[1:h];
 ind2=[1:w];
@@ -413,12 +413,12 @@ if ~isempty(a)
             if length(ind)>4
                 cnt=cnt+1;
                 CELLS(ind) = cnt*ones(size(ind));
-                % rearrange and sort the cells, auto-update the classification file    
-                CELLS=rearrange_sort_cells(CELLS);
-                autoupdate_cell_classification(CELLS, ind, ...
+                % rearrange and sort the cells, auto-update the classification file
+                [CELLS, ~, old2new] = rearrange_sort_cells(CELLS);
+                autoupdate_cell_classification(CELLS, ind, old2new, ...
                     handles.cellfile, handles.auto_class_update);
-            end;
-        end;
+            end
+        end
         handles.maskimg = CELLS;    
         handles.cells_saved = 0;
 
@@ -444,15 +444,15 @@ boundary_type=yes_no_dialog('title','Add the ellipse to the list of ROIs?',...
     'stringa','Yes', 'stringb','No', 'stringc','');
 
 if(boundary_type==1)
-    [added_cell ind] = roi2cell(h, 0);
+    [added_cell, ind] = roi2cell(h, 0);
     if isempty(handles.maskimg)
         handles.maskimg = zeros(size(handles.maskmass));
     end
     handles.maskimg = add_cell(handles.maskimg, added_cell);
     handles.cells_saved = 0;
-    [handles.maskimg,indc]=rearrange_sort_cells(handles.maskimg);
-    autoupdate_cell_classification(handles.maskimg, ind, ...
-            handles.cellfile, handles.auto_class_update);
+    [handles.maskimg, ~, old2new]=rearrange_sort_cells(handles.maskimg);
+    autoupdate_cell_classification(handles.maskimg, ind, old2new, ...
+            handles.cellfile, handles.auto_class_update);    
     handles.cells_saved = 0;
 end
 
@@ -473,17 +473,17 @@ boundary_type=yes_no_dialog('title','Add the rectangle to the list of ROIs?',...
     'stringa','Yes', 'stringb','No', 'stringc','');
 
 if(boundary_type==1)
-    [added_cell ind] = roi2cell(h, 1);
+    [added_cell, ind] = roi2cell(h, 1);
     if isempty(handles.maskimg)
         handles.maskimg = zeros(size(handles.maskmass));
-    end;
+    end
     handles.maskimg = add_cell(handles.maskimg, added_cell);
     handles.cells_saved = 0;
-    [handles.maskimg,indc]=rearrange_sort_cells(handles.maskimg);
-    autoupdate_cell_classification(handles.maskimg, ind, ...
+    [handles.maskimg,~,old2new]=rearrange_sort_cells(handles.maskimg);
+    autoupdate_cell_classification(handles.maskimg, ind, old2new, ...
             handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
-end; 
+end
 
 guidata(hObject, handles);
 
@@ -536,14 +536,14 @@ end
 
 % add the newly defined roi object to the list of all valid roi objects
 if boundary_type~=2
-    [added_cell ind] = roi2cell(h, boundary_type);
+    [added_cell, ind] = roi2cell(h, boundary_type);
     if isempty(handles.maskimg)
         handles.maskimg = zeros(size(handles.maskmass));
     end
     handles.maskimg = add_cell(handles.maskimg, added_cell);
     handles.cells_saved = 0;
-    [handles.maskimg,indc]=rearrange_sort_cells(handles.maskimg);
-    autoupdate_cell_classification(handles.maskimg, ind, ...
+    [handles.maskimg,~,old2new]=rearrange_sort_cells(handles.maskimg);
+    autoupdate_cell_classification(handles.maskimg, ind, old2new, ...
             handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
 end
@@ -944,8 +944,8 @@ if(m==13)
     ind=find(BW2==1);
     CELLS(ind)=ones(size(ind))*ncells;
     % disp('New cell was added')
-    handles.maskimg = rearrange_sort_cells(CELLS);
-    autoupdate_cell_classification(handles.maskimg, ind, ...
+    [handles.maskimg, ~, old2new] = rearrange_sort_cells(CELLS);
+    autoupdate_cell_classification(handles.maskimg, ind, old2new, ...
         handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
 end
@@ -1178,7 +1178,7 @@ if(tp)
     figure(1); hold off;
     plot(c(:,1),c(:,2),'rx-');
     hold on
-end;
+end
 
 origc=zeros(size(CELLS)); % pixels where drawn line and defined cells overlap
 for ii=1:(size(c,1)-1)
@@ -1190,19 +1190,19 @@ for ii=1:(size(c,1)-1)
             ang=pi/2;
         else
             ang=-pi/2;
-        end;
+        end
     else
         ang=atan(abs(dy/dx));
         if(dx<0 & dy<0)
             ang=ang+pi;
-        end;
+        end
         if(dx<0 & dy>=0)
             ang=pi-ang;
-        end;
+        end
         if(dx>0 & dy<0)
             ang = -ang;
-        end;
-    end;
+        end
+    end
     L=sqrt(dx^2+dy^2);
     v=[linspace(0,L,10); zeros(1,10)];
     m=[cos(ang) -sin(ang); sin(ang) cos(ang)]; 
@@ -1214,13 +1214,13 @@ for ii=1:(size(c,1)-1)
     if tp
         figure(1);
         plot(v1(:,1),v1(:,2),'b.');
-    end;
+    end
     
     v1=round(v1);
     
     if tp
         plot(v1(:,1),v1(:,2),'gx');
-    end;
+    end
     
     % make sure there are no neighboring pixels that change x and y
     % simultaneously, that is, the line should always make a step either in x
@@ -1236,12 +1236,12 @@ for ii=1:(size(c,1)-1)
             v2 = [v2; v2(eind,:) + [dx 0]; v2(eind,:) + [dx dy]];
         else
             v2 = [v2; v1(jj,:)];
-        end;
-    end;
+        end
+    end
     
     if tp
         plot(v2(:,1),v2(:,2),'go');
-    end;
+    end
     
     v1 = v2;
     
@@ -1253,17 +1253,17 @@ for ii=1:(size(c,1)-1)
             if(CELLS(v1(jj,2),v1(jj,1))>0)           
                 CELLS(v1(jj,2),v1(jj,1))=0;
                 origc(v1(jj,2),v1(jj,1))=OLDCELLS(v1(jj,2),v1(jj,1));
-            end;
-        end;
-    end;    
-end;
+            end
+        end
+    end
+end
 
 
 
 if tp
     figure(2)
     imagesc(CELLS);
-end;
+end
 
 % recognize which cells were really split (those that were only touched by
 % the line but not split remain unchanged)
@@ -1283,8 +1283,8 @@ for ii=1:length(ucells)
         p1=zeros(size(OLDCELLS)); 
         p1(ind)=ones(size(ind));
         VCELLS(ind)=max(VCELLS(:))+p1(ind);
-    end;
-end;
+    end
+end
 
 CELLS=VCELLS;
 
@@ -1298,7 +1298,7 @@ for ii=1:length(ind)
         x = ind(ii)/M;
     else
         x = floor( ind(ii)/M )+1;
-    end;
+    end
     y = ind(ii) - M*(x-1);
     indx = [-1:1]+x;
     indx = indx(find(indx>0 & indx<=N));
@@ -1307,13 +1307,14 @@ for ii=1:length(ind)
     surround = CELLS(indy,indx);
     a=setdiff(surround(:),0);
     VCELLS(y,x) = min(a);
-end;
+end
 
 if tp
     figure(3)
     imagesc(VCELLS);
-end;
+end
 t2=clock;
+
 global verbose
 if verbose
     fprintf(1,'split_by_line_Callback: %.3fs\n',etime(t2,t1));
@@ -1322,25 +1323,28 @@ end
 hm = rearrange_sort_cells(VCELLS);
 
 if(~isempty(handles.cellfile))
-    % find the indices of the pixels that belong to the cell that was added by
-    % splitting the already defined cell
+    % new approach (from 10-Dec-2022): 
+    % inherit class of the original ROIs to the split ROIs
     uc = setdiff(unique(hm),0);
-    [cidu,cc,cid,cnum,ss]=load_cell_classes(handles.cellfile);
+    [~,~,cid,~,~]=load_cell_classes(handles.cellfile);
+    cid2 = char('i'*ones(length(uc),1));
     for ii=1:length(uc)
         % indices belonging to the new cell
         ind = find(hm==uc(ii));
         % find what was the old cell ID
         oldc = median(OLDCELLS(ind));
-        % set the class of the old cell to the new cell
-        cnum2(ii) = ii;
-        cid2(ii) = cid(oldc);
-        oldind = find(OLDCELLS==oldc);
-        % if oldind is not equal ind, the cell uc(ii) was split, so change the
-        % class to 'i'
-        newind = setdiff(oldind,ind);
-        if(~isempty(newind)) % & ii~=oldc)
-            %autoupdate_cell_classification(hm, ind, handles.cellfile, handles.auto_class_update);
-            cid2(ii)='i';
+        % inherit the class of the old cell by the new cell
+        cid2(uc(ii)) = cid(oldc);
+        % old approach: removed on 10-Dec-2022
+        if 0
+            oldind = find(OLDCELLS==oldc);
+            % if oldind is not equal ind, the cell uc(ii) was split, so change the
+            % class to 'i'        
+            newind = setdiff(oldind,ind);
+            if(~isempty(newind)) % & ii~=oldc)
+                %autoupdate_cell_classification(hm, ind, handles.cellfile, handles.auto_class_update);
+                cid2(ii)='i';
+            end
         end
     end
 
@@ -1356,18 +1360,17 @@ if(~isempty(handles.cellfile))
         if(a==1)
             new_cellfile = handles.cellfile;
         else
-            [pathstr, name, ext] = fileparts(handles.cellfile);
+            [pathstr, name, ~] = fileparts(handles.cellfile);
             new_cellfile = [pathstr,delimiter,name,'.new'];
-        end;
-    end; 
+        end
+    end 
 
+    out=[1:length(cid2); double(cid2')];
     fid=fopen(new_cellfile,'w');
-    for ii=1:length(cid2)
-        fprintf(fid,'%d\t%c\n',ii,cid2(ii));
-    end;
+    fprintf(fid,'%d\t%c\n',out);
     fclose(fid);
     fprintf(1,'Classification in %s updated.\n',new_cellfile);
-end;
+end
 
 handles.maskimg = hm;
 handles.cells_saved = 0;
@@ -1387,7 +1390,7 @@ if isempty(answer)
     rc = [];
 else
     rc = str2num(answer{1});
-end;
+end
 
 if ~isempty(rc)
     CELLS = handles.maskimg;
@@ -1404,22 +1407,22 @@ if ~isempty(rc)
             ind = find(CELLS==rc(ii)-j);
             if ~isempty(ind)
                 CELLS(ind) = zeros(size(ind));            
-                CELLS = rearrange_sort_cells(CELLS);
-                autoupdate_cell_classification(CELLS, ind, ...
+                [CELLS,~,old2new] = rearrange_sort_cells(CELLS);
+                autoupdate_cell_classification(CELLS, ind, old2new, ...
                     handles.cellfile, handles.auto_class_update,rc(ii)-j);
                 j=j+1;
                 ind_all = [ind_all; ind(:)];            
-            end;
-        end;
+            end
+        end
         % now add cell in pixels ind_all as a cell with the highest ID, and
         % rearrange cells
         uc = setdiff(unique(CELLS),0);
         if isempty(uc)
             uc = 0;
-        end;
+        end
         CELLS(ind_all) = (max(uc)+1)*ones(size(ind_all));
-        CELLS = rearrange_sort_cells(CELLS);
-        autoupdate_cell_classification(CELLS, ind_all, ...
+        [CELLS,~,old2new] = rearrange_sort_cells(CELLS);
+        autoupdate_cell_classification(CELLS, ind_all, old2new, ...
              handles.cellfile, handles.auto_class_update,max(uc)+1);
 
         handles.maskimg = CELLS;
@@ -1432,13 +1435,13 @@ if ~isempty(rc)
 
     else
         fprintf(1,'Specified ROIs not defined. Nothing done.\n');
-    end;
+    end
 
 else
     
     fprintf(1,'Nothing specified, nothing done.\n');
 
-end;
+end
 
 function Remove_all_rois_Callback(hObject, eventdata, handles)
 if ~isempty(handles.maskimg)
@@ -1457,7 +1460,7 @@ if ~isempty(handles.maskimg)
                 fprintf(fid,'');
                 fclose(fid);
                 fprintf(1,'Classification file %s cleared.\n',[handles.fdir handles.cellfile]);
-            end;
+            end
             
             handles.cells_saved = 0;
 
@@ -1470,7 +1473,7 @@ if ~isempty(handles.maskimg)
             fprintf(1,'Ok, I''ll keep them for now.\n');
     end        
     
-end;
+end
 
 function Remove_rois_size_Callback(hObject, eventdata, handles)
 fprintf(1,'Examples:\n  s<10 ... removes ROIs containing <10 pixels\n')
@@ -1481,12 +1484,12 @@ if isempty(answer)
     a = [];
 else
     a = answer{1};
-end;
+end
 
 if ~isempty(a)
     % loop over all ROIs and remove them if they satisfy condition A
     CELLS = handles.maskimg;
-    rc = [1:max(CELLS(:))];
+    rc = 1:max(CELLS(:));
     j=0;
     for ii=1:length(rc)
         ind = find(CELLS==rc(ii)-j); % every time a cell is removed, the ID's of the cell that are to be removed subsequently are by 1 lower
@@ -1495,12 +1498,12 @@ if ~isempty(a)
             CELLS(ind) = zeros(size(ind));        
             fprintf(1,'ROI %d (size %d) removed.\n',rc(ii),s);
             % update variables and the cells outlines in the image
-            CELLS = rearrange_sort_cells(CELLS);
-            autoupdate_cell_classification(CELLS, ind, ...
+            [CELLS,~,old2new] = rearrange_sort_cells(CELLS);
+            autoupdate_cell_classification(CELLS, ind, old2new, ...
                 handles.cellfile, handles.auto_class_update,rc(ii)-j);
             j=j+1;
-        end;
-    end;
+        end
+    end
     
     if j==0
         fprintf(1,'No ROI satisfied the given condition %s\n',a);
@@ -1514,13 +1517,13 @@ if ~isempty(a)
         update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
             handles.figure1,handles.maskimg, handles.coc, handles.bw,...
             strcmp(get(handles.zoom_out_after_ROI_definition,'checked'),'on'));
-    end;
+    end
     
 else
     
     fprintf(1,'Nothing specified, nothing done.\n');
     
-end;
+end
 
 function Remove_multiple_Callback(hObject, eventdata, handles)
 answer = inputdlg('Enter IDs of ROIs that should be removed','Removing ROIs',1,{''});
@@ -1528,7 +1531,7 @@ if isempty(answer)
     rc = [];
 else
     rc = str2num(answer{1});
-end;
+end
 if ~isempty(rc)
     CELLS = handles.maskimg;
     j=0;
@@ -1538,14 +1541,14 @@ if ~isempty(rc)
             CELLS(ind) = zeros(size(ind));        
             fprintf(1,'ROI %d removed.\n',rc(ii));
             % update variables and the cells outlines in the image
-            CELLS = rearrange_sort_cells(CELLS);
-            autoupdate_cell_classification(CELLS, ind, ...
+            [CELLS,~,old2new] = rearrange_sort_cells(CELLS);
+            autoupdate_cell_classification(CELLS, ind, old2new, ...
                 handles.cellfile, handles.auto_class_update,rc(ii)-j);
             j=j+1;
         else
             fprintf(1,'ROI %d not found. Nothing removed.\n',rc(ii));
-        end;
-    end;
+        end
+    end
     handles.maskimg = CELLS;
     handles.cells_saved = 0;
 
@@ -1559,7 +1562,7 @@ else
     
     fprintf(1,'Nothing specified, nothing done.\n');
     
-end;
+end
 
 function copy_ROI_Callback(hObject, eventdata, handles)
 CELLS = handles.maskimg;
@@ -1616,7 +1619,7 @@ h=add_polygon(handles.axes1,[xb(:) yb(:)]);
 
 if 1
     % convert the newly defined polygon to cell
-    [added_cell ind] = roi2cell(h, 1);
+    [added_cell, ind] = roi2cell(h, 1);
     % calculate centroids of the original and new cells
     gd = regionprops(BW2,'basic');
     cc1=gd.Centroid;
@@ -1629,11 +1632,11 @@ if 1
     added_cell = imdilate(BW2,se);
     handles.maskimg = add_cell(handles.maskimg, added_cell);
     handles.cells_saved = 0;
-    [handles.maskimg,indc]=rearrange_sort_cells(handles.maskimg);
-    autoupdate_cell_classification(handles.maskimg, ind, ...
+    [handles.maskimg,~,old2new]=rearrange_sort_cells(handles.maskimg);
+    autoupdate_cell_classification(handles.maskimg, ind, old2new, ...
             handles.cellfile, handles.auto_class_update);
     handles.cells_saved = 0;
-end;
+end
 
 guidata(hObject, handles);
 
@@ -1708,8 +1711,8 @@ while(m==1 | m==3)
                 fprintf(1,'ROI %d removed\n',vc);
             
                 % remove selected cell and update everything            
-                handles.maskimg = rearrange_sort_cells(l3);
-                autoupdate_cell_classification(handles.maskimg, ind, ...
+                [handles.maskimg,~,old2new] = rearrange_sort_cells(l3);
+                autoupdate_cell_classification(handles.maskimg, ind, old2new, ...
                     handles.cellfile, handles.auto_class_update,vc);
                 handles.cells_saved = 0;                                                
                 update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...
@@ -1728,11 +1731,11 @@ while(m==1 | m==3)
                     % check whether removal of a pixel resulted in a change
                     % of ROIs
                     l3r = bwlabel(l3,8);               
-                    l3r = rearrange_sort_cells(l3r);
+                    [l3r,~,old2new] = rearrange_sort_cells(l3r);
                     changed_rois = setdiff(unique(l3r(ind)),0);
                     ind1 = (xp-1)*size(CELLS,1)+yp;
                     handles.maskimg = l3r;
-                    autoupdate_cell_classification(handles.maskimg, ind1, ...
+                    autoupdate_cell_classification(handles.maskimg, ind1, old2new, ...
                         handles.cellfile, handles.auto_class_update,vc,changed_rois);
                     handles.cells_saved = 0;
                     update_cell_outline(handles.axes1,handles.maskmass, handles.ps,...

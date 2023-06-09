@@ -2129,6 +2129,9 @@ if ~isempty(ext_im)
     p.imscale{mass_index} = find_image_scale(ext_im, 0);
     p.accu_im{mass_index} = ext_im;
     a = zeros(size(p.im{1}));
+    if ~isfield(p,'mag_factor')
+        p.mag_factor = 1;
+    end
     ext_resized = imresize(ext_im,1/p.mag_factor,'method','nearest');
     % add the external image resized to the original size of the nanosims
     % data as individual planes of the mass 'ext' (LP: 03-10-2022)

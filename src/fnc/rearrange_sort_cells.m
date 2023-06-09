@@ -1,4 +1,4 @@
-function [VCELLS,indc]=rearrange_sort_cells(CELLS)
+function [VCELLS,indc,old2new]=rearrange_sort_cells(CELLS)
 % Rearrange CELLS, in case the new cell was drawn over the old ones, thus
 % making the old ones not defined (step 1). Furthermore, sort the cells
 % such that their center positions are increasing. Last but not least,
@@ -26,32 +26,32 @@ if(~isempty(ucells))
     % find ROI centers
     % code modified on 2020-04-22
     if 1
-    ucells=setdiff(unique(VCELLS),0);
-    l2=zeros(size(VCELLS));
-    [x,y]=meshgrid([1:size(VCELLS,1)],[1:size(VCELLS,2)]);
-    for ii=1:length(ucells)
-        ind=find(VCELLS==ii);
-        xc(ii)=mean(x(ind));
-        yc(ii)=mean(y(ind));
-        l2(ind)=ii*ones(size(ind));
-    end
+        ucells=setdiff(unique(VCELLS),0);
+        l2=zeros(size(VCELLS));
+        [x,y]=meshgrid(1:size(VCELLS,1),1:size(VCELLS,2));
+        for ii=1:length(ucells)
+            ind=find(VCELLS==ii);
+            xc(ii)=mean(x(ind));
+            yc(ii)=mean(y(ind));
+            l2(ind)=ii*ones(size(ind));
+        end
     end
     
     % old code (before 2020-04-22)
     if 0
-    ucells=setdiff(sort(unique(VCELLS)),0);
-    l2=zeros(size(VCELLS));
-    p4=zeros(size(VCELLS));
-    for ii=1:length(ucells)
+        ucells=setdiff(sort(unique(VCELLS)),0);
+        l2=zeros(size(VCELLS));
         p4=zeros(size(VCELLS));
-        ind=find(VCELLS==ii);
-        p4(ind)=ones(size(ind));
-        [B,L]=bwboundaries(p4,'noholes');
-        % find the "center" position (x and y)
-        xc(ii)=mean(B{1}(:,2));
-        yc(ii)=mean(B{1}(:,1));
-        l2(ind)=ii*ones(size(ind));
-    end
+        for ii=1:length(ucells)
+            p4=zeros(size(VCELLS));
+            ind=find(VCELLS==ii);
+            p4(ind)=ones(size(ind));
+            [B,L]=bwboundaries(p4,'noholes');
+            % find the "center" position (x and y)
+            xc(ii)=mean(B{1}(:,2));
+            yc(ii)=mean(B{1}(:,1));
+            l2(ind)=ii*ones(size(ind));
+        end
     end
     
     t3=clock;
@@ -60,16 +60,29 @@ if(~isempty(ucells))
     % sort the cells according to the increasing x-center position
     % account also for the y position of the center (i.e., if two cells
     % have the same x position, the one with lower y will come first)
-    [xcyc,indc]=sort(yc+size(CELLS,1)*xc);    
+    [~,indc]=sort(yc+size(CELLS,1)*xc);    
     l2=zeros(size(l3));
     for ii=1:length(indc)
         ind=find(l3==indc(ii));
         l2(ind)=ii;
     end
     VCELLS=l2;
+
+    % find the mapping from new cell IDs to old ones
+    old2new = zeros(1,length(ucells));
+    for ii=1:length(ucells)
+        ind = find(VCELLS==ucells(ii));
+        old2new(ii) = mean(CELLS(ind));
+    end
+    if sum(abs(old2new-indc))>0
+        %fprintf(1,'ERROR: Something unexpected happened in rearrange_sort_cells\n');
+        a=0;
+    end
+
 else
     VCELLS = CELLS;
     indc=[];
+    old2new = [];
 end
 
 t4=clock;
