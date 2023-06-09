@@ -28,7 +28,7 @@ else
     %gu = unique(g);
     xks=linspace(quantile(x,0.001), quantile(x,0.995),100);
     for i=1:length(gn)
-        if strcmp(compare,'treat')
+        if strcmp(compare,'treat') | strcmp(compare,'ROI')
             ii=find(g==str2num(gn{i}));
         else
             ii=find(g==gn{i});

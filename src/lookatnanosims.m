@@ -172,6 +172,13 @@ LANS_version = '2022-09-02'; % An error was fixed in the worklow for defining RO
 							 % With this error, the resized image wanted to be resized again, which yielded 
 							 % enormous datasets and thus resulted in a Matlab crash.
                              % Also, export of RGB overlays in the CMYK mode was added.
+LANS_version = '2022-12-10'; % Bugs in autoupdate_cell_classification after
+                             % rearranging cells (due to the addition,
+                             % removal, splitting of cells) fixed.
+LANS_version = '2023-03-14'; % Bug fixed: comparison of ratios in individual ROIs based on
+                             % depth profiles now works again.
+LANS_version = '2023-03-16'; % Bug fixed: when all planes are accumulated, i.e., planes = [],
+                             % the image_stack in lateral profiles became empty.                             
 LANS_version = '2023-06-09'; % There was a bug in the formatting of the data structure when the im file
                              % only contained one plane, which caused
                              % errors down the line (e.g., when one wanted

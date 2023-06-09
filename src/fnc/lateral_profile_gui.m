@@ -230,6 +230,7 @@ image_stack=handles.image_stack;
 mass=handles.mass_names;
 
 if isfield(handles,'polygon')
+%if ishandle(handles.polygon)
     xy = handles.polygon.Position; 
     
     % store lateral profiles (dim 1) for each plane (dim 2) and mass
@@ -315,6 +316,8 @@ if isfield(handles,'polygon')
     % - each ratio, accumulated over planes (ratio_accu)
     % pos = position along the profile (in um)
  
+else
+    fprintf(1,'ERROR: Please draw a polyline first.\n');
 end
 
 if hObject == handles.pushbutton2  % display lateral profiles   

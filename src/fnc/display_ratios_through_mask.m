@@ -414,7 +414,9 @@ if opt1(3) || opt1(6) || eaf || opt1(5) || opt1(9) || opt1(13) || opt1(12) || op
             
         end
                     
-        %% display ranking
+        %% display ROIs ranking and differences among ROIs
+        % debugged on 06-03-2023 by LP to account for changes in
+        % statistics_gui made in the meantime
         if opt1(12)
             
             % define cell classes by loading cell
@@ -475,9 +477,41 @@ if opt1(3) || opt1(6) || eaf || opt1(5) || opt1(9) || opt1(13) || opt1(12) || op
             
             mfile = [p.filename '.txt'];
             
+            % reorganize data into tables, as required by statistics_gui
+            % debugged on 06-03-2023 by LP
+            Nrow = size(all_x{1},1);
+            cs = cell_sizes(:,p.images{1})'; lw = lwratios(:,p.images{1})';
+            sizefactor=2/sqrt(pi)*p.scale/size(p.Maskimg,2);
+            t1 = table(ones(Nrow,1), ...
+                repmat(mfile,Nrow,1), ...
+                treatment(:), ...
+                cellclass(:), ...
+                cellnum(:), ...
+                sizefactor*sqrt(cs(:)), ...
+                cs(:), ...
+                lw(:), ...
+                ones(Nrow,1), ...
+                ones(Nrow,1), ...
+                cellnum(:),...
+                'VariableNames',{'id';'file';'treatment'; ...
+                'roi_class';'roi_id';'size';'pixels';'l2w'; ...
+                 % 'dl2w';
+                'xpos';'ypos';'roi_uid'});
+            rdr = zeros(size(t1,1), 2*length(all_ratios));
+            for k=1:length(all_x)
+                rdr(:, (k-1)*2+1) = all_x{k}(:,3);                
+            end
+            rdr(isinf(rdr))=NaN; 
+            t2 = array2table(rdr);
+            
+            % this was the old way, which got broken at some point and was
+            % not fixed further
+            %statistics_gui(all_x, all_ratios, mfile,...
+            %    additional_settings.print_factors(5));
+            
             % open statistics_gui where all the comparisons will be done
-            statistics_gui(all_x, all_ratios, mfile,...
-                additional_settings.print_factors(5));
+            % this is the new way, debugged on 06-03-2023
+            statistics_gui(t1, t2, all_ratios, mfile);
             
         end
 

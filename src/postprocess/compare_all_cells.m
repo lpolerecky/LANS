@@ -106,10 +106,21 @@ else
     
     if ~isempty(all_x)
         
+        %% this is an old code that will not work any more because statistics_gui
+        % has been redesigned.
+        % If this feature is needed, see changes made in
+        % display_ratios_through_mask.m, l.480-505 to see what needs to be
+        % done to rearrange the all_x data into tables suitable for
+        % statistics_gui.m
         % run the statistics_gui to do statistical testing interactively
-	global additional_settings;
-        statistics_gui(all_x, all_ratios, s.metafile, ...
-            additional_settings.print_factors(5));
+        
+%        global additional_settings;
+%        statistics_gui(all_x, all_ratios, s.metafile, ...
+%            additional_settings.print_factors(5));
+        
+        fprintf(1,'*** This is compare_all_cell.m\n');
+        fprintf(1,'Sorry, this feature does not work at the moment due to outdated formatting of the input.\n');
+        fprintf(1,'You can contact LP for a possible fix.\n');
         
     end;
     
