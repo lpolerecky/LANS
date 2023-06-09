@@ -65,7 +65,8 @@ else
             if size(p.im{1},3)==1
                 p.planes_aligned=1;            
                 for ii=1:length(p.im)
-                    p.accu_im{ii}=double(p.im{ii});
+                    p.im{ii} = double(p.im{ii});
+                    p.accu_im{ii} = p.im{ii};
                 end
             end
         end
@@ -82,9 +83,9 @@ else
         
     % fix issue for 1 plane
     if ~isempty(p.im)
-	if size(p.im{1}) == 1
-		set(handles.edit12,'String','[1]');
-	end
+        if size(p.im{1},3) == 1
+            set(handles.edit12,'String','[1]');
+        end
     end
 
     % fill additional paramters from the GUI, such as scaling

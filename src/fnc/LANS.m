@@ -2492,7 +2492,7 @@ if isfield(handles,'p')
     if prod(FileName ~= 0)
         outfname = [fdir FileName];
         fprintf(1,'Saving LANS-processed data to %s ... ', outfname);
-        save(outfname, 'p');
+        save(outfname, 'p','-v7.3');
         fprintf(1,'done\n');
     end
 end

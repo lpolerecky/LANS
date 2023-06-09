@@ -172,6 +172,11 @@ LANS_version = '2022-09-02'; % An error was fixed in the worklow for defining RO
 							 % With this error, the resized image wanted to be resized again, which yielded 
 							 % enormous datasets and thus resulted in a Matlab crash.
                              % Also, export of RGB overlays in the CMYK mode was added.
+LANS_version = '2023-06-09'; % There was a bug in the formatting of the data structure when the im file
+                             % only contained one plane, which caused
+                             % errors down the line (e.g., when one wanted
+                             % to display lateral profiles). This bug has
+                             % been fixed now.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
@@ -189,7 +194,7 @@ if be_verbous
     fprintf(1,'Written by Lubos Polerecky <lpolerec (at) mpi-bremen.de>\n')
     fprintf(1,'(2008-2012) Max-Planck Institute for Marine Microbiology, Bremen\n')
     fprintf(1,'Updates by Lubos Polerecky <l.polerecky (at) uu.nl>\n')
-    fprintf(1,'(2013-2022) Utrecht University\n')
+    fprintf(1,'(2013-2023) Utrecht University\n')
     fprintf(1,'More info: http://nanosims.geo.uu.nl/LANS\n')
     fprintf(1,'================================================================\n')
     fprintf(1,'Enjoy your work!\n')
