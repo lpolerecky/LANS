@@ -92,3 +92,5 @@ if(~isempty(fname))
 else
     disp(['Preferences could not be saved.']);
 end
+
+figure(handles.figure1);
