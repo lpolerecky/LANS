@@ -46,7 +46,7 @@ if Nc>0
                     a = mplane(ind);
                     indN = find(isfinite(a));            
                     rcell(ii,jj) = sum(a(indN));
-                end;
+                end
                 
             else
                 
@@ -124,16 +124,9 @@ if Nc>0
         % ratio calculation
         m_out{kk} = rcell;
 
-        % because of the Poisson statistics, the percentage Poisson error of the mass
-        % should be equal to 100%/sqrt(mass), and so the Poisson error should
-        % be mass/sqrt(mass)
-        warning('off');
-        dm{kk} = rcell./sqrt(rcell);
-        warning('on');
+        % because of the Poisson statistics, the Poisson error is equal to sqrt(mass)
+        dm{kk} = sqrt(rcell);
         
-        ind = find(rcell==0);
-        dm{kk}(ind) = zeros(size(ind));
-
     end
 
     m=m_out;

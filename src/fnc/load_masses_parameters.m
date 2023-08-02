@@ -57,9 +57,9 @@ for ii=1:8
         eval(s);
         p.imscale{jj}=str2num(s);
         
-    end;
+    end
     
-end;
+end
 
 if length(p.images)<length(p.mass)
     for ii=(length(p.images)+1):length(p.mass)
@@ -78,7 +78,7 @@ if uss
         
         if ii<=4, k1=ii+19; k2=ii+24;
         else, k1=ii+48; k2=ii+65;
-        end;
+        end
         
         % fill expression string:
         s=['s=my_get(handles.edit',num2str(k1),',''string'');'];
@@ -96,12 +96,12 @@ if uss
                 p.special_scale{jj}=str2num(s);
             else
                 p.special_scale{jj}=s;
-            end;
-        end;
+            end
+        end
         
-    end;
+    end
     
-end;
+end
 
 %% fill other parameters
 p.ext = 'eps';
@@ -115,8 +115,22 @@ if(isfield(handles,'edit46'))
     p.maxalignment = str2num(my_get(handles.edit46,'string'));
 else
     p.maxalignment = 1;
-end;
+end
 
+p.shift_columns_rows = [0 0 0 0];
+if strcmp(get(handles.shift_first_column_end,'checked'),'on')
+    p.shift_columns_rows(1) = 1;
+end
+if strcmp(get(handles.shift_last_column_beginning,'checked'),'on')
+    p.shift_columns_rows(2) = 1;
+end
+if strcmp(get(handles.shift_first_row_end,'checked'),'on')
+    p.shift_columns_rows(3) = 1;
+end
+if strcmp(get(handles.shift_last_row_beginning,'checked'),'on')
+    p.shift_columns_rows(4) = 1;
+end
+    
 %% add ext to the list of masses, if the relevant image file exists, but only if it has not been done before
 global EXTERNAL_IMAGEFILE;
 if ~isempty(EXTERNAL_IMAGEFILE)
@@ -127,8 +141,8 @@ if ~isempty(EXTERNAL_IMAGEFILE)
             p.images{Nim+1}=p.images{Nim};
             p.imscale{Nim+1}='[0 255]';       
             fprintf(1,'Loading parameters for the external image.\n');
-        end;
-    end;
-end;
+        end
+    end
+end
 
 
