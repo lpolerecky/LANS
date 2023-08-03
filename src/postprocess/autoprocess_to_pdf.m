@@ -16,7 +16,8 @@ function autoprocess_to_pdf(s, handles)
 
 % get instructions from the meta file
 all_cell_types = regexprep(s.cellclasses,' ','');
-[id,fname,tmnt,ct,xyz,nf,all,plot3d, basedir, image_range]=getmetainstructions(s.metafile, all_cell_types, s.plot3d);
+[id, fname, tmnt, ct, xyz, nf, all, plot3d, basedir, image_range] = ...
+    getmetainstructions(s.metafile, all_cell_types, s.plot3d);
 
 % the output filename will have the same base-name as the metafile
 if(~isempty(s.metafile))
@@ -105,13 +106,14 @@ if ~isempty(foutname)
             % exist, do accumulation based on the information in the
             % main GUI.
             prefsfile = [s.base_dir fname{k} filesep s.prefsfile];
-            if exist(prefsfile)
+            if exist(prefsfile,'file')
 
                 a=load(prefsfile);
                 fprintf(1,'Preferences loaded from %s\n',prefsfile);
 
                 images=[];
                 for j=1:length(p.mass)
+                    
                     switch j
                         case 1, ims = str2num(a.h.edit12.string); mname = a.h.edit3.string;
                         case 2, ims = str2num(a.h.edit12.string); mname = a.h.edit4.string;
@@ -122,11 +124,29 @@ if ~isempty(foutname)
                         case 7, ims = str2num(a.h.edit12.string); mname = a.h.edit9.string;
                         case 8, ims = str2num(a.h.edit12.string); mname = a.h.edit74.string;
                     end
-                    images{j}=ims;
+                    
+                    if isempty(ims)
+                        images{j} = p.planes;
+                    else
+                        images{j}=ims;
+                    end
+                    
+                    % force image_range from the metafile, if not empty
+                    b=eval(image_range{k});
+                    if ~isempty(b)
+                        if j==1
+                            fprintf(1,'WARNING: Updating planes that will be accumulated based on the value in the metafile.\n')
+                            fprintf(1,'         Original: [%d:%d]\n', min(images{j}), max(images{j}));
+                            fprintf(1,'         Updated:  %s\n', image_range{k});
+                        end
+                        images{j}=b;
+                    end
+                    
                     if ~strcmp(p.mass{j},mname)
                         fprintf(1,'WARNING: Mass %s in the loaded IM file renamed to %s based on info in %s\n',p.mass{j},mname,prefsfile);
                         p.mass{j} = mname;
                     end
+                    
                 end
 
                 find_alignments = a.h.checkbox7.value;
@@ -137,7 +157,8 @@ if ~isempty(foutname)
                 if find_alignments
                     xyalignfile = [s.base_dir fname{k} filesep s.xyalignfile];
 
-                    if exist(xyalignfile)
+                    if exist(xyalignfile,'file')
+                        
                         % load the previously calculated and stored alignment data
                         b=load(xyalignfile);
                         fprintf(1,'XY-alignment loaded from %s\n',xyalignfile);
@@ -146,8 +167,10 @@ if ~isempty(foutname)
                         end
                         if isfield(b,'tforms')
                             tforms = b.tforms;
-                        end                    
+                        end                   
+                        
                     else
+                        
                         % if the xyalignfile does not exist, i.e., the im file has
                         % never been processed or was processed but without image
                         % alignment, autoalign images using the base mass       
@@ -162,28 +185,29 @@ if ~isempty(foutname)
                         [tforms, images, xyalign, ~, ~] = findimagealignments2(p.im{bm},[],[1:p.width],[1:p.height],0);
 
                     end
+                    
                 else
                     images={str2num(a.h.edit12.string)};
                 end
 
                 % align only selected planes based on info in metafile
-                if ~isempty(str2num(image_range{k}))
-                    for ik=1:length(images)
-                        images{ik} = str2num(image_range{k});
-                    end
-                end
+                %if ~isempty(str2num(image_range{k}))
+                %    for ik=1:length(images)
+                %        images{ik} = str2num(image_range{k});
+                %    end
+                %end
 
                 % align and accumulate masses
-                if ~p.planes_aligned && ~isempty(xyalign)
-                    if ~isempty(tforms)
-                        [p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, images, ones(1,length(p.mass)));
-                    else
-                        [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, images, ones(1,length(p.mass)));
-                    end
-                    p.planes_aligned = 1;
-                else
-                    [p.accu_im, p.im]=accumulate_images(p.im, xyalign, find_alignments, p.mass, images, zeros(1,length(p.mass)));
-                end
+                %if ~p.planes_aligned && ~isempty(xyalign)
+                %    if ~isempty(tforms)
+                %        [p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, images, ones(1,length(p.mass)));
+                %    else
+                %        [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, images, ones(1,length(p.mass)));
+                %    end
+                %    p.planes_aligned = 1;
+                %else
+                %    [p.accu_im, p.im]=accumulate_images(p.im, xyalign, find_alignments, p.mass, images, zeros(1,length(p.mass)));
+                %end
 
                 if isfield(a.h,'shift_columns_rows')
                     shift_columns_rows = a.h.shift_columns_rows;
@@ -211,24 +235,39 @@ if ~isempty(foutname)
     %            [p.accu_im, p.im]=accumulate_images(p.im, xyalign, s.p.find_alignments, p.mass, {images}, ones(1,length(p.mass)));
 
                 % align and accumulate masses
-                if ~isempty(xyalign)
-                    if ~isempty(tforms)
-                        [p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, {images}, ones(1,length(p.mass)));
-                        %[p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, [], ones(1,length(p.mass)));
-                    else
-                        [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, {images}, ones(1,length(p.mass)));
-                        %[p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, [], ones(1,length(p.mass)));
-                    end
-                end
+                %if ~isempty(xyalign)
+                %    if ~isempty(tforms)
+                %        [p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, {images}, ones(1,length(p.mass)));
+                %        %[p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, [], ones(1,length(p.mass)));
+                %    else
+                %        [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, {images}, ones(1,length(p.mass)));
+                %        %[p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, [], ones(1,length(p.mass)));
+                %    end
+                %end
 
-                shift_columns_rows = [0 0 0 0];
+                shift_columns_rows = s.p.shift_columns_rows;
 
             end        
 
             % shift columns or rows of the images, if needed, according to the
             % information stored in shift_columns_rows flags
             p.im = shift_columns_rows_images(p.im, shift_columns_rows);
-            p.accu_im = shift_columns_rows_images(p.accu_im, shift_columns_rows);        
+            %p.accu_im = shift_columns_rows_images(p.accu_im, shift_columns_rows);        
+
+            % align and accumulate masses
+            if ~p.planes_aligned && ~isempty(xyalign) && ~isempty(tforms)
+                if isempty(tforms)
+                    % old algorithm
+                    [p.accu_im, p.im]=accumulate_images(p.im, xyalign, p.mass, images, ones(1,length(p.mass)));
+                else
+                    % new algorithm
+                    [p.accu_im, p.im]=accumulate_images2(p.im, tforms, p.mass, images, ones(1,length(p.mass)));
+                end
+                p.planes_aligned = 1;
+            else
+                % by default, use old algorithm
+                [p.accu_im, p.im]=accumulate_images2(p.im, xyalign, p.mass, images, zeros(1,length(p.mass)));
+            end
 
         else
             
@@ -254,7 +293,7 @@ if ~isempty(foutname)
         
         % load cells from disk, if the file exists, otherwise set cells to zero
         cellfile = [s.base_dir fname{k} filesep s.cellfile];
-        if exist(cellfile)
+        if exist(cellfile, 'file')
             a=load(cellfile);
             Maskimg = a.Maskimg;
             fprintf(1,'ROIs loaded from %s\n',cellfile);
@@ -269,6 +308,7 @@ if ~isempty(foutname)
         fig173 = 173; % "random" figure number where all the images will be displayed
         
         % display and export all masses as PDF
+        
         % because there is no general information about the right scale,
         % the images will be autoscaled in the same way as if the
         % auto-scale function is chosen from the menu in the GUI

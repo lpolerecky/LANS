@@ -184,6 +184,24 @@ LANS_version = '2023-06-09'; % There was a bug in the formatting of the data str
                              % errors down the line (e.g., when one wanted
                              % to display lateral profiles). This bug has
                              % been fixed now.
+LANS_version = '2023-08-03'; % Bugs in export_depth_profiles.m fixed.
+                             % Now it is again possible, without errors, to
+                             % use metafile processing for plotting depth
+                             % profiles of ion counts and ion count ratios
+                             % in ROIs. By default, depth profiles in all
+                             % planes selected during the processing of the
+                             % individual datasets are plotted (and exported).
+                             % One can change this behaviour by including a
+                             % range of planes (e.g., [5:25]) for each
+                             % individual dataset in the metafile. The range
+                             % should be added at the end of the
+                             % corresponding line. Note that this range is
+                             % also used when doing Auto-process datasets
+                             % during metafile processing. In this case,
+                             % when the data is reprocessed, the total ion
+                             % counts, and the corresponding ion count ratios,
+                             % will be calculated by accumulating only the
+                             % specified planes.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';

@@ -87,7 +87,8 @@ if(~isempty(q))
                 
         else
             % cells are not defined, so take data for all cells
-            disp(['** Classification file ',fncells,' not found. All cells treated as equal (class "a").']);
+            fprintf(1, '** Classification file %s not found.\n', fncells);
+            fprintf(1, '   All cells treated as equal (class "a").\n');
             ii=1; d=[];
             d{ii} = r(:,4:5);
             cellid{ii}=r(:,1);

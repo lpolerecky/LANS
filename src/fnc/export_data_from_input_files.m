@@ -13,7 +13,6 @@ fmt2=[fmt2,'\n'];
 % filename of the final output
 fn = [foutname,'.dac'];  
 
-fprintf(1,'\nExporting data to %s ... \n',fn); 
 fid=fopen(fn,'w');
 %fid=1;
 
@@ -25,4 +24,5 @@ for ii=1:size(t2,1)
     fprintf(fid,fmt2, table2array(t2(ii,:)));
 end
 fclose(fid);
-fprintf(1,'Done.\n');       
+
+fprintf(1,'NOTE: Complete data exported to %s\n',fn); 

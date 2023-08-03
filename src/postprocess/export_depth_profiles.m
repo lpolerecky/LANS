@@ -7,14 +7,16 @@ function export_depth_profiles(s)
 
 % get instructions from the meta file
 all_cell_types = regexprep(s.cellclasses,' ','');
-[id,fname,tmnt,ct,xyz,nf,all,plot3d, basedir, image_range]=getmetainstructions(s.metafile, all_cell_types, s.plot3d);
+[id, fname, tmnt, ct, xyz, nf, all, plot3d, basedir, image_range] = ...
+    getmetainstructions(s.metafile, all_cell_types, s.plot3d);
 
 % the output filename will have the same base-name as the metafile
 if(~isempty(s.metafile))
     [fdir, fn, fext] = fileparts(s.metafile);
     doutname = [fdir delimiter fn];
-    if ~exist(doutname)
+    if ~isfolder(doutname)        
         mkdir(doutname);
+        fprintf(1,'Output folder %s created.\n', doutname);
     end
     foutname = [fdir, delimiter, fn, delimiter, fn];
 else
@@ -22,7 +24,6 @@ else
 end
 
 % auto-process datasets
-all_filenames=[];
 if ~isempty(foutname)   
 
     global additional_settings;
@@ -128,6 +129,11 @@ if ~isempty(foutname)
                 % force image_range from the metafile, if not empty
                 b=eval(image_range{k});
                 if ~isempty(b)
+                    if j==1
+                        fprintf(1,'WARNING: Updating planes that will be accumulated based on the value in the metafile.\n')
+                        fprintf(1,'         Original: [%d:%d]\n', min(images{j}), max(images{j}));
+                        fprintf(1,'         Updated:  %s\n', image_range{k});
+                    end
                     images{j}=b;
                 end
                 
@@ -143,8 +149,10 @@ if ~isempty(foutname)
             
             if find_alignments
                 xyalignfile = [s.base_dir fname{k} filesep s.xyalignfile];
-                if exist(xyalignfile)
+                
+                if exist(xyalignfile,'file')
                     
+                    % load the previously calculated and stored alignment data
                     b=load(xyalignfile);
                     fprintf(1,'XY-alignment loaded from %s\n',xyalignfile);
                     if isfield(b,'xyalign')
@@ -166,7 +174,7 @@ if ~isempty(foutname)
                     bm = identifyMass(p.mass,s.base_mass_for_alignment);
                     % determine the alignment distances
                     %[xyalign, images] = findimagealignments(p.im{bm}, [], 1, [1:p.width], [1:p.height],3);
-                    [tforms, images, xyalign, f40, choice] = findimagealignments2(p.im{bm},[],[1:p.width],[1:p.height]);
+                    [tforms, images, xyalign, ~, ~] = findimagealignments2(p.im{bm},[],[1:p.width],[1:p.height],0);
                     
                 end
                 
@@ -213,7 +221,7 @@ if ~isempty(foutname)
             images = [s.p.images{1}];
             if s.p.find_alignments
                 bm = identifyMass(p.mass,s.p.alignment_mass);
-                [tforms, images, xyalign, f40, choice] = findimagealignments2(p.im{bm},images,s.p.alignmentregion_x, s.p.alignmentregion_y,0);
+                [tforms, images, xyalign, ~, ~] = findimagealignments2(p.im{bm},images,s.p.alignmentregion_x, s.p.alignmentregion_y,0);
             else
                 xyalign=zeros(length(images),2);
                 tforms = [];
@@ -284,7 +292,7 @@ if ~isempty(foutname)
         
         % load cells from disk, if the file exists, otherwise set cells to zero
         cellfile = [s.base_dir fname{k} filesep s.cellfile];
-        if exist(cellfile)
+        if exist(cellfile, 'file')
             a=load(cellfile);
             Maskimg = a.Maskimg;
             fprintf(1,'ROIs loaded from %s\n',cellfile);
@@ -299,12 +307,14 @@ if ~isempty(foutname)
         % load cells classes from disk, if the file exists, otherwise
         % classify all rois as 'i'
         cellfile = [s.base_dir fname{k} filesep s.classificationfile];
-        fprintf(1,'ROI classes loaded from %s\n',cellfile);
-        [cidu,cc,cid,cnum,ss]=load_cell_classes(cellfile);
-        if isempty(cid)
+        if exist(cellfile,'file')
+            fprintf(1,'ROI classes loaded from %s\n',cellfile);
+            [~,~,cid,cnum,~]=load_cell_classes(cellfile);
+        else
+            fprintf(1,'** Classification file %s not found.\n   All cells treated as equal (class "a").\n', cellfile);
             % determine the number of rois and classes based on the Maskimg data
             Nrois = length(setdiff(unique(Maskimg(:)),0));
-            cid = char('i'*ones(Nrois,1));
+            cid = char('a'*ones(Nrois,1));
             cnum = [1:Nrois]';
         end
         
@@ -316,7 +326,7 @@ if ~isempty(foutname)
         % each plane
         [m2, dm2]=accumulate_masses_in_cells(p.im,p.Maskimg,p.im,p.images,p.mass);
         
-        [out pdfout f30] = display_depth_profiles_ROIS(m2,dm2,cid,cnum,p.images,p.mass,p.Maskimg,all{k},p.filename,s.cellclasses);        
+        [out, pdfout, f30] = display_depth_profiles_ROIS(m2,dm2,cid,cnum,p.images,p.mass,p.Maskimg,all{k},p.filename,s.cellclasses);        
         
         % export data, gather some of it also for final plotting        
         for ii=1:length(all{k})
@@ -328,8 +338,8 @@ if ~isempty(foutname)
                     fprintf(fid,'#id\tfile\ttreatment\tcell_type\tcell_id\tmean\tstd_tot\tstd_Poiss\tstd_depth\t2.5pc\t97.5pc\n');
                 else
                     fid=fopen(fout,'a');
-                end;
-                [cids,icid]=sort(cid,1,'descend');
+                end
+                [~,icid]=sort(cid,1,'descend');
                 for jj=1:size(out{ii},1)
                     fprintf(fid,'%d\t%s\t%d\t%c\t%d\t%.4e\t%.4e\t%.4e\t%.4e\t%.4e\t%.4e\n',...
                         k,fname{k},tmnt{k},cid(icid(jj)),cnum(icid(jj)),out{ii}(icid(jj),:));
@@ -339,12 +349,12 @@ if ~isempty(foutname)
                         final_data{ii} = out_final_data;
                     else
                         final_data{ii} = [final_data{ii}; out_final_data];
-                    end;
-                end;
+                    end
+                end
                 fclose(fid);
                 fprintf(1,'Output written/appended to %s\n',fout);
-            end;
-        end;
+            end
+        end
         
         % generate PDF-LaTeX output
         for ii=1:length(all{k})
@@ -365,11 +375,11 @@ if ~isempty(foutname)
 
                 else
                     fid=fopen(fout,'a');
-                end;
+                end
 
                 if k>1
                     fprintf(fid,'\n\\newpage\n');
-                end;
+                end
 
                 % add the section with the current filename, also the label
                 s1=regexprep(fname{k},'\','/');
@@ -383,20 +393,20 @@ if ~isempty(foutname)
                 fprintf(fid,'\\end{center}\n');                
                 fclose(fid);
 
-            end;
+            end
             
-        end;
+        end
         
         if want_to_be_asked
             input('Check the graphs, then press enter to continue.');
-        end;
+        end
         
         % close all figures
         for ii=1:length(f30)
             close(f30{ii});
-        end;            
+        end       
         
-    end;
+    end
     
     for ii=1:length(all{k})
         if ~isempty(pdfout{ii})
@@ -408,8 +418,8 @@ if ~isempty(foutname)
             % compile the tex file to create a PDF output
             mepstopdf(fout,'pdflatex',0);
             mepstopdf(fout,'pdflatex',1);
-        end;
-    end;
+        end
+    end
     
     % plot final data
     fig=plot_final_data(final_data, all{1}, s);
@@ -426,7 +436,7 @@ if ~isempty(foutname)
     %disp('You can use pdflatex to generate a PDF file from it');
     %end;
     
-end;
+end
 
 function fig=plot_final_data(d,ratios,s)
 fprintf(1,'Plotting mean +/- SD and CV=SD/mean values ... ');
@@ -449,7 +459,7 @@ for k=1:Nd
         pc=dd(ii,9:10);
         ci = findstr(classes,c);
         ti = find(tmnt==t);
-        if ~isempty(ci) & ~isempty(ti)
+        if ~isempty(ci) && ~isempty(ti)
             cnt=cnt+1;
             % plot mean +/- SD
             subplot(2,Nd,k);
@@ -457,7 +467,7 @@ for k=1:Nd
                 hold off;
             else
                 hold on;
-            end;
+            end
             errorbar(cnt,m,sd,tmnts(ti),'MarkerSize',8,'Color',s.cellcolors(ci));
             rectangle('Position',[cnt-0.1, m-sd_depth, 0.2 2*sd_depth],'EdgeColor',s.cellcolors(ci));
             % plot coefficient of variation
@@ -466,11 +476,11 @@ for k=1:Nd
                 hold off;
             else
                 hold on;
-            end;
+            end
             plot(cnt,sd_depth/m,tmnts(ti),'MarkerSize',12,'Color',s.cellcolors(ci));   
             text(cnt,sd_depth/m,num2str(roiid),'HorizontalAlignment','center','FontSize',8);
-        end;
-    end;
+        end
+    end
     subplot(2,Nd,k);
     title(ratios{k});
     ylabel('mean +/- SD_{tot} (SD_z)');
@@ -480,6 +490,6 @@ for k=1:Nd
     ylim2=ylim;
     ylim([0 ylim2(2)]);
     xlim([0 cnt+1]);
-end;
+end
 fprintf(1,'Done.\n');
 a=0;

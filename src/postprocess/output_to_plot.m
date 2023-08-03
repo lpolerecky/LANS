@@ -68,7 +68,7 @@ else
             end
         end
 
-        fprintf(1,'\nPlotting 2D graph ... \n');
+        fprintf(1,'Plotting 2D graph: ');
         
         %% plot x1 vs y1
         if length(varnames{1})>1
@@ -162,7 +162,7 @@ else
             end
         end
               
-        fprintf(1,'\nPlotting 3D graph ... \n');
+        fprintf(1,'Plotting 3D graph: ');
         
         %% plot 1 vs 2 vs 3
         if length(varnames{1})>2
@@ -253,7 +253,7 @@ else
     end
     
     if plot2d
-        fprintf('NOTE: Click on DATACURSOR to see annotations for each data-point.\n')
+        fprintf('NOTE: Click on DATA TIPS and then on individual data points to see annotations.\n')
     end
     
     %% add a button for fitting data to each graph
@@ -326,10 +326,10 @@ ax=subplot(1,1,1);
 hold off;
 
 %% add data to the graph
-fprintf(1,'Adding data in a 2D plot ... ');
+fprintf(1,'adding data in a 2D plot ... ');
 [cls_sel, tmnt_sel]=add_to_plot2d(ax,xyz(:,1),xyz(:,2),dxyz(:,1),dxyz(:,2),roi_prop, ...
     xlab, ylab, xscale,yscale,logscalex,logscaley, s);
-fprintf(1,'Done\n');
+fprintf(1,'done\n');
 
 %% export graphics
 fbs = ['fit_button' num2str(fig)];
@@ -422,10 +422,10 @@ ax=subplot(1,1,1);
 hold off;
 
 %% add data to the graph
-fprintf(1,'Adding data in a 3D plot ... ');
+fprintf(1,'adding data in a 3D plot ... ');
 [cls_sel, tmnt_sel]=add_to_plot3d(ax,xyz(:,1),xyz(:,2),xyz(:,3), dxyz(:,1),dxyz(:,2),dxyz(:,3),roi_prop, ...
     xlab, ylab, zlab, xscale,yscale,zscale, logscalex,logscaley,logscalez, s);
-fprintf(1,'Done\n');
+fprintf(1,'done\n');
 
 %% export graphics
 pdffile = [name '-' xlab '--' ylab '--' zlab '-all'];
