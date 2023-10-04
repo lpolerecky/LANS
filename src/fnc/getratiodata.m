@@ -50,8 +50,8 @@ if(~isempty(q))
                    pixels{ii}=[r(cnum(ind),8) zeros(length(ind),1)];
                    xpos{ii}=[r(cnum(ind),2) zeros(length(ind),1)];
                    ypos{ii}=[r(cnum(ind),3) zeros(length(ind),1)];
-                   l2w{ii}=[r(cnum(ind),9)];
-                   %l2w{ii}=[r(cnum(ind),9:10)];
+                   %l2w{ii}=[r(cnum(ind),9)];
+                   l2w{ii}=[r(cnum(ind),9:10)];
                    %dl2w{ii}=[r(cnum(ind),10) zeros(length(ind),1)];
                    cls{ii}=ct(ii)*ones(length(ind),1);
                 else
