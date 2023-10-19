@@ -2336,6 +2336,8 @@ else
 end
 guidata(hObject, handles);
 display_detected_cells(handles);
+% activate the main GUI window
+figure(handles.figure1);
 
 % --------------------------------------------------------------------
 function clear_mask_image_Callback(hObject, eventdata, handles)

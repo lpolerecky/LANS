@@ -116,6 +116,8 @@ if cbpos ~= 0
             xt = [mi:ma];
         end
     else
+        % figure out how to set the tick labels better
+        % LP: ticks and ticklabels
         f1 = 10^(floor(log10(dr/4)));
         dx = f1*floor((dr/4)/f1);
         % LP: last update 21-05-2021

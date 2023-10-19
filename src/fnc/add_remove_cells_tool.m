@@ -731,6 +731,8 @@ else
     fprintf(1,'ROIs and ROIs classifications are now UNLINKED.\n');
 end
 guidata(hObject, handles);
+% activate the main GUI at the end
+figure(handles.figure1);
 
 function ButtonDownFcn(hObject, eventdata, handles)
 cp = round(get(gca,'CurrentPoint'));
@@ -1876,6 +1878,8 @@ if ~isempty(Maskimg)
 else
     disp(['No cells defined as yet.']);
 end
+% activate the main GUI at the end
+figure(handles.figure1);
 
 function add_remove_rgb_channel(hObject, eventdata, handles)
 % get to the image data
