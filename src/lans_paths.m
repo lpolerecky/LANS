@@ -68,7 +68,11 @@ elseif isunix
     ZIP_COMMAND = 'zip -r';
     
     % PDF viewer
-    PDF_VIEWER = 'xreader';
+    %PDF_VIEWER = 'xreader';
+    
+    % if calling system(PDF_VIEWER) without the LD_LIBRARY_PATH set
+    % gives a segmentation fault, use the following way to define it:
+    PDF_VIEWER = 'LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu; xreader';
         
     GUI_FONTSIZE = 10;
     

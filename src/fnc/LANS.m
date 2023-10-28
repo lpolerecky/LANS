@@ -2081,20 +2081,20 @@ function h=Load_Display_Preferences_Callback(hObject, eventdata, handles)
 h = [];
 workdir=get(handles.edit2,'String');
 workdir=fixdir(workdir);
-if(isdir(workdir))
+if(isfolder(workdir))
     newdir=workdir;
 else
     newdir='';
-end;
+end
 global MAT_EXT
 def_file = [workdir 'prefs' MAT_EXT];
 fprintf(1,'Select the Preferences file (default %s)\n',def_file);
 
-[FileName,newdir,newext] = uigetfile('*.mat', 'Select the Preferences file', def_file);
+[FileName,newdir,~] = uigetfile('*.mat', 'Select the Preferences file', def_file);
 if(FileName~=0)
     imfile = [newdir, FileName];
     h = load_settings(handles,imfile,0);
-end;
+end
 
 % --------------------------------------------------------------------
 function define_mask_Callback(hObject, eventdata, handles)
@@ -2403,7 +2403,7 @@ function Save_Display_Preferences_Callback(hObject, eventdata, handles)
 
 workdir=get(handles.edit2,'String');
 workdir=fixdir(workdir);
-if(isdir(workdir))
+if(isfolder(workdir))
     newdir=workdir;
 else
     newdir='';
@@ -2416,7 +2416,7 @@ fprintf(1,'Specify file name to store the preferences (default %s.mat)\n',def_fi
 if(FileName~=0)
     imfile = [newdir, FileName];
     save_settings(handles,imfile);
-end;
+end
 
 % --------------------------------------------------------------------
 function close_all_figures_Callback(hObject, eventdata, handles)

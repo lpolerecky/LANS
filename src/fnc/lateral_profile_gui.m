@@ -187,6 +187,64 @@ else
 end
 %guidata(hObject, handles);
 
+function pushbutton5_Callback(hObject, eventdata, handles)
+if isfield(handles,'polygon')
+%if ishandle(handles.polygon)
+    xy = handles.polygon.Position;
+    
+    workdir=handles.fdir;
+    if(isfolder(workdir))
+        newdir=workdir;
+    else
+        newdir='';
+    end
+
+    def_file = [workdir 'polygon_xy'];
+    fprintf(1,'Specify a file name for storing the polygon coordinates (default %s.dat)\n',def_file);
+
+    [FileName,newdir,~] = uiputfile('*.dat', 'Select *.DAT file', def_file);
+    if(FileName~=0)
+        polygonfile = [newdir, FileName];
+        save(polygonfile,'xy','-ascii');
+    end
+
+end
+
+function pushbutton6_Callback(hObject, eventdata, handles)
+workdir=handles.fdir;
+if(isfolder(workdir))
+    newdir=workdir;
+else
+    newdir='';
+end
+def_file = [workdir 'polygon_xy.dat'];
+fprintf(1,'Select a file with polygon coordinates (default %s)\n',def_file);
+
+[FileName,newdir,~] = uigetfile('*.dat', 'Select *.DAT file', def_file);
+if(FileName~=0)
+    polygonfile = [newdir, FileName];
+    fid=fopen(polygonfile,'r');
+    xy = fscanf(fid,'%f %f',[2,inf]);
+    fclose(fid);
+    xy = xy';
+end
+if isfield(handles,'polygon') 
+    if isvalid(handles.polygon)
+        handles.polygon.Position = xy;
+    else
+        ax = handles.axes1;
+        polygon = images.roi.Polyline(ax, 'Color', 'w', 'Tag', 'lans_polygon');
+        polygon.Position = xy;
+        handles.polygon = polygon;
+    end
+else
+    ax = handles.axes1;
+    polygon = images.roi.Polyline(ax, 'Color', 'w', 'Tag', 'lans_polygon');
+    polygon.Position = xy;
+    handles.polygon = polygon;
+end
+guidata(hObject, handles);
+
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
