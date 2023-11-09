@@ -135,11 +135,15 @@ if cbpos ~= 0
         xt = xt(xt>=mi & (ma-xt)>-eps);
     end
     
-    % LP: last update 21-05-2021
+    % LP: last update 21-10-2023
+    % related to TickLabels
     %xt2 = xt(xt==round(xt));
-    %if length(xt2)>2
-    %    xt=xt2;
-    %end
+    if (xt(1)-mi) > 0.5*(xt(2)-xt(1)) && ~log_flag
+        xt = [mi xt];
+    end
+    if (ma-xt(end)) > 0.5*(xt(end)-xt(end-1)) && ~log_flag
+        xt = [xt ma];
+    end
     
     if max(xt)>0
         f2 = 10^floor(log10(max(xt))-1);    
