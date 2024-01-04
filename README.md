@@ -12,7 +12,7 @@ Netherlands.
 Although LANS has matured pretty well over the years, it may still contain bugs or lack features that you might find useful. If you experience problems, find a bug, or would like to have a new feature added to LANS, you can contact LP via email - he will be happy to work with you to fix them and improve the program. Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
 <span style="color:red">
-**Current version: 2023-08-03**
+Current version: 2023-08-03
 </span>
 
 ## Basic features and functions
@@ -70,8 +70,8 @@ LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh
 
 Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011), it is still the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading the following web-pages that describe *extra features and functions* of LANS:
 
-  - %md <a href="http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras" target="_blank">New features in LANS</a>
-  - %md <a href="http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know" target="_blank">LANS: Good to know</a>
+  - <a href="http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras" target="_blank">New features in LANS</a>
+  - <a href="http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know" target="_blank">LANS: Good to know</a>
 
 ## Download & update
 
