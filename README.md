@@ -11,9 +11,7 @@ Netherlands.
 
 Although LANS has matured pretty well over the years, it may still contain bugs or lack features that you might find useful. If you experience problems, find a bug, or would like to have a new feature added to LANS, you can contact LP via email - he will be happy to work with you to fix them and improve the program. Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
-<code style="color : Red">
-Current version: 2023-08-03
-</code>
+<code style="color : red">Current version: 2023-08-03</code>
 
 ## Basic features and functions
 
