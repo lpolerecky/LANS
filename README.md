@@ -70,8 +70,8 @@ LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh
 
 Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011), it is still the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading the following web-pages that describe *extra features and functions* of LANS:
 
-  - [New features in LANS](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras){:target="_blank"}
-  - [LANS: Good to know](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know){:target="_blank"}
+  - %md <a href="http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras" target="_blank">New features in LANS</a>
+  - %md <a href="http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know" target="_blank">LANS: Good to know</a>
 
 ## Download & update
 
