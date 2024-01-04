@@ -66,16 +66,16 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 
 ## LANS manual
 
-LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0).
+LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0){:target="_blank"}.
 
-Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 2011), it is the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading about *extra features and functions* described on the following web-sites:
+Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011), it is still the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading the following web-pages that describe *extra features and functions* of LANS:
 
-  - [New features in LANS](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras)
-  - [LANS: Good to know](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know)
+  - [New features in LANS](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras){:target="_blank"}
+  - [LANS: Good to know](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know){:target="_blank"}
 
 ## Download & update
 
-  - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the *program* folder and then select the file `LANS-latest-src.zip`.
+  - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0){:target="_blank"}. Click on the *program* folder and then select the file `LANS-latest-src.zip`.
   - If you are already using LANS, updating it to the newest version is much easier: just enter `lans_webupdate` in the Matlab console.
   - Of course, you can download LANS by pulling the source code from this repository; the complete source code is in the [src](src) folder.
 
@@ -83,15 +83,16 @@ Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 
 
 1. Install Matlab. 
 
-    - You will need the *core* Matlab and the *image processing* and *statistics and machine learning* toolboxes. 
-    - Presently, LANS requires Matlab 2019b or newer.
+    - You will need the *core* Matlab and the following toolboxes: *image processing* and *statistics and machine learning*. 
+    - Presently, LANS requires Matlab 2019b or newer. Using the version 2019b of Matlab is most recommended.
 
 2. Install LaTeX. 
     
     - This software is required to enable export of graphical output as tagged PDF documents.
     - Use one of the well-known LaTeX distributions for your operating system, e.g., *texlive* (Linux), *MikTeX* (Windows), *MacTex* (MacOS).
-    - required executables: *epstopdf*, *pdflatex*
-    - required LaTeX packages: *graphicx*, *geometry*, *hyperref*
+    - What is essential to have installed and working are the following executables and packages:
+        - executables: *epstopdf*, *pdflatex*
+        - LaTeX packages: *graphicx*, *geometry*, *hyperref*
     
 3. Install software for decompressing zip files.
 
