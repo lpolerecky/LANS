@@ -11,7 +11,9 @@ Netherlands.
 
 Although LANS has matured pretty well over the years, it may still contain bugs or lack features that you might find useful. If you experience problems, find a bug, or would like to have a new feature added to LANS, you can contact LP via email - he will be happy to work with you to fix them and improve the program. Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
+<span style="color:red">
 **Current version: 2023-08-03**
+</span>
 
 ## Basic features and functions
 
@@ -66,13 +68,16 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 
 LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0).
 
-Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 2011), it is the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading about *extra features and functions* described in `LANS-extras.pdf`.
+Although the original manual (`LANS-manual.pdf`) is rather outdated (written in 2011), it is the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading about *extra features and functions* described on the following web-sites:
+
+  - [New features in LANS](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras)
+  - [LANS: Good to know](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know)
 
 ## Download & update
 
   - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the *program* folder and then select the file `LANS-latest-src.zip`.
-  - If you are already using LANS and want to update it to the newest version, enter `lans_webupdate` in Matlab console.
-  - Of course, you can download LANS from the folder [src](src) in this repository.
+  - If you are already using LANS, updating it to the newest version is much easier: just enter `lans_webupdate` in the Matlab console.
+  - Of course, you can download LANS by pulling the source code from this repository; the complete source code is in the [src](src) folder.
 
 ## Installation instructions
 
