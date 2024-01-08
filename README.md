@@ -1,13 +1,8 @@
 # Look@NanoSIMS
 
-Look@NanoSIMS (abbreviated as **LANS**) is a [free software](http://www.gnu.org/philosophy/free-sw.html) 
-for the analysis of NanoSIMS image data acquired by the Cameca NanoSIMS 50L instrument. It is distributed 
-as a Matlab code, thus it requires a working installation of Matlab (proprietary software) to run.
+Look@NanoSIMS (abbreviated as **LANS**) is a software tool for the analysis of NanoSIMS image data acquired by the Cameca NanoSIMS 50L instrument. Although the software itself is [free](http://www.gnu.org/philosophy/free-sw.html), it is distributed as a Matlab code and thus requires a working installation of Matlab (proprietary software) to run.
 
-The software is written and maintained by Lubos Polerecky (LP). The development started in 2008, at the 
-time when LP worked at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Since 2013, LP 
-continues with the development of the program as part of his permanent employment at Utrecht University in the 
-Netherlands.
+The software is written and maintained by Lubos Polerecky (LP). The development started in 2008, at the time when LP worked at the Max-Planck Institute for Marine Microbiology in Bremen, Germany. Since 2013, LP continues with the development of the program as part of his permanent employment at Utrecht University in the Netherlands.
 
 Although LANS has matured pretty well over the years, it may still contain bugs or lack features that you might find useful. If you experience problems, find a bug, or would like to have a new feature added to LANS, you can contact LP via email - he will be happy to work with you to fix them and improve the program. Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
@@ -39,7 +34,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
     - ratios defined through an expression (e.g., 13C/12C, 13C/(12C+13C))
     - scatter plots of ROI-specific ratios (color-coded based on ROI classification)
     - ratio images (various colormaps, ROI outlines can be included, hue intensity can be modulated)
-    - lateral and depth profiles (incl. depth variation of a lateral profile)
+    - lateral and depth profiles (incl. depth variation along a lateral profile)
     - histograms
     - image overlays (combined into an RGB image or a 3D surface plot)
     - results exported as text and graphics
@@ -61,6 +56,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 7. Import of *external* (third-party) images (e.g., TEM, SEM, AFM, fluorescence)
 
     - image alignment done within LANS
+    - resampling of NanoSIMS images to match the resolution of the external image
 
 ## LANS manual
 
@@ -71,9 +67,11 @@ Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011)
   - [New features in LANS](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras)
   - [Good to know](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know) 
   
+There is also a possibility of contacting LP if you have questions about LANS, experience problems while running LANS, or wish to include new features in the software.
+  
 ## Download & update
 
-  - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the *program* folder and then select the file `LANS-latest-src.zip`.
+  - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the *program* folder and then download the file `LANS-latest-src.zip`.
   - If you are already using LANS, updating it to the newest version is much easier: just enter `lans_webupdate` in the Matlab console.
   - Of course, you can download LANS by pulling the source code from this repository; the complete source code is in the [src](src) folder.
 
@@ -81,20 +79,21 @@ Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011)
 
 1. Install Matlab. 
 
-    - You will need the *core* Matlab and the following toolboxes: *image processing* and *statistics and machine learning*. 
-    - Presently, LANS requires Matlab 2019b or newer. Using the version 2019b of Matlab is most recommended.
+    - LANS requires Matlab, version 2019b or newer (available from www.mathworks.com). Using the Matlab version 2019b is most recommended to ensure that all features of LANS work correctly.
+    - When installing Matlab, you will need the *core* Matlab. Additionally, although Matlab comes with many *toolboxes*, you will only need these two: *image processing* and *statistics and machine learning*. 
+    - You will need a license to install and run Matlab. It may be that your institution has a site-license, thus it is useful to check whether this is the case (e.g., your university may have one for all students and academic staff).
 
 2. Install LaTeX. 
     
-    - This software is required to enable export of graphical output as tagged PDF documents.
-    - Use one of the well-known LaTeX distributions for your operating system, e.g., *texlive* (Linux), *MikTeX* (Windows), *MacTex* (MacOS).
-    - What is essential to have installed and working are the following executables and packages:
+    - This software is required to enable export of graphical output as tagged PDF documents. This is a free software.
+    - To install LaTeX, use one of the well-known LaTeX distributions for your operating system, as described on [this website](https://www.latex-project.org/get/) (e.g., *texlive* for Linux, *MikTeX* for Windows, *MacTex* for MacOS; note that the on-line LaTeX service, such as Overleaf, is insufficient).
+    - To correctly integrate LaTeX with LANS, you will need the following executables and packages installed and working:
         - executables: *epstopdf*, *pdflatex*
-        - LaTeX packages: *graphicx*, *geometry*, *hyperref*
+        - packages: *graphicx*, *geometry*, *hyperref*
     
 3. Install software for decompressing zip files.
 
-	- This software is required to enable loading of compressed datasets (`im.zip` files). This is a useful feature because `im.zip` files have roughly a 10-fold lower size than the original `im` files.
+	- This software is required to enable loading of compressed datasets (`im.zip` files) by LANS. This is a useful feature because `im.zip` files have roughly a 10-fold lower size than the original `im` files.
     - *7-Zip* (freeware) is recommended for Windows.
     - *unzip* is available by default on Linux and MacOS systems.
 
@@ -102,9 +101,9 @@ Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011)
 
     - Download LANS as described above.
     - Unzip `LANS-latest-src.zip` to a folder of your choice. 
-    - Start Matlab and set the current folder to the LANS folder.
+    - Start Matlab and set the current folder to the folder where you installed LANS.
     - Enter `lookatnanosims` in Matlab console. This should open the main LANS 
-      graphical user interface, as shown below. You can start from there, as explained in the manuals.
+      graphical user interface, as shown below. You can start from there, as explained in the manual.
 
 <center><img src="man/figures/lans-main-GUI.png"></img></center>
 
