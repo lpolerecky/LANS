@@ -289,7 +289,11 @@ if ~isdir(outdir)
     mkdir(outdir);
     fprintf(1,'Directory %s did not exist, so it was created.\n',outdir);
 end;
-print_figure(handles.figure1,fname,handles.data.print_factor);
+% older: 
+% print_figure(handles.figure1,fname,handles.data.print_factor);
+% changed on 16-01-2024 to match depth_profiles_ratios_gui.m
+global additional_settings;
+print_figure(handles.figure1, fname, additional_settings.print_factors(3));
 %fprintf(1,'Depth profiles of %s saved as %s\n',handles.data.ratio{ri},fname);
 % create also PDF file, so that it can be included by pdflatex 
 mepstopdf(fname,'epstopdf');

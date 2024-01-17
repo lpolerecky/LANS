@@ -89,7 +89,7 @@ CELLSFILE = 'cells';
 IM_FILE_EXT = '.im.zip';
 
 % define whether you want to display actions during data processing by LANS
-verbose = 0;
+verbose = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % There should be no need to make any changes below this line.
