@@ -202,6 +202,7 @@ LANS_version = '2023-08-03'; % Bugs in export_depth_profiles.m fixed.
                              % counts, and the corresponding ion count ratios,
                              % will be calculated by accumulating only the
                              % specified planes.
+LANS_version = '2024-01-18'; % Bugs in align_external_image due to autoscale fixed.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
@@ -219,7 +220,7 @@ if be_verbous
     fprintf(1,'Written by Lubos Polerecky <lpolerec (at) mpi-bremen.de>\n')
     fprintf(1,'(2008-2012) Max-Planck Institute for Marine Microbiology, Bremen\n')
     fprintf(1,'Updates by Lubos Polerecky <l.polerecky (at) uu.nl>\n')
-    fprintf(1,'(2013-2023) Utrecht University\n')
+    fprintf(1,'(2013-2024) Utrecht University\n')
     fprintf(1,'More info: http://nanosims.geo.uu.nl/LANS\n')
     fprintf(1,'================================================================\n')
     fprintf(1,'Enjoy your work!\n')

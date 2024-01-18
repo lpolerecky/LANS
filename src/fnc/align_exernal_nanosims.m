@@ -498,6 +498,11 @@ function show_alignment_Callback(hObject, eventdata, handles)
 log_flag1 = get(handles.checkbox1,'value');
 log_flag2 = get(handles.checkbox2,'value');
 
+ext_vscale = str2num([get(handles.min_ext,'String'), ...
+        ' ', get(handles.max_ext,'String')]);
+ns_vscale = str2num([get(handles.min_ns,'String'), ...
+        ' ', get(handles.max_ns,'String')]);
+    
 if hObject == handles.show_alignment4
     % set flags
     set(handles.show_alignment4,'Checked','on');
@@ -506,9 +511,10 @@ if hObject == handles.show_alignment4
     align_type = 4;
     % align based on multiple (>4) points
     v1 = round(handles.extplist');
-    v2 = round(handles.nanosimsplist');
+    v2 = round(handles.nanosimsplist');    
     [ext_aligned, ext_aligned_xyscale, f_aligned] = ...
         align2images(v1,v2,handles.extimage,handles.nanosimsimage,...
+            ext_vscale, ns_vscale,...
             handles.extimage_xyscale,handles.nanosimsimage_xyscale,...
             log_flag1,log_flag2,handles.points_color_symbol);        
     
@@ -543,7 +549,9 @@ elseif hObject == handles.align_interactively
         s2 = size(im2,2);
     end
     [ext_aligned, ext_aligned_xyscale, rgb_aligned, f_aligned] = ...
-        align_interactively(im1,im2,s1,s2,log_flag1,log_flag2);
+        align_interactively(im1,im2,...
+        ext_vscale, ns_vscale,...
+        s1,s2,log_flag1,log_flag2);
 
 elseif hObject == handles.show_alignment2
     % set flags
@@ -575,6 +583,7 @@ elseif hObject == handles.show_alignment2
     extimage_xyscale = handles.extimage_xyscale * size(im1,2)/size(handles.extimage,2);
     [ext_aligned, ext_aligned_xyscale, rgb_aligned, f_aligned] = ...
         align2images_2points(v1,v2,im1,im2,...
+            ext_vscale, ns_vscale,...
             extimage_xyscale,handles.nanosimsimage_xyscale,...
             log_flag1,log_flag2);
     
@@ -630,6 +639,10 @@ else
             % rescale it first to 0->255
             im1 = handles.ext_aligned;
             sc1 = find_image_scale(im1(im1>0),0,additional_settings.autoscale_quantiles,0,0);
+            min1 = str2num(get(handles.min_ext,'String'));
+            max1 = str2num(get(handles.max_ext,'String'));
+            if isnumeric(min1), sc1(1)=min1; end
+            if isnumeric(max1), sc1(2)=max1; end
             im1 = (im1-sc1(1))/diff(sc1);
             im1(im1<0)=0;
             im1(im1>1)=1;
@@ -800,6 +813,10 @@ elseif newext==5 % mat file (produced by LANS) selected
         a.mag_factor_used = 1;
     end
     mag_factor_used = a.mag_factor_used;
+    if isfield(a,'vscale')
+        set(handles.min_ext,'String',num2str(a.vscale(1)));
+        set(handles.max_ext,'String',num2str(a.vscale(2)));
+    end    
 else
     im=double(imread(handles.extimagefile));
     xyscale = size(im,2);
@@ -821,6 +838,10 @@ else
     %global additional_settings;
     %sc=quantile(double(im(:)),additional_settings.autoscale_quantiles);
     sc = find_image_scale(double(im));
+    min1 = str2num(get(handles.min_ext,'String'));
+    max1 = str2num(get(handles.max_ext,'String'));
+    if isnumeric(min1), sc(1)=min1; end
+    if isnumeric(max1), sc(2)=max1; end
     imagesc(im,sc);
     global additional_settings;
     colormap(get_colormap(additional_settings.colormap));
@@ -872,6 +893,8 @@ if size(im,3)>1
     image(im);
 else
     sc=vscale;
+    set(handles.min_ns,'String',num2str(vscale(1)));
+    set(handles.max_ns,'String',num2str(vscale(2)));    
     imagesc(im,sc);
     colormap(get_colormap(additional_settings.colormap));
 end
@@ -1186,6 +1209,10 @@ if isfield(handles,'extimage')
     if ~isempty(im)
         axes(ax); hold off
         sc = find_image_scale(im,0,additional_settings.autoscale_quantiles, log_flag,0);
+        min1 = str2num(get(handles.min_ext,'String'));
+        max1 = str2num(get(handles.max_ext,'String'));
+        if isnumeric(min1), sc(1)=min1; end
+        if isnumeric(max1), sc(2)=max1; end
         if size(im,3)>1
             if log_flag
                 im = log10(im);
@@ -1199,6 +1226,10 @@ if isfield(handles,'extimage')
             if log_flag
                 im = log10(im);
                 sc = log10(sc);
+                if isinf(sc(1)), sc(1)=sc(2)-3; end
+            end
+            if contains(get(hObject,'Tag'),'min_') || contains(get(hObject,'Tag'),'max_')    
+                fprintf(1,'Ext image scale set to [%.2e, %.2e]\n', sc); 
             end
             imagesc(im, sc);
             colormap(get_colormap(additional_settings.colormap));
@@ -1231,6 +1262,10 @@ if isfield(handles,'nanosimsimage')
     if ~isempty(im)
         axes(ax); hold off;
         sc = find_image_scale(im,0,additional_settings.autoscale_quantiles, log_flag,0);
+        min1 = str2num(get(handles.min_ns,'String'));
+        max1 = str2num(get(handles.max_ns,'String'));
+        if isnumeric(min1), sc(1)=min1; end
+        if isnumeric(max1), sc(2)=max1; end
         if size(im,3)>1
             if log_flag
                 im = log10(im);
@@ -1244,6 +1279,10 @@ if isfield(handles,'nanosimsimage')
             if log_flag
                 im = log10(im);
                 sc = log10(sc);
+                if isinf(sc(1)), sc(1)=sc(2)-3; end
+            end
+            if contains(get(hObject,'Tag'),'min_') || contains(get(hObject,'Tag'),'max_')
+                fprintf(1,'Nanosims image scale set to [%.2e, %.2e]\n', sc); 
             end
             imagesc(im, sc);
             colormap(get_colormap(additional_settings.colormap));

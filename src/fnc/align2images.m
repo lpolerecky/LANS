@@ -1,5 +1,6 @@
 %function [im1_out,im2_xyscale,rgb,f101]=align2images(v1,v2,im1,im2,im1_xyscale,im2_xyscale,log_flag1,log_flag2)
-function [im1_out,im2_xyscale,f101]=align2images(v1,v2,im1,im2,im1_xyscale,im2_xyscale,log_flag1,log_flag2,symb_col)
+function [im1_out,im2_xyscale,f101]=align2images(v1,v2,im1,im2,im1_vscale,im2_vscale,...
+    im1_xyscale,im2_xyscale,log_flag1,log_flag2,symb_col)
 
 N = size(v1,2);
 
@@ -60,7 +61,8 @@ t_proj = fitgeotrans(xybase1, xybase2, 'projective');
 % main_GUI:Preferences->Additional Output Options
 %sc1 = find_image_scale(im1(im1>0),0,additional_settings.autoscale_quantiles, log_flag1,0);
 % autoscale image based on min/max values
-sc1 = find_image_scale(im1(im1>0),1,additional_settings.autoscale_quantiles, log_flag1,0);
+% sc1 = find_image_scale(im1(im1>0),1,additional_settings.autoscale_quantiles, log_flag1,0);
+sc1 = im1_vscale;
 
 % warp the image, using the maximum as the FillValues (usually maximum is
 % white in the BW images, which is a reasonable choice)
@@ -151,7 +153,8 @@ end
 % transform output images before passing them for display
 
 % first the nanosims image
-sc2 = find_image_scale(im2,0,additional_settings.autoscale_quantiles, log_flag2,0);
+%sc2 = find_image_scale(im2,0,additional_settings.autoscale_quantiles, log_flag2,0);
+sc2 = im2_vscale;
 if log_flag2
     im2 = log10(im2);
     sc2 = log10(sc2);

@@ -8,7 +8,7 @@ rgb8_fname=[];
 global additional_settings;
 
 
-if ~isempty(rgb7) | ~isempty(rgb8)
+if ~isempty(rgb7) || ~isempty(rgb8)
 
     for ii=1:2
         if ii==1
@@ -17,7 +17,7 @@ if ~isempty(rgb7) | ~isempty(rgb8)
         else
             rgb=rgb8;
             plotopt=opt1(8);
-        end;
+        end
         
         if plotopt
             
@@ -101,34 +101,34 @@ if ~isempty(rgb7) | ~isempty(rgb8)
                         
             % export RGB image (as eps and tif)
             if(opt1(11))                
-                if(~isempty(xl) & ~isempty(yl) & ~isempty(zl))
+                if(~isempty(xl) && ~isempty(yl) && ~isempty(zl))
                     xyfile0=[xl,'-vs-',yl,'-vs-',zl];
                 else
                     if(isempty(xl))
                         xyfile0=[yl,'-vs-',zl];
-                    end;
+                    end
                     if(isempty(yl))
                         xyfile0=[xl,'-vs-',zl];
-                    end;
+                    end
                     if(isempty(zl))
                         xyfile0=[xl,'-vs-',yl];
-                    end;
-                end;
+                    end
+                end
                 if(ii==1)
                     ext='-rgb';
                     ext_cmyk = '-cmyk';
                 else
                     ext='-rgba';
                     ext_cmyk = '-cmyka';
-                end;                
+                end              
                 xyfile=convert_string_for_texoutput([xyfile0,ext]);
                 xyfile=[xyfile,'.eps'];
                 xyfile=[p.fdir,'eps',delimiter,xyfile];
                 epsdir = fileparts(xyfile);
-                if(~isdir(epsdir))
+                if(~isfolder(epsdir))
                     mkdir(epsdir);
                     fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
-                end;
+                end
                 print_figure(mf,xyfile,additional_settings.print_factors(1));
                 outfname = mepstopdf(xyfile,'epstopdf');
                 outfname = regexprep(outfname,'\','/');
@@ -136,16 +136,16 @@ if ~isempty(rgb7) | ~isempty(rgb8)
                     rgb7_fname = outfname;
                 else
                     rgb8_fname = outfname;                    
-                end;
+                end
                 xyfile=convert_string_for_texoutput([xyfile0,ext]);
                 xyfile=[xyfile, '.tif'];
                 xyfile_cmyk=convert_string_for_texoutput([xyfile0,ext_cmyk]);
                 xyfile_cmyk=[xyfile_cmyk, '.tif'];
                 tifdir=[p.fdir, 'tif'];
-                if(~isdir(tifdir))
+                if(~isfolder(tifdir))
                     mkdir(tifdir);
                     fprintf(1,'Directory %s did not exist, so it was created.\n',tifdir);
-                end;
+                end
                 xyfile=[p.fdir,'tif',delimiter,xyfile];
                 xyfile_cmyk=[p.fdir,'tif',delimiter,xyfile_cmyk];
                 Nbits = 8;
@@ -158,7 +158,8 @@ if ~isempty(rgb7) | ~isempty(rgb8)
                 % also save the image as CMYK
                 outprof = iccread('USSheetfedCoated.icc'); 
                 inprof = iccread('sRGB.icm');
-                C = makecform('icc',inprof,outprof);            
+                C = makecform('icc',inprof,outprof);   
+                rgb(isnan(rgb(:)))=0; % set NaN to 0
                 cmyk = applycform(rgb, C);
                 imwrite(cmyk, xyfile_cmyk);
                 %a = 0;

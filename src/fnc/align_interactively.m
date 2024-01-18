@@ -1,4 +1,5 @@
-function [im_out,im1_xyscale,rgb,f102] = align_interactively(im1,im2,im1_xyscale,im2_xyscale,log_flag1,log_flag2,tflag)
+function [im_out,im1_xyscale,rgb,f102] = align_interactively(im1,im2,im1_vscale,im2_vscale,...
+    im1_xyscale,im2_xyscale,log_flag1,log_flag2,tflag)
 
 % default output
 im_out = [];
@@ -16,10 +17,11 @@ im2_orig = im2;
 
 global additional_settings;
 
-if nargin>6
+if nargin>8
     fill_v = 1*(tflag>0);
 else
-    fill_v = quantile(im1(:),additional_settings.autoscale_quantiles(1));
+    %fill_v = quantile(im1(:),additional_settings.autoscale_quantiles(1));
+    fill_v = im1_vscale(1);
 end
 
 % rescale image im1 so that it matches true dimensions of im2
@@ -74,7 +76,8 @@ if sum(abs(size(im2s)-size(im1s)))>0
     fprintf(1,'ERROR: Sizes of the external and nanosims images are not in proportion.\n');
     fprintf(1,'Please zoom in the external image to correct this.\n');
 else
-    sc1 = find_image_scale(im1s(im1s>0),0,additional_settings.autoscale_quantiles, log_flag1,0);
+    %sc1 = find_image_scale(im1s(im1s>0),0,additional_settings.autoscale_quantiles, log_flag1,0);
+    sc1 = im1_vscale;
     if log_flag1
         im1s = log10(im1s);
         sc1 = log10(sc1);
@@ -83,7 +86,8 @@ else
     im1s(im1s<0)=0;
     im1s(im1s>1)=1;
 
-    sc2 = find_image_scale(im2s,0,additional_settings.autoscale_quantiles, log_flag2,0);
+    %sc2 = find_image_scale(im2s,0,additional_settings.autoscale_quantiles, log_flag2,0);
+    sc2 = im2_vscale;
     if log_flag2
         im2s = log10(im2s);
         sc2 = log10(sc2);

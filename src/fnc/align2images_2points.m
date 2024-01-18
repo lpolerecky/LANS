@@ -1,10 +1,11 @@
-function [ext5,im1_xyscale,rgb,f100]=align2images_2points(v1,v2,im1,im2,im1_xyscale,im2_xyscale,log_flag1,log_flag2,tflag)
+function [ext5,im1_xyscale,rgb,f100]=align2images_2points(v1,v2,im1,im2,im1_vscale,im2_vscale,...
+    im1_xyscale,im2_xyscale,log_flag1,log_flag2,tflag)
 
 % align im1 to im2 based on two points
 
 global additional_settings;
 
-if nargin>8
+if nargin>10
     fill_v = 1*(tflag>0);
 else
     fill_v = quantile(im1(:),additional_settings.autoscale_quantiles(1));
@@ -196,7 +197,8 @@ end
 rgb = zeros(size(im2,1),size(im2,2),3);
 
 im1 = ext5;
-sc1 = find_image_scale(im1(im1>0),0,additional_settings.autoscale_quantiles, log_flag1,0);
+%sc1 = find_image_scale(im1(im1>0),0,additional_settings.autoscale_quantiles, log_flag1,0);
+sc1 = im1_vscale;
 if log_flag1
     im1 = log10(im1);
     sc1 = log10(sc1);
@@ -208,7 +210,8 @@ im1(im1>1)=1;
 meanv1 = (meanv1-sc1(1))/diff(sc1);
 
 im2 = nanosimsimage;
-sc2 = find_image_scale(im2,0,additional_settings.autoscale_quantiles, log_flag2,0);
+%sc2 = find_image_scale(im2,0,additional_settings.autoscale_quantiles, log_flag2,0);
+sc2 = im2_vscale;
 if log_flag2
     im2 = log10(im2);
     sc2 = log10(sc2);
