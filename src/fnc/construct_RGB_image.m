@@ -1,4 +1,5 @@
-function [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = construct_RGB_image(handles, p_name, p_scale, R, Raim, opt1, Rconf)
+function [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = ...
+    construct_RGB_image(handles, p_name, p_scale, R, Raim, opt1, Rconf, Maskimg)
 % Construct RGB image from R and Raim images. Return also names and scales of the
 % masses that are in the R, G and B channels.
 
@@ -14,7 +15,7 @@ else
     i1=str2num(my_get(handles.edit59,'string'));
     i2=str2num(my_get(handles.edit60,'string'));
     i3=str2num(my_get(handles.edit61,'string'));
-end;
+end
 xl=[]; yl=[]; zl=[]; xs=[]; ys=[]; zs=[];
 
 % check whether the settings for the RGB display/calculation match with
@@ -23,19 +24,19 @@ psl=length(p_name);
 isum=sum([ i1>0 i2>0 i3>0 ]);
 c1 = (isum <= psl);
 if length(R)>=isum
-    if(i1>0), c1 = (c1 & ~isempty(R{i1})); end;
-    if(i2>0), c1 = (c1 & ~isempty(R{i2})); end;
-    if(i3>0), c1 = (c1 & ~isempty(R{i3})); end;
+    if(i1>0), c1 = (c1 & ~isempty(R{i1})); end
+    if(i2>0), c1 = (c1 & ~isempty(R{i2})); end
+    if(i3>0), c1 = (c1 & ~isempty(R{i3})); end
 else 
     c1=0;
-end;
+end
 
 % continue if everything is fine
 if c1
     
-    if(i1>0), xl=p_name{i1}; xs=p_scale{i1}; end;
-    if(i2>0), yl=p_name{i2}; ys=p_scale{i2}; end;
-    if(i3>0), zl=p_name{i3}; zs=p_scale{i3}; end;
+    if(i1>0), xl=p_name{i1}; xs=p_scale{i1}; end
+    if(i2>0), yl=p_name{i2}; ys=p_scale{i2}; end
+    if(i3>0), zl=p_name{i3}; zs=p_scale{i3}; end
       
     Nx = 0;
     Ny = 0;
@@ -53,6 +54,12 @@ if c1
         else
             Rc = [];
         end
+        if nargin>7 % Maskimg takes precedence over Rconf            
+            if sum(Maskimg(:))>0 && opt1(2) % zero values outside ROIs
+                Rc = ones(Ny,Nx);
+                Rc(Maskimg==0) = 0;
+            end
+        end
         [r7, r8, r] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i1,p_scale,xl,opt1);
         i=1; rgb7(:,:,i) = r7; rgb8(:,:,i) = r8; rgb_true(:,:,i) = r;
         [g7, g8, g] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i2,p_scale,yl,opt1);
@@ -64,8 +71,10 @@ if c1
         % apply a hack to remove blue from pixels where r+g are sufficiently
         % high, and modify yellow to orange 
         % (implemented for the Mycobacterium paper, LP 24-08-2022)
-        factor = 0.85;
-        i=3; rgb7(:,:,i) = b7*factor; rgb8(:,:,i) = b8*factor; rgb_true(:,:,i) = b*factor;
+        if 0
+            factor = 0.85;
+            i=3; rgb7(:,:,i) = b7*factor; rgb8(:,:,i) = b8*factor; rgb_true(:,:,i) = b*factor;
+        end
         
         if 0
             thresh = 0.5;
@@ -79,6 +88,7 @@ if c1
             %b7(ind) = 0;
             i=3; rgb7(:,:,i) = 1-b7; rgb8(:,:,i) = b8; rgb_true(:,:,i) = b;
         end
+        
         if 0
             [r7, r8, r] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i1,p_scale,xl,opt1);
             i=1; rgb7(:,:,i) = r7; rgb8(:,:,i) = r8; rgb_true(:,:,i) = r;
@@ -145,7 +155,7 @@ if ii>0
         rgb7(rgb7>1) = 1;
         rgb8(rgb8<0) = 0;
         rgb8(rgb8>1) = 1; 
-        if ~isempty(Rconf)
+        if ~isempty(Rconf) 
             % apply the hue correction. it does not make analytical sense,
             % but it does help the RGB image to look better by removing all
             % the potentially noisy pixels 

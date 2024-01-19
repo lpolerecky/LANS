@@ -111,7 +111,7 @@ if opt1(3) || opt1(6) || eaf || opt1(5) || opt1(9) || opt1(13) || opt1(12) || op
         %% display RGB image constructed from 3 selected ratio images
         if opt1(5)
             [rgb7, rgb8, xl, yl, zl, xs, ys, zs, rgb_true] = ...
-                construct_RGB_image(handles,p.special,p.special_scale,R,Raim,opt1,Rconf);   
+                construct_RGB_image(handles,p.special,p.special_scale,R,Raim,opt1,Rconf,p.Maskimg);
             display_RGB_image(rgb7, rgb8, p, opt1, tit, xl, yl, zl, get(handles.edit62,'string'));                
         end
         
