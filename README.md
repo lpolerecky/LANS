@@ -112,7 +112,9 @@ There is also a possibility of contacting LP if you have questions about LANS, e
     - Enter `lookatnanosims` in the Matlab console. This should open the main LANS 
       graphical user interface, as shown below. You can start from there, as explained in the manual.
 
-<center><img src="man/figures/lans-main-GUI.png"></img></center>
+<p align="center">
+  <img src="man/figures/lans-main-GUI.png">
+</p>
 
 ## Acknowledgement
 
