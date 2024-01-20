@@ -1,13 +1,13 @@
-% Script for updating LANS from a zip file located at a given webaddress.
+% Script for updating LANS from a zip file located at a given web-address.
 % No warranty, but it should work like this: Your old LANS is backed up,
 % the latest version is downloaded and unzipped, the MATLABPATH is updated.
 
 % (c) L. Polerecky, 2018-06-07, Utrecht University
 
-LANS_webaddress = 'https://www.dropbox.com/s/adapr3pulmhlrnl/LANS-latest-src.zip?dl=1';
-LANS_zipfile = 'f1.zip';
+LANS_webaddress   = 'https://www.dropbox.com/s/adapr3pulmhlrnl/LANS-latest-src.zip?dl=1';
+LANS_zipfile      = 'f1.zip';
 LANS_backup_fname = ['LANS-backup-' datestr(now,'YYYY-mm-DD_HH-MM-SS') '.zip'];
-LANS_new_fname = 'LANS-current';
+LANS_new_fname    = 'LANS-current';
 
 aa=0;
 fprintf(1,'*** This will update your Look@NanoSIMS program. ***\n');
