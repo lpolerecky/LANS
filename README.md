@@ -6,7 +6,7 @@ The software is written and maintained by Lubos Polerecky (LP). The development 
 
 Although LANS has matured pretty well over the years, it may still contain bugs or lack features that you might find useful. If you experience problems, find a bug, or would like to have a new feature added to LANS, you can contact LP via email - he will be happy to work with you to fix them and improve the program. Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
-**Current version: 2024-01-18*
+**Current version: 2024-01-18**
 
 ## Basic features and functions
 
