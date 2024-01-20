@@ -53,7 +53,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
     - depth profiles in ROIs
     - automated reprocessing of previously processed datasets
 
-7. Import of *external* (third-party) images (e.g., TEM, SEM, AFM, fluorescence)
+7. Import and alignment of **external images** (e.g., TEM, SEM, AFM, fluorescence)
 
     - image alignment done within LANS
     - resampling of NanoSIMS images to match the resolution of the external image
