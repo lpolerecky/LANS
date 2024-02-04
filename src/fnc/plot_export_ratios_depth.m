@@ -5,7 +5,7 @@ function plot_export_ratios_depth(m, dm, cell_sizes, images, planes, opt1, opt4,
 % designeg GUI.
 % (c) Lubos Polerecky, 03-07-2011
 
-if ~isempty(m) & ~isempty(dm)
+if ~isempty(m) && ~isempty(dm)
     
     Nc=size(m{1},1);
     M=length(ratios);
@@ -13,7 +13,7 @@ if ~isempty(m) & ~isempty(dm)
     x=images{1};
     if isempty(x)
         x=planes;
-    end;
+    end
     
     k=0; % count of truly displayed ratios
     
@@ -43,11 +43,23 @@ if ~isempty(m) & ~isempty(dm)
             ind=unique([find(~isfinite(per)) find(isnan(per))]);
             per(ind) = zeros(size(ind));
             
+            % fix indexing:
+            % if the original data were loaded with selected planes and saved
+            % as "full processed", then when the data is loaded again as "full processed",
+            % the planes in the GUI are set as [], but planes in the input of
+            % this function is still correctly set as those selected
+            % planes. This causes error in indexing.
+            
+            x_ind = x;
+            if length(x_ind)==size(r,2)
+                x_ind = x_ind - min(x_ind) + 1;
+            end
+            
             % calculate ratios and Poisson errors for all ROIs
             for jj=1:Nc               
 
-                y=r(jj,x);
-                dy=r(jj,x).*per(jj,x);
+                y=r(jj,x_ind);
+                dy=r(jj,x_ind).*per(jj,x_ind);
 
                 % remember output in out for export as ascii and EPS
                 out(:,(jj-1)*2+[1:2]) = [y(:) dy(:)];
@@ -59,13 +71,13 @@ if ~isempty(m) & ~isempty(dm)
                     if ~warning_printed
                         fprintf(1,'*** Warning: ratio %s has a significant trend with depth for ROI(s):\n',ratios{ii});
                         warning_printed = 1;
-                    end;
+                    end
                     fprintf(1,'%d ', jj);
-                end;           
+                end
 
-            end;
+            end
             
-            if warning_printed, fprintf(1,'\n'); end;
+            if warning_printed, fprintf(1,'\n'); end
             
             % remember results for later plotting
             all_x{k} = x(:);
@@ -81,30 +93,30 @@ if ~isempty(m) & ~isempty(dm)
                 if ~isdir(outdir)
                     mkdir(outdir);
                     fprintf(1,'Directory %s did not exist, so it was created.\n',outdir);
-                end;
+                end
                 fid = fopen(fname,'w');
                 fprintf(fid,'# %s: %s\n',fdir,ratios{ii});
                 fprintf(fid,'# cell');
                 for kk=1:Nc
                     fprintf(fid,'\tMEAN%d\tPoiss_E%d',kk,kk);
-                end;
+                end
                 fprintf(fid,'\n# plane');
                 for kk=1:Nc
                     fprintf(fid,'\tPOL=%d\t',pol(kk));
-                end;
+                end
                 fprintf(fid,'\n');
                 for jj=1:Np
                     fprintf(fid,'%d', x(jj));
                     fprintf(fid,'\t%.3e\t%.3e',out(jj,1:2*Nc));
                     fprintf(fid,'\n');
-                end;
+                end
                 fclose(fid);
                 fprintf(1,'Depth profiles of %s in defined ROIs saved as %s\n',ratios{ii},fname);
-            end;
+            end
 
-        end;
+        end
 
-    end;
+    end
     
     % plot depth profiles
     if k>0
@@ -114,7 +126,7 @@ if ~isempty(m) & ~isempty(dm)
         for ii=1:length(all_out)
             data.y{ii}=all_out{ii}(:,[1:2:2*Nc]); 
             data.dy{ii}=all_out{ii}(:,1+[1:2:2*Nc]);
-        end;
+        end
         data.pol=all_pol; 
         data.plot_flag=opt1(11);
         data.ratio = all_ratios;
@@ -122,8 +134,8 @@ if ~isempty(m) & ~isempty(dm)
         data.print_factor = print_factor;
         % here is the call to the actual GUI
         depth_profiles_ratios_gui(data);
-    end;
+    end
     
 else
     fprintf(1,'*** Warning: Empty mass values. Nothing done.\n');
-end;
+end

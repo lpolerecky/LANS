@@ -203,6 +203,7 @@ LANS_version = '2023-08-03'; % Bugs in export_depth_profiles.m fixed.
                              % will be calculated by accumulating only the
                              % specified planes.
 LANS_version = '2024-01-18'; % Bugs in align_external_image due to autoscale fixed.
+                             % Zero-outside-ROIs in RGB overlay images implemented.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
