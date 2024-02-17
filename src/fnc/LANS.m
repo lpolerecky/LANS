@@ -1737,6 +1737,8 @@ else
 end
 
 function shift_columns_rows_Callback(hObject, eventdata, handles)
+% obsolete code (since 17-02-2024)
+if 0
 global shift_first_column_end shift_last_column_beginning
 global shift_first_row_end shift_last_row_beginning
 if hObject==handles.shift_first_column_end    
@@ -1777,6 +1779,16 @@ if hObject==handles.shift_last_row_beginning
 end
 fprintf(1,'Current settings for shifts during loading: [%d %d %d %d]\n',...
     fliplr(get_shift_columns_rows(handles)));
+end
+
+% 17-02-2024: 
+% more than one (left/right) columns or (top/bottom) rows can now be shifted
+if isfield(handles,'shift_columns_rows')
+    shift_columns_rows = handles.shift_columns_rows;
+else
+    shift_columns_rows = [0 0 0 0];
+end
+handles.shift_columns_rows = get_shift_columns_rows(shift_columns_rows);
 guidata(hObject, handles);
 
 function generate_fake_cameca_Callback(hObject, eventdata, handles)
@@ -1784,12 +1796,13 @@ create_fake_file_gui('workdir',get(handles.edit1,'String'));
 
 function load_cameca_image_Callback(hObject, eventdata, handles)
 handles = load_cameca_image(handles);
-handles = shift_columns_rows(handles);
+[handles.p.im, handles.shift_columns_rows] = ...
+    shift_columns_rows_images(handles.p.im, handles.shift_columns_rows);
 guidata(hObject, handles);
 
 function load_cameca_as_blocks_Callback(hObject, eventdata, handles)
-handles=load_cameca_image_as_blocks(handles);
-handles = shift_columns_rows(handles);
+handles = load_cameca_image_as_blocks(handles);
+%handles = shift_columns_rows(handles);
 guidata(hObject, handles);
 
 function load_processed_image_Callback(hObject, eventdata, handles)
@@ -1798,7 +1811,8 @@ h = Load_Display_Preferences_Callback(hObject, eventdata, handles);
 % LP: added 21-05-2021 (next 2 lines)
 if isfield(h,'mass'), handles.p.mass = h.mass; end
 if isfield(h,'imscale_full'), handles.p.imscale_full = h.imscale_full; end
-handles = shift_columns_rows(handles,h.shift_columns_rows);
+[handles.p.im, handles.p.shift_columns_rows] = ...
+    shift_columns_rows_images(handles.p.im, h.p.shift_columns_rows);
 handles = accumulate_images_Callback(hObject, eventdata, handles);
 display_all_masses_Callback(hObject, eventdata, handles);
 guidata(hObject, handles);

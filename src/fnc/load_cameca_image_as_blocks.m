@@ -46,11 +46,14 @@ else
     % stored as separate planes
     for ii=1:length(imfile)   
         
-        p=read_cameca_image(imfile{ii},ask_for_planes,0);
+        p = read_cameca_image(imfile{ii},ask_for_planes,0);
         p.im = apply_dtc(p.im, handles.dtc, p.dwell_time);
         if ii==1
             pout=p;            
         end
+        
+        % shift columns and rows just before accumulation
+        [p.im, p.shift_columns_rows] = shift_columns_rows_images(p.im, handles.shift_columns_rows);
         
         if ii>1 && ~use_same
             % ask for the block-size every time a new im file is to be
@@ -76,8 +79,7 @@ else
             m{mi} = double(p.im{mi});
         end
 
-        % find the alignment tforms first
-        % find details needed for accumulation of images in blocks
+        % find the alignment tforms first        
         if block_size>1
             pp = load_masses_parameters(handles);
             [formula, ~, kalign] = parse_formula_lans(pp.alignment_mass,pp.mass);
@@ -85,7 +87,9 @@ else
             if ~isfield(handles,'p')
                 handles.p = p;
             end
-            [~, ~, opt4]=load_options(handles, 1);
+            [~, ~, opt4]=load_options(handles, 1);                        
+            
+            % find details needed for accumulation of images in blocks
             for jj=1:Nb
                 planes = [1:block_size]+(jj-1)*block_size;
                 ind=find(planes<=length(p.planes));

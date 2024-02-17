@@ -4,17 +4,18 @@ if(nargin>2)
     fpf=fig_pos_flag;
 else
     fpf = 1;
-end;
+end
 
-%% load the last saved preferences from the ini file and fill the GUI objects and other flags
+%% load the last saved preferences from the ini file and fill the GUI 
+%  objects and other flags
 h=[];
-if(exist(fname)==2)
+if exist(fname,'file')
     load(fname);
-    [pathstr, name, ext] = fileparts(fname);
+    [~, name, ~] = fileparts(fname);
     if strcmp(name,'nanosimsini')
         set(s.edit1,'string',h.edit1.string);
         set(s.edit2,'string',h.edit2.string);
-    end;    
+    end 
     %set(s.listbox1,'string',h.listbox1.string);
     
     % fill edit-fields with the loaded values
@@ -27,7 +28,7 @@ if(exist(fname)==2)
         b2=['set(',es1,',''string'',',es2,');'];        
         eval(b1a);
         eval(b1b);
-        if(b1a & b1b)
+        if(b1a && b1b)
             % in earlier versions of LANS, smoothing kernel was a 2x1 vector,
             % but now it's only a number. so correct this when loading the
             % preferences
@@ -40,8 +41,8 @@ if(exist(fname)==2)
 %                 eval([es2 ' = num2str(sk);']);
 %             end;
             eval(b2);
-        end;
-    end;
+        end
+    end
     
     % fill checkboxes with the loaded values
     for ii=7:73
@@ -53,16 +54,16 @@ if(exist(fname)==2)
         b2=['set(',es1,',''value'',',es2,');'];        
         eval(b1a);
         eval(b1b);
-        if(b1a & b1b)
+        if(b1a && b1b)
             eval(b2);
-        end;
-    end;
+        end
+    end
     
-    if(isfield(h,'figureposition') & fpf)
+    if(isfield(h,'figureposition') && fpf)
         fp=get(s.figure1,'Position');
         fp1 = h.figureposition;
         set(s.figure1,'Position',[fp1(1:2) fp(3:4)]);
-    end;
+    end
  
     % dead-time-correction structure
     if isfield(h,'dtc')
@@ -77,13 +78,13 @@ if(exist(fname)==2)
         d.apply_QSA = 0; % apply QSA correction
         d.K = 0*ones;
         s.dtc = d;        
-    end;    
+    end    
     if ~isfield(s.dtc,'apply_QSA')
         s.dtc.apply_QSA = 0;
-    end;
+    end
     if ~isfield(s.dtc,'K')
         s.dtc.K=0*ones;
-    end;
+    end
     
     % shift_columns_rows flags
     if isfield(h,'shift_columns_rows')
@@ -121,92 +122,92 @@ if(exist(fname)==2)
             else
                 if length(additional_settings.print_factors)<6
                     additional_settings.print_factors(6)=1;
-                end;
+                end
                 if length(additional_settings.print_factors)<7
                     additional_settings.print_factors(7)=1;
-                end;
+                end
                 if ~isfield(h.additional_settings,'export_png')
                     additional_settings.export_png = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'export_eps')
                     additional_settings.export_eps = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'export_tif')
                     additional_settings.export_tif = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'compress_pdf')
                     additional_settings.compress_pdf = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'always_display_rois')
                     additional_settings.always_display_rois = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'title_length')
                     additional_settings.title_length = 40;
-                end;
+                end
                 if ~isfield(h.additional_settings,'defFontSize')
                     additional_settings.defFontSize = 16;
-                end;
+                end
                 if ~isfield(h.additional_settings,'include_scale_text')
                     additional_settings.include_scale_text = 1;
-                end;
+                end
                 if ~isfield(h.additional_settings,'scale_bar_length')
                     additional_settings.scale_bar_length = 3;
-                end;
+                end
                 if ~isfield(h.additional_settings,'autoscale_quantiles')
                     additional_settings.autoscale_quantiles = [0.001 0.999];
-                end;
+                end
                 if ~isfield(h.additional_settings,'display_error_bars')
                     additional_settings.display_error_bars = 1;
-                end;
+                end
                 if ~isfield(h.additional_settings,'display_trend_lines')
                     additional_settings.display_trend_lines = 1;
-                end;
+                end
                 if ~isfield(h.additional_settings,'colormap')
                     additional_settings.colormap = 1;
-                end;
+                end
                 if ~isfield(h.additional_settings,'view_pdf')
                     additional_settings.view_pdf = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'include_colorbar_label')
                     additional_settings.include_colorbar_label = 1;
-                end;                
+                end                
                 if ~isfield(h.additional_settings,'apply_1e3_factor')
                     additional_settings.apply_1e3_factor = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'smooth_masses_kernelsize')
                     additional_settings.smooth_masses_kernelsize = [5 1];
-                end;
+                end
                 if ~isfield(h.additional_settings,'smooth_esi_kernelsize')
                     additional_settings.smooth_esi_kernelsize = [1 1];
-                end;
+                end
                 if ~isfield(h.additional_settings,'title_position')
                     additional_settings.title_position = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'fill_title_background')
                     additional_settings.fill_title_background = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'title_background_color')
                     additional_settings.title_background_color = 'w';
-                end;
+                end
                 if ~isfield(h.additional_settings,'title_font_size_color')
                     additional_settings.title_font_size_color = '14k';
-                end;                
+                end                
                 if ~isfield(h.additional_settings,'calculate_LWfactor')
                     additional_settings.calculate_LWfactor = 1;
-                end;
+                end
                 if ~isfield(h.additional_settings,'calculate_perimeter')
                     additional_settings.calculate_perimeter = 0;
-                end;
+                end
                 if ~isfield(h.additional_settings,'calculate_roi_variability')
                     additional_settings.calculate_roi_variability = 0;
-                end;                                
-            end;
+                end                                
+            end
         else
             % these are default values tested on my computer
-            q = get_default_settings;                
+            q = get_default_settings;
             additional_settings = q;       
-        end;
-    end;
+        end
+    end
     s.additional_settings = additional_settings;
     
     % additional settings (implemented in version 03-09-2012)
@@ -304,6 +305,7 @@ q.calculate_LWfactor = 1;
 q.calculate_perimeter = 0;
 q.calculate_perimeter = 0;
 q.calculate_roi_variability = 0;
+q.shift_columns_rows = [0 0 0 0];
 
 function q = get_default_correction_settings
 q.correction_apply = zeros(1,6);

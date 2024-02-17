@@ -46,11 +46,12 @@ h.correction_settings = correction_settings;
 h.figureposition = get(handles.figure1,'Position');
 
 % remember flags for shifting columns and rows
+shift_columns_rows = [0 0 0 0];
 if isfield(handles,'p')
     if isfield(handles.p,'shift_columns_rows')
         shift_columns_rows = handles.p.shift_columns_rows;
-    else
-        shift_columns_rows = get_shift_columns_rows(handles);
+    %else
+        %shift_columns_rows = get_shift_columns_rows(handles);
     end
     % remember masses and scaling (added 20-05-2021)
     if isfield(handles.p,'mass')
@@ -64,7 +65,7 @@ if isfield(handles,'p')
         imscale_full = [];
     end
 else
-    shift_columns_rows = get_shift_columns_rows(handles); 
+    %shift_columns_rows = get_shift_columns_rows(handles);    
     mass = [];
     imscale_full = [];
 end
@@ -90,7 +91,7 @@ if(~isempty(fname))
     save(fname,'h','-v6');
     disp(['Preferences saved in ',fname]);
 else
-    disp(['Preferences could not be saved.']);
+    disp('Preferences could not be saved.');
 end
 
 figure(handles.figure1);

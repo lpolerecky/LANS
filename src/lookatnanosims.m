@@ -206,6 +206,8 @@ LANS_version = '2024-01-18'; % Bugs in align_external_image due to autoscale fix
                              % Win-GUI's updated.
                              % Zero-outside-ROIs implemented also for RGB images.
                              % Bug about plane numbering fixed when plotting depth profiles
+LANS_version = '2024-02-17'; % More than one (left/right) columns or 
+                             % (top/bottom) rows can now be shifted.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';

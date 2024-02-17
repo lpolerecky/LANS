@@ -4,13 +4,13 @@ if(nargin>1)
     uss=update_special_scale;
 else
     uss=1;
-end;
+end
 
 p_defined = isfield(handles,'p');
 
 if p_defined
     p = handles.p;
-end;
+end
 
 %% define directory with the nanosims image structure
 p.fdir = my_get(handles.edit2,'string');
@@ -31,7 +31,7 @@ for ii=1:8
     
     % fill mass name;
     % edit fields with the masses are edit3:edit9 and edit74
-    if ii<8, k=ii+2; else, k=74; end;
+    if ii<8, k=ii+2; else, k=74; end
     s=['s=my_get(handles.edit',num2str(k),',''string'');'];
     eval(s);
     
@@ -42,7 +42,7 @@ for ii=1:8
         
         % fill range of images:
         % edit fields with the image range are edit12:edit18 and edit75
-        if ii<8, k=ii+11; else, k=75; end;
+        if ii<8, k=ii+11; else, k=75; end
         % from 13-10-2017 only the first edit field (edit12) will be used
         % to check for the range of planes
         k=12;
@@ -52,7 +52,7 @@ for ii=1:8
         
         % fill image scale:
         % edit fields with the image scale are edit33:edit39 and edit76
-        if ii<8, k=ii+32; else, k=76; end;
+        if ii<8, k=ii+32; else, k=76; end
         s=['s=my_get(handles.edit',num2str(k),',''string'');'];
         eval(s);
         p.imscale{jj}=str2num(s);
@@ -117,6 +117,7 @@ else
     p.maxalignment = 1;
 end
 
+if 0 % 2024-02-17 shifting of columns/rows handled differently
 p.shift_columns_rows = [0 0 0 0];
 if strcmp(get(handles.shift_first_column_end,'checked'),'on')
     p.shift_columns_rows(1) = 1;
@@ -130,7 +131,11 @@ end
 if strcmp(get(handles.shift_last_row_beginning,'checked'),'on')
     p.shift_columns_rows(4) = 1;
 end
-    
+end
+
+p.shift_columns_rows = handles.shift_columns_rows;
+
+
 %% add ext to the list of masses, if the relevant image file exists, but only if it has not been done before
 global EXTERNAL_IMAGEFILE;
 if ~isempty(EXTERNAL_IMAGEFILE)

@@ -41,19 +41,19 @@ if load_accumulated ~= 2
 % the original im file to a tmp file, which will be at the end renamed back
 
     % do this if a *.im.zip file is to be read
-    if ~isempty(findstr(ext,'.zip'))
+    if contains(ext,'.zip')
 
         % if the unzipped im file exists too, move it to a tmp file first
         uname = [pathstr delimiter name];
-        if exist(uname)==2
+        if exist(uname,'file')==2
             fprintf(1,'Filename %s already exists.\n',uname);
-            [pathstr1, tmpname, ext1] = fileparts(uname);
+            [pathstr1, ~, ~] = fileparts(uname);
             tmpimfile = [pathstr1 delimiter 'imtmp.im'];
             fprintf(1,'Renaming to %s ... ',tmpimfile);
             movefile(uname, tmpimfile);
             fprintf(1,'done.\n');
             imfile_existed=1;
-        end;
+        end
 
         % unzip the zipped im file
         global UNZIP_COMMAND;    
@@ -68,22 +68,22 @@ if load_accumulated ~= 2
         % from now on, *.im file should exist, so update the fname 
         fname = [pathstr delimiter name];
 
-    end;
+    end
     
     % read the IM file, filling also its properties in the p structure
-    if exist(fname)==2           
+    if exist(fname,'file')==2           
         [im, planes, p]=read_im_file(fname,ask_for_planes);
         log_user_info(fname);        
         p.im = im;
         p.planes = planes;
         if ~isempty(handles)
             set(handles.text46,'string',num2str(p.scale));
-        end;
-    end;
+        end
+    end
 
     % if a zipped image file was loaded, remove the unzipped file
     % if the original unzipped file also existed, rename it back
-    if ~isempty(findstr(ext,'.zip'))
+    if contains(ext,'.zip')
         fprintf(1,'Deleting file %s and keeping the zipped file ... ',fname);
         delete(fname);
         fprintf(1,'done.\n');
@@ -91,8 +91,8 @@ if load_accumulated ~= 2
             fprintf(1,'Moving %s back to %s ... ',tmpimfile,fname);
             movefile(tmpimfile, fname); 
             fprintf(1,'done.\n');
-        end;
-    end;
+        end
+    end
 
 else
 
@@ -104,10 +104,10 @@ else
         p.planes = planes; 
     else
         fprintf(1,'*** Warning: cannot load accumulated image data.\n');
-    end;
-end;
+    end
+end
     
 % set the EXTERNAL_IMAGEFILE to empty by default every time a new dataset
 % is loaded
 global EXTERNAL_IMAGEFILE;
-EXTERNAL_IMAGEFILE='';
+EXTERNAL_IMAGEFILE = '';
