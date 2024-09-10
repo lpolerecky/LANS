@@ -125,8 +125,11 @@ for ii=1:Nm
                     %Rconf{ii} = get_ratio_confidence(sprintf('1./m{%d};',sic_mass),m,p.imscale);
                     
                     % 2020-04-07: one mass, or sum of several masses is supported
-                    fla2 = get_sic_mass_formula(sic_mass, p.mass);                    
+                    [fla2, negative_flag] = get_sic_mass_formula(sic_mass, p.mass);                    
                     Rconf{ii} = get_ratio_confidence(fla2, m, p.imscale);
+                    if negative_flag
+                        Rconf{ii} = 1-Rconf{ii};
+                    end
                 end
             else
                 Rconf{ii} = ones(size(r));

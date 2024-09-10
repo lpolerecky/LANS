@@ -59,6 +59,7 @@ fp=get(handles.figure1,'Position');
 
 h = load_settings(handles,get_ini_file('r'));
 handles.dtc = h.dtc;
+handles.shift_columns_rows = h.shift_columns_rows;
 
 log_user_info('start');
 
@@ -2789,6 +2790,8 @@ if(isfield(handles,'p'))
         errordlg(sprintf('mat subfolder not found in %s.\nNothing done.',p.fdir),'Folder not found.');
     end
 end
+pause(0.1);
+figure(handles.figure1);
 
 function backup_folder_Callback(hObject, eventdata, handles)
 if(isfield(handles,'p'))
@@ -2825,3 +2828,5 @@ if(isfield(handles,'p'))
         end
     end
 end
+pause(0.1);
+figure(handles.figure1);

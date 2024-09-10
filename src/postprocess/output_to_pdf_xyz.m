@@ -142,7 +142,8 @@ if(~isempty(foutname))
                 title_ = ms;
                 ms=convert_string_for_texoutput(ms);
                 mtmp=[base_dir,fname{j},delimiter,'mat',delimiter,ms,'.mat'];
-
+                ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,ms,'.pdf'];
+                
                 if lscale
                     ms = ['log(' ms ')'];
                 end
@@ -190,23 +191,34 @@ if(~isempty(foutname))
                         ftmp=[pathstr,delimiter,lower(name)];
                     end;
                     ftmp=regexprep(ftmp,'\\','/');
-                else
+                else                    
                     disp(['*** File ',mtmp,' missing!']);
-                    ftmp=[];
+                    if ~isfile(ftmp)
+                        % if the pdf really does not exist, then set the
+                        % filename to empty                        
+                        ftmp=[];
+                    end
+                    
                 end;
                 % add the LaTeX entry to the file
                 if(mod(j,2)==1)
                     fprintf(fid,'%s\n','\begin{tabular}{cc}');
-                    if exist(mtmp)
+                    if isfile(ftmp)
                         %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s} &\n',id{j},ftmp);
                         fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s} &\n',j,tmnt{j},ftmp);
+                        if ~exist(mtmp)
+                            fprintf(1,'But %s exists. Hence, it was included.\n',ftmp);
+                        end
                     else
                         fprintf(fid,'%d: missing &\n',id{j});
                     end;
                 else
-                    if exist(mtmp)
+                    if isfile(ftmp)
                         %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s}\n',id{j},ftmp);
                         fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},ftmp);
+                        if ~exist(mtmp)
+                            fprintf(1,'But %s exists. Hence, it was included.\n',ftmp);
+                        end
                     else
                         fprintf(fid,'%d: missing\n',id{j});
                     end;

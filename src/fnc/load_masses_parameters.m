@@ -133,8 +133,11 @@ if strcmp(get(handles.shift_last_row_beginning,'checked'),'on')
 end
 end
 
-p.shift_columns_rows = handles.shift_columns_rows;
-
+if isfield(handles, 'shift_columns_rows')
+    p.shift_columns_rows = handles.shift_columns_rows;
+else
+    p.shift_columns_rows = [0 0 0 0];
+end
 
 %% add ext to the list of masses, if the relevant image file exists, but only if it has not been done before
 global EXTERNAL_IMAGEFILE;
