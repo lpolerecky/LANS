@@ -2135,7 +2135,7 @@ end
 if ~isempty(ext_im)
     [~, ~, mass_index]=parse_formula_lans('ext',p.mass);
     if mass_index>length(p.mass)
-        warndlg('External image added to the list of masses. You can now use it as EXT in any of the expressions.','For your information','modal');
+        warndlg('External image added to the list of masses. You can now use it as mass called `ext` in any of the expressions.','For your information','modal');
     else
         warndlg('External image replaced. You may want to recalculate ratios or reexport overlays.','For your information','modal');
     end
@@ -2168,7 +2168,7 @@ else
         if isfield(p,'ext_im')
             p = rmfield(p,'ext_im');
         end
-        warndlg('External image removed from the list of masses. You may no longer use EXT in your expressions or overlay it with masses/ratios.','For your information','modal');
+        warndlg('External image removed from the list of masses. You may no longer use `ext` in your expressions or overlay it with masses/ratios.','For your information','modal');
     end
 end
 handles.p = p;

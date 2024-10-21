@@ -142,11 +142,12 @@ if(~isempty(foutname))
                 title_ = ms;
                 ms=convert_string_for_texoutput(ms);
                 mtmp=[base_dir,fname{j},delimiter,'mat',delimiter,ms,'.mat'];
-                ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,ms,'.pdf'];
                 
                 if lscale
                     ms = ['log(' ms ')'];
                 end
+                
+                ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,ms,'.pdf'];
                 
                 % load matlab file containing the special image and re-print it
                 % with a new scale (if the scale is defined or set to
@@ -181,14 +182,14 @@ if(~isempty(foutname))
                 
                         %exportImageCells(10,[base_dir,fname{j}],ms,'png');
                     end;
-                    ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,ms];
+                    %ftmp=[base_dir,fname{j},delimiter,'pdf',delimiter,ms];
                     [pathstr, name, ext] = fileparts(ftmp);
                     ext='.pdf';
                     %ext='.png';
                     if(exist([pathstr,delimiter,name,ext]))
-                        ftmp=[pathstr,delimiter,name];
+                        ftmp=[pathstr,delimiter,name,ext];
                     else
-                        ftmp=[pathstr,delimiter,lower(name)];
+                        ftmp=[pathstr,delimiter,lower(name),ext];
                     end;
                     ftmp=regexprep(ftmp,'\\','/');
                 else                    
