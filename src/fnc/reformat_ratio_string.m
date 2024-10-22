@@ -10,6 +10,7 @@ end
 
 % replace the most common functions and isotopes with LaTeX-compatible strings
 ratio = strrep(ratio_, '*','\times');
+ratio = strrep(ratio_, '/','\,/');
 if contains(ratio,'log10')
     ratio = strrep(ratio, 'log10','log');
 elseif contains(ratio,'log2')
@@ -17,17 +18,19 @@ elseif contains(ratio,'log2')
 else
     ratio = strrep(ratio, 'log','ln');
 end
-ratio = strrep(ratio, '2H','D');
-ratio = strrep(ratio, '1H','H');
-ratio = strrep(ratio, '12C','{}^{12}C');
-ratio = strrep(ratio, '13C','{}^{13}C');
-ratio = strrep(ratio, '14N','{}^{14}N');
-ratio = strrep(ratio, '15N','{}^{15}N');
-ratio = strrep(ratio, '16O','{}^{16}O');
-ratio = strrep(ratio, '18O','{}^{18}O');
-ratio = strrep(ratio, '32S','{}^{32}S');
-ratio = strrep(ratio, '31P','{}^{31}P');
-ratio = strrep(ratio, 'C2','C_{2}');
+%ratio = strrep(ratio, '2H','D');
+ratio = strrep(ratio, '2H','\,{}^{2}H');
+%ratio = strrep(ratio, '1H','H');
+ratio = strrep(ratio, '1H','\,{}^{1}H');
+ratio = strrep(ratio, '12C','\,{}^{12}C');
+ratio = strrep(ratio, '13C','\,{}^{13}C');
+ratio = strrep(ratio, '14N','\,{}^{14}N');
+ratio = strrep(ratio, '15N','\,{}^{15}N');
+ratio = strrep(ratio, '16O','\,{}^{16}O');
+ratio = strrep(ratio, '18O','\,{}^{18}O');
+ratio = strrep(ratio, '32S','\,{}^{32}S');
+ratio = strrep(ratio, '31P','\,{}^{31}P');
+ratio = strrep(ratio, 'C2','\,C_{2}');
 ratio = strrep(ratio, 'Esi','SE');
 
 
