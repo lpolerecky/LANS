@@ -2665,7 +2665,9 @@ else
             N=length(p.im);
             for ii=1:N
                 tmp=p.im{ii};
-                tmpscale = find_image_scale(double(tmp));
+                %tmpscale = find_image_scale(double(tmp));
+                tmpscale = find_image_scale(double(tmp), 0, ...
+                    additional_settings.autoscale_quantiles, 0, 1, p.mass{ii});
                 imscale_full{ii}=tmpscale;
                 % write this scale to the appropriate edit field
                 if ii<8, k=ii+32; else, k=76; end
@@ -2692,7 +2694,9 @@ else
             N=length(p.accu_im);
             for ii=1:N
                 tmp=p.accu_im{ii};
-                tmpscale = find_image_scale(double(tmp));
+                tmpscale = find_image_scale(double(tmp), 0, ...
+                    additional_settings.autoscale_quantiles, 0, 1, p.mass{ii});
+                %tmpscale = find_image_scale(double(tmp));
                 if mf<=1 
                     tmpscale = round(tmpscale);
                     scale_format = '[%d %d]';
