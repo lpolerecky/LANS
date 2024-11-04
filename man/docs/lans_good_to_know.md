@@ -1,6 +1,4 @@
-# Look@NanoSIMS
-
-<img align="right" src="man/figures/13c-12c_13c-vs-31p-12c_13c-vs-32s-12c_13c-rgb.png">
+## New features in Look@NanoSIMS
 
 Look@NanoSIMS (abbreviated as **LANS**) is a software tool for the analysis of NanoSIMS image data acquired by the Cameca NanoSIMS 50L instrument. Although the software itself is [free](http://www.gnu.org/philosophy/free-sw.html), it is distributed as a Matlab code and thus requires a working installation of Matlab (proprietary software) to run.
 
@@ -68,8 +66,8 @@ LANS manuals are available from this [Dropbox folder](https://www.dropbox.com/sh
 
 Although the original manual (`LANS-manual.pdf`) is rather old (written in 2011), it is still the *best starting point* for you to learn about LANS. Once you have learned about the basic approaches described there, you can proceed by reading the following web-pages that describe *extra features and functions* of LANS:
 
-  - [New features in LANS](man/docs/lans_extras.md)
-  - [Good to know](man/docs/lans_good_to_know.md) 
+  - [New features in LANS](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_extras)
+  - [Good to know](http://nanosims.geo.uu.nl/nanosims-wiki/doku.php/nanosims:lans_good_to_know) 
   
 There is also a possibility of contacting LP if you have questions about LANS, experience problems while running LANS, or wish to include new features in the software.
   
