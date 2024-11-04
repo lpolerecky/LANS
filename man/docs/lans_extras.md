@@ -37,7 +37,7 @@ I have defined many ROIs and classified them into classes. After I made a scatte
 In the Interactive ROIs definition tool, click on Display ROIs in the menu. In the window that pops up, specify the ID numbers of ROIs (separated by space) and ID letters of ROI classes that you wish to display. Enter empty to display all defined ROIs. The results will look similar as shown in the figure below.
 
 <p align="center">
-  <img src="../figures/display-specific-rois.png">
+  <img width="600" src="../figures/display-specific-rois.png">
 </p>
 
 ### Annotated scatter plots
@@ -53,7 +53,7 @@ When processing multiple NanoSIMS data sets, I end up with a scatter plot of rat
 I would like to display a scatter plot with ratios. However, I want to show the ratios pixel-by-pixel, i.e., derived from ion counts in individual pixels separately rather than derived from ion counts *accumulated* over ROI pixels. Additionally, I only want to show these values in pixels that belong to ROIs that I have drawn, using different colors for different classes. [Learn how to do this.](pixel_by_pixel_scatter_plots)
 
 <p align="center">
-  <img src="../figures/classified_scatter_plot_2dhist_crop.png">
+  <img width="600" src="../figures/classified_scatter_plot_2dhist_crop.png">
 </p>
 
 ### Scatter plots in ROIs from specific classes
