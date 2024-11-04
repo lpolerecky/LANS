@@ -35,7 +35,7 @@ Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
 4. Quantification and export of **isotope and element ratios** 
 
-    - ratios defined through an expression (e.g., 13C/12C, 13C/(12C+13C))
+    - ratios defined through an expression (e.g., 13C/12C, 13C/(12C+13C), 0.5*12C13C/12C2)
     - scatter plots of ROI-specific ratios (color-coded based on ROI classification)
     - ratio images (various colormaps, ROI outlines can be included, hue intensity can be modulated)
     - lateral and depth profiles (incl. depth variation along a lateral profile)
