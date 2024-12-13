@@ -208,6 +208,11 @@ LANS_version = '2024-01-18'; % Bugs in align_external_image due to autoscale fix
                              % Bug about plane numbering fixed when plotting depth profiles
 LANS_version = '2024-02-17'; % More than one (left/right) columns or 
                              % (top/bottom) rows can now be shifted.
+LANS_version = '2024-12-13'; % Calculation of the QSA correction has been fixed.
+                             % When fitting data points in a scatter plot,
+                             % weights (given by 1/dy) are considered.
+                             % Option to add/remove ROI id's in scatter
+                             % plots added in the Additional Options gui.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
