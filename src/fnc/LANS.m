@@ -1884,6 +1884,17 @@ if p.find_alignments && ~p.planes_aligned
         if isfield(a,'tforms')
             p.tforms = a.tforms;
             tforms = p.tforms;
+            % LP 08-11-2024:
+            % for some unknown reason, when the xyalign is created by a
+            % newer version of Matlab (Michiel's), tforms is empty except
+            % for the very first element. If this is the case, recreate
+            % tforms based on the information in xyalign.
+            if isempty(tforms{2}) && ~isempty(xyalign)
+                for ii=1:size(xyalign,1)
+                    tforms{ii} = affine2d([1 0 0; 0 1 0; xyalign(ii,[2 1]) 1]);
+                end
+                p.tforms = tforms;
+            end
         end
         
         % display xy-alignment data loaded from the file

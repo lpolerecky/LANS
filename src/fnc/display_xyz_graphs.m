@@ -567,12 +567,16 @@ if opt1(9)
                     end
                 end
                 % add also the ROI numbers next to the points
-                for ii=1:length(special_x)
+                global additional_settings;
+                if additional_settings.display_roi_ids
+                    roi_id = 1:length(special_x);
                     if isempty(cid)
-                        text(special_x(ii),special_y(ii),num2str(ii),'horizontalalignment','center','FontSize',10);
+                        text(special_x,special_y,num2str(roi_id'),'horizontalalignment','center','FontSize',10);
                     else
-                        if ismember(cid(ii),i4) 
-                            text(special_x(ii),special_y(ii),num2str(ii),'horizontalalignment','center','FontSize',10);
+                        for ii=roi_id
+                            if ismember(cid(ii),i4)
+                                text(special_x(ii),special_y(ii),num2str(ii),'horizontalalignment','center','FontSize',10);
+                            end
                         end
                     end
                 end
@@ -613,6 +617,10 @@ if opt1(9)
                 % add button for fitting data
                 %a=0;
                 if ~isempty(f2)
+                    % remember data in the scatter plot for the 'Fit data' function
+                    global XY_DATA_SCATTER_PLOT;
+                    XY_DATA_SCATTER_PLOT = [special_x(:), dx(:), special_y(:), dy(:)];  
+                    % define the button to call the 'Fit data' function
                     fb = findobj('tag','fit_button');
                     if isempty(fb)
                         btn1 = uicontrol(f2,'Style', 'pushbutton', 'String', 'Fit data',...
@@ -627,7 +635,10 @@ if opt1(9)
 
         end
         if opt1(8)
-            fprintf(1,'*** Note: Length of the error-bars corresponds to Poisson standard error.\n');
+            global additional_settings;
+            if additional_settings.display_error_bars
+                fprintf(1,'*** Note: Length of the error-bars corresponds to Poisson standard error.\n');
+            end
         end
     
     else

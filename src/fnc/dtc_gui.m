@@ -54,17 +54,18 @@ function dtc_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 if nargin>3
     handles.dtc = varargin{1};    
 else
-    ones = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
+    ONES = ones(1, 16);
     % default structure of the dead-time correction parameters
-    d.dt = 44*ones; % dead-time, in ns
-    d.y  = 1*ones; % yield
-    d.bkg = 0*ones; % in counts/second
-    %d.dwelling_time = 1; % dwelling time, in ms
-    d.apply_dtc = 0; % apply dead-time correction
-    d.K = 0*ones; % K factor in the QSA correction
-    d.apply_QSA = 0;  % apply QSA correction
-    handles.dtc = d; % dtc = dead-time correction structure
-end;
+    d.dt = 44*ONES;     % dead-time, ns
+    d.y  = 1*ONES;      % yield
+    d.bkg = 0*ONES;     % bkg count rate, cnt/s
+    %d.dwelling_time = 1; % dwelltime, ms
+    d.apply_dtc = 0;    % apply dead-time correction
+    d.beta = 1*ONES;    % beta factor in the QSA correction
+    d.FCo  = 2;         % FCo, primary ion current at sample surface, pA
+    d.apply_QSA = 0;    % apply QSA correction
+    handles.dtc = d;    % dtc = dead-time & qsa correction structure
+end
 
 handles.dtc_orig = handles.dtc;
 
@@ -696,8 +697,8 @@ end
 if length(h.dtc.dt)<16
     h.dtc.dt(8:16) = h.dtc.dt(1);
 end
-if length(h.dtc.K)<16
-    h.dtc.K(8:16) = h.dtc.K(1);
+if length(h.dtc.beta)<16
+    h.dtc.beta(8:16) = h.dtc.beta(1);
 end
 
 for ii=1:8
@@ -705,14 +706,14 @@ for ii=1:8
     s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+1,num2str(h.dtc.y(ii)));    eval(s);
     s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+2,num2str(h.dtc.bkg(ii)));  eval(s);
     s=sprintf('set(h.edit%d,''string'',''%s'');',(ii-1)*3+3,num2str(h.dtc.dt(ii)));   eval(s);
-    s=sprintf('set(h.edit%d,''string'',''%s'');',32+ii,num2str(h.dtc.K(ii)));         eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',32+ii,num2str(h.dtc.beta(ii)));      eval(s);
     % second 8 (applicable when peak-switching used)
     s=sprintf('set(h.edit%d,''string'',''%s'');',100+(ii-1)*3+1,num2str(h.dtc.y(ii+8)));   eval(s);
     s=sprintf('set(h.edit%d,''string'',''%s'');',100+(ii-1)*3+2,num2str(h.dtc.bkg(ii+8))); eval(s);
     s=sprintf('set(h.edit%d,''string'',''%s'');',100+(ii-1)*3+3,num2str(h.dtc.dt(ii+8)));  eval(s);
-    s=sprintf('set(h.edit%d,''string'',''%s'');',100+32+ii,num2str(h.dtc.K(ii+8)));        eval(s);
+    s=sprintf('set(h.edit%d,''string'',''%s'');',100+32+ii,num2str(h.dtc.beta(ii+8)));     eval(s);
 end
-%set(h.edit50,'string',num2str(h.dtc.dwelling_time));
+set(h.edit67,'string',num2str(h.dtc.FCo));
 
 
 function h = get_values(h)
@@ -723,11 +724,11 @@ for ii=1:8
     s=sprintf('h.dtc.y(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+1);     eval(s);
     s=sprintf('h.dtc.bkg(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+2);   eval(s);
     s=sprintf('h.dtc.dt(ii) = str2num(get(h.edit%d,''string''));',(ii-1)*3+3);    eval(s);
-    s=sprintf('h.dtc.K(ii) = str2num(get(h.edit%d,''string''));',32+ii);          eval(s);
+    s=sprintf('h.dtc.beta(ii) = str2num(get(h.edit%d,''string''));',32+ii);       eval(s);
     % second 8 (applicable when peak-switching used)
     s=sprintf('h.dtc.y(ii+8) = str2num(get(h.edit%d,''string''));',100+(ii-1)*3+1);     eval(s);
     s=sprintf('h.dtc.bkg(ii+8) = str2num(get(h.edit%d,''string''));',100+(ii-1)*3+2);   eval(s);
     s=sprintf('h.dtc.dt(ii+8) = str2num(get(h.edit%d,''string''));',100+(ii-1)*3+3);    eval(s);
-    s=sprintf('h.dtc.K(ii+8) = str2num(get(h.edit%d,''string''));',100+32+ii);          eval(s);    
+    s=sprintf('h.dtc.beta(ii+8) = str2num(get(h.edit%d,''string''));',100+32+ii);       eval(s);    
 end
-%h.dtc.dwelling_time = str2num(get(h.edit50,'string'));
+h.dtc.FCo= str2num(get(h.edit67,'string'));

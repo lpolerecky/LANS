@@ -66,24 +66,28 @@ if exist(fname,'file')
     end
  
     % dead-time-correction structure
+    ONES = ones(1, 8);        
     if isfield(h,'dtc')
         s.dtc = h.dtc;
     else
-        ones = [1 1 1 1 1 1 1];
-        d.dt = 44*ones; % dead-time, in ns
-        d.y  = 1*ones; % yield
-        d.bkg = 0*ones; % in counts/second
-        d.dwelling_time = 1; % dwelling time, in ms
+        d.dt = 44*ONES; % dead-time, in ns
+        d.y  = 1*ONES; % yield
+        d.bkg = 0*ONES; % in counts/second
+        %d.dwelling_time = 1; % dwelling time, in ms
         d.apply_dtc = 0; % apply dead-time correction
         d.apply_QSA = 0; % apply QSA correction
-        d.K = 0*ones;
+        d.beta = 0*ONES;
+        d.FCo = 2; % PIB current at sample surface, pA
         s.dtc = d;        
     end    
     if ~isfield(s.dtc,'apply_QSA')
         s.dtc.apply_QSA = 0;
     end
-    if ~isfield(s.dtc,'K')
-        s.dtc.K=0*ones;
+    if ~isfield(s.dtc,'beta')
+        s.dtc.beta=0*ONES;
+    end
+    if ~isfield(s.dtc,'FCo')
+        s.dtc.FCo=2;
     end
     
     % shift_columns_rows flags

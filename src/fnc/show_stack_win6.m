@@ -170,9 +170,9 @@ set(handles.text1,'string',num2str(n));
 display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
 a=0;
 
-function fid=pushbutton7_Callback(hObject, eventdata, handles)
+function [fid,immat]=pushbutton7_Callback(hObject, eventdata, handles)
 set(handles.text1,'string','1');
-fid=display_images(handles.imagestack,handles.imscales,handles.immasses,1,handles,hObject,0,handles.imagestack_conf);
+[fid,immat]=display_images(handles.imagestack,handles.imscales,handles.immasses,1,handles,hObject,0,handles.imagestack_conf);
 
 function pushbutton9_Callback(hObject, eventdata, handles)
 nmax=str2num(get(handles.text3,'String'));
@@ -180,7 +180,7 @@ set(handles.text1,'string',num2str(nmax));
 display_images(handles.imagestack,handles.imscales,handles.immasses,nmax,handles,hObject,0,handles.imagestack_conf);
 
 % --- Executes on button press in pushbutton5.
-function fid=pushbutton5_Callback(hObject, eventdata, handles)
+function [fid,immat]=pushbutton5_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -197,7 +197,7 @@ if(n<1)
     n=1;
 end;
 set(handles.text1,'string',num2str(n));
-fid=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
+[fid,immat]=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
 a=0;
 
 % --- Executes on button press in pushbutton1.
@@ -224,8 +224,9 @@ nmax=str2num(get(handles.text3,'String'));
 n=str2num(get(handles.text1,'String'));
 fid=display_images(handles.imagestack,handles.imscales,handles.immasses,n,handles,hObject,0,handles.imagestack_conf);
 
-function fid=display_images(im,scales,masses,n,handles,hObject,sr,im_conf)
+function [fid, immat]=display_images(im,scales,masses,n,handles,hObject,sr,im_conf)
 
+immat=[];
 fid=handles.figure1;
 if(sr)
     disp('---');
@@ -458,6 +459,14 @@ function popupmenu2_Callback(hObject,eventdata,handles)
 i=str2num(get(handles.text1,'String'));
 display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
 
+function [fpng, ftif] = getfnamepngtif(cb2, outdir, name_prefix, id)
+if get(cb2,'value')==1
+    fout = [outdir name_prefix '-log-' id];
+else
+    fout = [outdir name_prefix '-' id];
+end
+fpng = [fout, '.png'];
+ftif = [fout, '.tif'];
 
 function pushbutton10_Callback(hObject, eventdata, handles)
 % set the flag for displaying images in a separate window, when exporting
@@ -472,7 +481,7 @@ end
 % export mass images
 if get(handles.checkbox3,'value')==1
     % export all, starting from the first frame
-    fid=pushbutton7_Callback(hObject, eventdata, handles);
+    [fid, immat]=pushbutton7_Callback(hObject, eventdata, handles);
     i=str2num(get(handles.text1,'String'));
     nmax=str2num(get(handles.text3,'String'));
     %print_factor=1;
@@ -480,38 +489,29 @@ if get(handles.checkbox3,'value')==1
     %set(handles.figure1,'PaperPosition',[pp(1:2) print_factor*pp(3:4)]);
     while i<nmax
         %display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,0);
-        if get(handles.checkbox2,'value')==1
-            fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
-        else
-            fout = [outdir handles.name_prefix '-' getid(i,3,1) '.png'];
-        end
-        print(fid,fout,'-dpng');
+        [fpng, ftif] = getfnamepngtif(handles.checkbox2, outdir, handles.name_prefix, getid(i,3,1));
+        print(fid,fpng,'-dpng');
+        imwrite(immat(:,:,1), ftif);
         %print_figure(f1,fout,additional_settings.print_factors(6));
-        fprintf(1,'Frame %d exported as %s\n',i,fout);
-        fid=pushbutton5_Callback(hObject, eventdata, handles);
+        fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+        [fid, immat]=pushbutton5_Callback(hObject, eventdata, handles);
         i=str2num(get(handles.text1,'String'));
     end
     % export last frame and jump to the start
-    fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
-    if get(handles.checkbox2,'value')==1
-        fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
-    else
-        fout = [outdir handles.name_prefix '-' getid(i,3,1) '.png'];
-    end
-    print(fid,fout,'-dpng');
-    fprintf(1,'Frame %d exported as %s\n',i,fout);
-    fid=pushbutton7_Callback(hObject, eventdata, handles);
+    [fid, immat]=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
+    [fpng, ftif] = getfnamepngtif(handles.checkbox2, outdir, handles.name_prefix, getid(i,3,1));
+    print(fid,fpng,'-dpng');
+    imwrite(immat(:,:,1), ftif);
+    fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+    [fid,immat]=pushbutton7_Callback(hObject, eventdata, handles);
 else
     % export the currently shown frame
     i=str2num(get(handles.text1,'String'));
-    fid=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
-    if get(handles.checkbox2,'value')==1
-        fout = [outdir handles.name_prefix '-log-' getid(i,3,1) '.png'];
-    else
-        fout = [outdir handles.name_prefix '-' getid(i,3,1) '.png'];
-    end
-    print(fid,fout,'-dpng');
-    fprintf(1,'Frame %d exported as %s\n',i,fout);
+    [fid,immat]=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
+    [fpng, ftif] = getfnamepngtif(handles.checkbox2, outdir, handles.name_prefix, getid(i,3,1));
+    print(fid,fpng,'-dpng');    
+    imwrite(immat(:,:,1), ftif);
+    fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
 end
 
 handles.flag = 0;

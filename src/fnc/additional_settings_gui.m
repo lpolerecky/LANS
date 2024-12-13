@@ -376,6 +376,9 @@ end;
 if isfield(h.additional_settings,'calculate_roi_variability')
     set(h.checkbox20,'Value',h.additional_settings.calculate_roi_variability);
 end;
+if isfield(h.additional_settings,'display_roi_ids')
+    set(h.checkbox21,'Value',h.additional_settings.display_roi_ids);
+end;
 
 %%
 
@@ -578,6 +581,11 @@ if isfield(h,'checkbox20')
     d.calculate_roi_variability = get(h.checkbox20,'value');
 else
     d.calculate_roi_variability = 0;
+end
+if isfield(h,'checkbox21')
+    d.display_roi_ids = get(h.checkbox21,'value');
+else
+    d.display_roi_ids = 1;
 end
 
 h.additional_settings = d;

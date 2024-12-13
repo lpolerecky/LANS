@@ -285,7 +285,7 @@ e=linspace(0,size(im,2)+1,a+1);
 ind1=[1:h];
 ind2=[1:w];
 % mask defined by the grid
-maskimg_grid=zeros(size(im));
+maskimg_grid=zeros(size(im,[1 2]));
 cellid=0;
 for x=1:(length(e2)-1)
     for y=1:(length(e1)-1)

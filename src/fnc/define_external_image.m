@@ -1,7 +1,7 @@
 function ext_im=define_external_image(p)
 ext_im=[];
 if isfield(p,'fdir')
-    [FileName,newdir,newext] = uigetfile({'*.tif';'*.bmp';'*.png';'*.mat'}, 'Define external image', p.fdir);
+    [FileName,newdir,newext] = uigetfile({'*.mat';'*.bmp';'*.png';'*.tif'}, 'Define external image', p.fdir);
     if newdir==0 % this means cancel was pressed
         fprintf(1,'*** Warning: No external image selected.\n');
     else

@@ -765,7 +765,7 @@ function load_external_image_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-[FileName,newdir,newext] = uigetfile({'*.tif';'*.bmp';'*.png';'*.xyz';'*.mat';'*.*'}, ...
+[FileName,newdir,newext] = uigetfile({'*.mat';'*.bmp';'*.png';'*.xyz';'*.tif';'*.*'}, ...
     'Select external image', handles.imagedir);
 handles.imagedir = newdir;
 handles.extimagefile = [newdir FileName];
@@ -805,7 +805,7 @@ if newext==4 % xyz file (AFM) was selected
     % calculate also the xyscale of the image, based on the x's, and
     % convert it to microns
     xyscale = 1e6*(max(xu) - min(xu) + mean(diff(xu)));
-elseif newext==5 % mat file (produced by LANS) selected
+elseif newext==1 % mat file (produced by LANS) selected
     a = load(handles.extimagefile);
     im =  a.IM;
     xyscale = a.xyscale;

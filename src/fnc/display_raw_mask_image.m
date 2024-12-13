@@ -99,7 +99,7 @@ if isfield(handles,'p')
                 [FileName,PathName,FilterIndex] = uigetfile({'*.tif';'*.bmp';'*.png';'*.jpg';'*.*'},...
                     'Select external image (B&W or RGB).',fdir);
                 fname=[fixdir(PathName),FileName];
-                if FileName~=0 & exist(fname)==2                
+                if FileName~=0 && exist(fname)==2                
                     maskmass=double(imread(fname));
                     maskmass=maskmass/max(maskmass(:));
                     ps=[zeros(size(maskmass,3),1) ones(size(maskmass,3),1)];
