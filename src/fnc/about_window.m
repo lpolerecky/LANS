@@ -75,6 +75,8 @@ if(nargin > 3)
           set(handles.text2,'String',varargin{index+1});
          case 'updates'
           set(handles.text5,'String',varargin{index+1});
+         case 'website'
+          set(handles.text3,'String',varargin{index+1});
         end
     end
 end

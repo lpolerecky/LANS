@@ -2562,7 +2562,8 @@ function aboutprogram_Callback(hObject, eventdata, handles)
 global LANS_version;
 about_window('string',my_get(handles.figure1,'Name'),...
     'written', ['written by Lubos Polerecky (MPI Bremen, 2008-2012)'],...
-    'updates', ['updates by Lubos Polerecky (Utrecht University, 2013-' LANS_version(1:4) ')']);
+    'updates', ['updates by Lubos Polerecky (Utrecht University, 2013-' LANS_version(1:4) ')'], ...
+    'website', 'https://github.com/lpolerecky/LANS');
 
 function edit33_Callback(hObject, eventdata, handles)
 % hObject    handle to edit33 (see GCBO)

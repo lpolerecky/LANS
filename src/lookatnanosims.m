@@ -213,6 +213,9 @@ LANS_version = '2024-12-13'; % Calculation of the QSA correction has been fixed.
                              % weights (given by 1/dy) are considered.
                              % Option to add/remove ROI id's in scatter
                              % plots added in the Additional Options gui.
+LANS_version = '2024-12-20'; % Dead-time and QSA correction GUI updated for windows.
+                             % Additional Options GUI updated for windows.
+                             % LANS GUI (menu) updated for windows.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
@@ -231,7 +234,7 @@ if be_verbous
     fprintf(1,'(2008-2012) Max-Planck Institute for Marine Microbiology, Bremen\n')
     fprintf(1,'Updates by Lubos Polerecky <l.polerecky (at) uu.nl>\n')
     fprintf(1,'(2013-2024) Utrecht University\n')
-    fprintf(1,'More info: http://nanosims.geo.uu.nl/LANS\n')
+    fprintf(1,'More info: http://github.com/lpolerecky/LANS\n')
     fprintf(1,'================================================================\n')
     fprintf(1,'Enjoy your work!\n')
     fprintf(1,'***\nNote:\nAVOID using SPECIAL CHARACTERS in the path and file names of your data-sets. Use _ or - instead.\n');
