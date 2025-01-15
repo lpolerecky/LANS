@@ -60,11 +60,11 @@ if c1
                 Rc(Maskimg==0) = 0;
             end
         end
-        [r7, r8, r] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i1,p_scale,xl,opt1);
+        [r7, r8, r, xl] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i1,p_scale,xl,opt1);
         i=1; rgb7(:,:,i) = r7; rgb8(:,:,i) = r8; rgb_true(:,:,i) = r;
-        [g7, g8, g] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i2,p_scale,yl,opt1);
+        [g7, g8, g, yl] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i2,p_scale,yl,opt1);
         i=2; rgb7(:,:,i) = g7; rgb8(:,:,i) = g8; rgb_true(:,:,i) = g;
-        [b7, b8, b] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i3,p_scale,zl,opt1);
+        [b7, b8, b, zl] = fill_channel_rgb(R,Raim,Rc,Nx,Ny,i3,p_scale,zl,opt1);
         i=3; rgb7(:,:,i) = b7; rgb8(:,:,i) = b8; rgb_true(:,:,i) = b;
         fprintf(1,'RGB channels filled.\n');
         
@@ -122,12 +122,13 @@ end
 
 
 
-function [rgb7, rgb8, rgb_true] = fill_channel_rgb(R,Raim,Rconf,Nx,Ny,ii,p_scale,lab,opt1)
+function [rgb7, rgb8, rgb_true, lab2] = fill_channel_rgb(R,Raim,Rconf,Nx,Ny,ii,p_scale,lab,opt1)
 global additional_settings;
 % default output
 rgb7 = zeros(Ny,Nx);
 rgb8 = rgb7; 
 rgb_true = rgb7;
+lab2 = lab;
 % proper output
 if ii>0
     ch_scale = p_scale{ii};
@@ -145,7 +146,7 @@ if ii>0
     % can be log-transformed & hue-corrected (if requested) and rescaled
     if opt1(7) 
         if opt1(4)
-            [RR, ch_scale7] = log10transform_image(RR,ch_scale,lab);
+            [RR, ch_scale7, lab2] = log10transform_image(RR,ch_scale,lab);
         else
             ch_scale7 = ch_scale;
         end
@@ -165,7 +166,7 @@ if ii>0
     if opt1(8)
         RR=Raim{ii}; 
         if opt1(4)
-            [RR, ch_scale8] = log10transform_image(RR,ch_scale,lab);
+            [RR, ch_scale8, lab2] = log10transform_image(RR,ch_scale,lab);
         else
             ch_scale8 = ch_scale;
         end

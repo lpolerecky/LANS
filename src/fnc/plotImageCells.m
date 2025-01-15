@@ -299,6 +299,7 @@ if o1(6) && prod(mi<ma)
             set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
                 'TickDirection', 'out', ...
                 'TickLabels', xtl_auto);
+            b.Ruler.TickLabelRotation=0;
 
         end
 
