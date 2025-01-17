@@ -72,7 +72,7 @@ else
         
         %% plot x1 vs y1
         if length(varnames{1})>1
-            fig = 1;
+            fig = 61;
             xscale = s.xscale1;
             yscale = s.yscale1;
             logscalex = s.logscale.x1;
@@ -86,7 +86,7 @@ else
                
         %% plot x2 vs y2
         if(length(varnames{1})>3)
-            fig = 2;
+            fig = 62;
             xscale = s.xscale2;
             yscale = s.yscale2;
             logscalex = s.logscale.x2;
@@ -100,7 +100,7 @@ else
         
         %% plot x3 vs y3
         if(length(varnames{1})>5)
-            fig = 3;
+            fig = 63;
             xscale = s.xscale3;
             yscale = s.yscale3;
             logscalex = s.logscale.x3;
@@ -128,7 +128,7 @@ else
                 j=j+1;
                 pdffile{j}=pdffile4;
             end
-            create_pdf_output(pathstr, name, pdffile, '-2D-all', s);
+            %create_pdf_output(pathstr, name, pdffile, '-2D-all', s);
         end
         
         if plot_flag == 2
@@ -166,7 +166,7 @@ else
         
         %% plot 1 vs 2 vs 3
         if length(varnames{1})>2
-            fig = 4;
+            fig = 64;
             xscale = s.xscale1;
             yscale = s.yscale1;
             zscale = s.xscale2;
@@ -187,7 +187,7 @@ else
                 
         %% plot 4 vs 5 vs 6
         if length(varnames{1})>5
-            fig = 5;
+            fig = 65;
             xscale = s.yscale2;
             yscale = s.xscale3;
             zscale = s.yscale3;
@@ -219,7 +219,7 @@ else
                 pdffile{j}=pdffile6;
             end
 
-            create_pdf_output(pathstr, name, pdffile, '-3D-all', s);
+            %create_pdf_output(pathstr, name, pdffile, '-3D-all', s);
         end
         
     else

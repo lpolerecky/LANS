@@ -39,6 +39,8 @@ if isempty(yscale)
     set_autoscale_y=1;
 end
 
+global additional_settings;
+
 for ii=1:size(x,1)
     % only include datapoints for selected treatments and classes
     if ismember(char(roi_prop.roi_class(ii)), cls_sel) && ismember(roi_prop.treatment(ii),tmnt_sel)
@@ -50,11 +52,24 @@ for ii=1:size(x,1)
         if(ii==1), hold on; end
         % make sure that the axis is not autoscaled every time a point is added
         set(ax,'Xlim',xscale, 'Ylim',yscale,'XLimMode','manual','YLimMode','manual')
-        if s.disp_errorbars
+        if s.disp_errorbars % additional_settings.display_error_bars 
             my_errorbar2(x(ii), y(ii), dx(ii), dy(ii), cls_col(p1));
         end
     end
 end
+
+% populate strings for the title
+legend_colors = strings(1,length(cls_sel));
+for ii=1:length(cls_sel)
+    legend_colors{ii} = [num2str(cls_sel(ii)), '/' cls_col(ii)];
+end
+legend_colors = join(legend_colors);
+
+legend_symbols = strings(1,length(tmnt_sel));
+for ii=1:length(tmnt_sel)
+    legend_symbols{ii} = [num2str(tmnt_sel(ii)), '/' tmnt_symb(ii)];
+end
+legend_symbols = join(legend_symbols);
 
 if set_autoscale_x
     set(ax,'XLimMode','auto');
@@ -63,11 +78,10 @@ if set_autoscale_y
     set(ax,'YLimMode','auto');
 end
 
-global additional_settings;
-
 xlabel(xlab,'FontSize',additional_settings.defFontSize);
 ylabel(ylab,'FontSize',additional_settings.defFontSize);
-selct = sprintf('(c: %s) [t: %s]', cls_sel, num2str(tmnt_sel));
+%selct = sprintf('(c: %s) [t: %s]', cls_sel, num2str(tmnt_sel));
+selct = sprintf('(col: %s) [sym: %s]', legend_colors, legend_symbols);
 title({s.graphtitle,selct},'FontSize',additional_settings.defFontSize,'interpreter','none');
 set(ax,'box','on','FontSize',additional_settings.defFontSize);
 set(ax,'FontSize',additional_settings.defFontSize);

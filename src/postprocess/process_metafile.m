@@ -84,6 +84,10 @@ handles.base_mass_for_alignment = base_mass_for_alignment;
 handles.all_handles = all_handles;
 %handles.additional_settings = additional_settings;
 
+global additional_settings;
+set(handles.checkbox13, 'value', additional_settings.display_error_bars);
+set(handles.checkbox16, 'value', 0);
+
 % default corrections settings
 global correction_settings;
 % make sure that when the process_metafile GUI is open, the correction and

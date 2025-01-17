@@ -21,12 +21,16 @@ else
 end
 
 if nargin>5
-    mk = mask_kernel;
+    if ~isempty(mask_kernel)
+        mk = mask_kernel;
+    else
+        global additional_settings;
+        mk = additional_settings.smooth_masses_kernelsize;
+    end
 else
     global additional_settings;
     mk = additional_settings.smooth_masses_kernelsize;
 end
-
 
 % default output is empty
 R = []; Ra = []; Raim = []; oall = []; Rconf=[]; Rnom = []; Rdenom = [];
@@ -118,18 +122,19 @@ for ii=1:Nm
             
             if zlc
                 if isempty(sic_mass)
-                    Rconf{ii} = get_ratio_confidence(formula,m,p.imscale);
+                    Rconf{ii} = get_ratio_confidence(formula, m, p.imscale);
                 else
                     % before 2020-04-07, only one mass (or empty) in
                     % sic_mass was supported.
                     %Rconf{ii} = get_ratio_confidence(sprintf('1./m{%d};',sic_mass),m,p.imscale);
                     
                     % 2020-04-07: one mass, or sum of several masses is supported
-                    [fla2, negative_flag] = get_sic_mass_formula(sic_mass, p.mass);                    
-                    Rconf{ii} = get_ratio_confidence(fla2, m, p.imscale);
-                    if negative_flag
-                        Rconf{ii} = 1-Rconf{ii};
-                    end
+                    %[fla2, negative_flag] = get_sic_mass_formula(sic_mass, p.mass);
+                    [fla2, mass_id] = get_sic_mass_formula(sic_mass);
+                    Rconf{ii} = get_ratio_confidence(fla2, m, p.imscale, mass_id);
+                    %if negative_flag
+                    %    Rconf{ii} = 1-Rconf{ii};
+                    %end
                 end
             else
                 Rconf{ii} = ones(size(r));
@@ -216,3 +221,5 @@ for ii=1:Nm
         
     end
 end
+
+oo=0;
