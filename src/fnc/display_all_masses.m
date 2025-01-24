@@ -46,18 +46,31 @@ else
     
     
     % assemble images into a big matrix
-    def_cmat = get_colormap(additional_settings.colormap);    
+    def_cmat = get_colormap(additional_settings.colormap);   
+    [opt1, ~, ~]=load_options(handles,1);    
     %def_cmat = clut(64);
     k=0;
     for jj=1:jmax
         for ii=1:noc
             k=k+1;
             if k<=nim
-                ims=size(def_cmat,1)*(p.accu_im{k}-min(p.imscale{k}))/(max(p.imscale{k})-min(p.imscale{k}));
-                ind=find(ims<0);
-                if ~isempty(ind), ims(ind)=zeros(size(ind)); end
-                ind=find(ims>size(def_cmat,1));
-                if ~isempty(ind), ims(ind)=size(def_cmat,1)*ones(size(ind)); end
+                
+                ims = p.accu_im{k};                
+                ch_scale = p.imscale{k};
+                if opt1(4) % log-transform requested                    
+                    if ch_scale(1)==0
+                        ch_scale_auto = find_image_scale(ims, 0, additional_settings.autoscale_quantiles, opt1(4), 0);
+                        ch_scale(1) = ch_scale_auto(1);
+                        p.imscale{k} = ch_scale;
+                    end
+                    [ims, ch_scale] = log10transform_image(ims,ch_scale);
+                end
+                ncol_cmat = size(def_cmat,1);
+                ims = ncol_cmat*(ims-min(ch_scale))/diff(ch_scale);
+                %ind=find(ims<0);
+                %if ~isempty(ind), ims(ind)=zeros(size(ind)); end
+                %ind=find(ims>size(def_cmat,1));
+                %if ~isempty(ind), ims(ind)=size(def_cmat,1)*ones(size(ind)); end
                 im((jj-1)*h+[1:h],(ii-1)*w+[1:w])=ims;
             end
         end
@@ -110,9 +123,13 @@ else
                 else
                     scale_string = sprintf('[%.2f %.2f]',p.imscale{k});
                 end
+                ts = sprintf('%s %s',p.mass{k},scale_string);
+                if opt1(4)
+                    ts = sprintf('log(%s)',ts);
+                end
                 t=text((ii-1)*w+w/2,...
                     round((jj-1)*(h+fac*(fontsize+2*font_gap))+(fontsize/2+font_gap)*fac+0),...
-                    sprintf('%s %s',p.mass{k},scale_string),...
+                    ts,...
                     'HorizontalAlignment','center','VerticalAlignment','middle',...
                     'Fontsize',fontsize,'FontName','Helvetica');
             end
@@ -154,6 +171,9 @@ else
     
     % export figure as PNG
     fout=[p.filename '.png'];
+    if opt1(4)
+        fout = [p.filename, '_log.png'];
+    end
     global additional_settings;
     pf = additional_settings.print_factors(1);
     wi=7;

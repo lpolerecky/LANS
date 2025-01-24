@@ -405,7 +405,7 @@ if handles.flag
                 k=k+1;
                 if k<=nim
                     t=text((ii-1)*w+w/2,...
-                        round((jj-1)*(h+fac*(fontsize+2*font_gap))+(fontsize/2+font_gap)*fac+0),...
+                        round((jj-1)*(h+fac*(fontsize+2*font_gap))+(fontsize/2+font_gap)*fac+0),... 
                         sprintf('%s [%d %d]',masses{k},[floor(scales{k}(1)) ceil(scales{k}(2))]),...
                         'HorizontalAlignment','center','VerticalAlignment','middle',...
                         'Fontsize',fontsize,'FontName','Helvetica');
@@ -491,9 +491,10 @@ if get(handles.checkbox3,'value')==1
         %display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,0);
         [fpng, ftif] = getfnamepngtif(handles.checkbox2, outdir, handles.name_prefix, getid(i,3,1));
         print(fid,fpng,'-dpng');
-        imwrite(immat(:,:,1), ftif);
+        %imwrite(immat(:,:,1), ftif);
         %print_figure(f1,fout,additional_settings.print_factors(6));
-        fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+        %fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+        fprintf(1,'Frame %d exported as %s\n',i,fpng);
         [fid, immat]=pushbutton5_Callback(hObject, eventdata, handles);
         i=str2num(get(handles.text1,'String'));
     end
@@ -501,8 +502,9 @@ if get(handles.checkbox3,'value')==1
     [fid, immat]=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
     [fpng, ftif] = getfnamepngtif(handles.checkbox2, outdir, handles.name_prefix, getid(i,3,1));
     print(fid,fpng,'-dpng');
-    imwrite(immat(:,:,1), ftif);
-    fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+    %imwrite(immat(:,:,1), ftif);
+    %fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+    fprintf(1,'Frame %d exported as %s\n',i,fpng);
     [fid,immat]=pushbutton7_Callback(hObject, eventdata, handles);
 else
     % export the currently shown frame
@@ -510,8 +512,9 @@ else
     [fid,immat]=display_images(handles.imagestack,handles.imscales,handles.immasses,i,handles,hObject,0,handles.imagestack_conf);
     [fpng, ftif] = getfnamepngtif(handles.checkbox2, outdir, handles.name_prefix, getid(i,3,1));
     print(fid,fpng,'-dpng');    
-    imwrite(immat(:,:,1), ftif);
-    fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+    %imwrite(immat(:,:,1), ftif);
+    %fprintf(1,'Frame %d exported as %s (and .tif)\n',i,fpng);
+    fprintf(1,'Frame %d exported as %s\n',i,fpng);
 end
 
 handles.flag = 0;
