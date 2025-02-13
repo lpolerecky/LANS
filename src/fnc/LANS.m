@@ -2793,7 +2793,7 @@ if(isfield(handles,'p'))
     p = handles.p;
     fname = [p.fdir 'mat'];
     if isfolder(fname)
-        a = questdlg(sprintf('Are you sure you want to remove the mat folder from disk?'),...
+        a = questdlg(sprintf('Are you sure you want to REMOVE the MAT sub-folder?'),...
             'Remove mat folder', 'Yes', 'No', 'Yes');
         switch a
             case 'Yes'
@@ -2803,25 +2803,63 @@ if(isfield(handles,'p'))
                 fprintf(1,'Ok, I''ll keep it.\n');
         end
     else
-        errordlg(sprintf('mat subfolder not found in %s.\nNothing done.',p.fdir),'Folder not found.');
+        errordlg(sprintf('mat sub-folder not found in %s.\nNothing done.',p.fdir),'Folder not found.');
     end
 end
 pause(0.1);
 figure(handles.figure1);
 
-function backup_folder_Callback(hObject, eventdata, handles)
+function backup_minimal_folder_Callback(hObject, eventdata, handles)
 if(isfield(handles,'p'))
     p = handles.p;
     [p1, foldername]=fileparts(p.filename);
-    bakname = [foldername '.zip'];
+    bakname = [foldername '_min.zip'];
     if isfolder(p1)
-        a = questdlg(sprintf('Are you sure you want to back up the processed data folder?'),...
-            'Remove mat folder', 'Yes', 'No', 'Yes');
+        a = questdlg(sprintf('Are you sure you want to do a MINIMAL BACKUP of the processed data folder?'),...
+            'Minimal backup', 'Yes', 'No', 'Yes');
         switch a
             case 'Yes'
                 global ZIP_COMMAND;
                 % create the zip-command and execute it
                 cmd = sprintf('!%s %s %s%s%s', ZIP_COMMAND, bakname, foldername, filesep, '*.*at');
+                cdir=pwd;
+                cd(p1);
+                eval(cmd);
+                fprintf(1,'Data backed up in %s.\n', [p1 filesep bakname]);
+                % if outtputG.pdf exists, copy it to the parent folder and
+                % change the filename
+                outG = [foldername filesep 'outputG.pdf'];
+                newoutG = [foldername '.pdf'];
+                if isfile(outG)
+                    copyfile(outG, newoutG,'f');
+                    fprintf(1,'OutputG.pdf copied to %s\n',[p1 filesep newoutG]);
+                elseif isfile(newoutG)
+                    fprintf(1,'Backup file %s already exists. Nothing done.\n',[p1 filesep newoutG]);
+                else
+                    fprintf(1,'OutputG.pdf not found. PDF backup not made.\n');
+                end
+                cd(cdir);                
+            case 'No'
+                fprintf(1,'Nothing done.\n');
+        end
+    end
+end
+pause(0.1);
+figure(handles.figure1);
+
+function backup_full_folder_Callback(hObject, eventdata, handles)
+if(isfield(handles,'p'))
+    p = handles.p;
+    [p1, foldername]=fileparts(p.filename);
+    bakname = [foldername '.zip'];
+    if isfolder(p1)
+        a = questdlg(sprintf('Are you sure you want to do a FULL BACKUP of the processed data folder?'),...
+            'Full backup', 'Yes', 'No', 'Yes');
+        switch a
+            case 'Yes'
+                global ZIP_COMMAND;
+                % create the zip-command and execute it
+                cmd = sprintf('!%s %s %s', ZIP_COMMAND, bakname, foldername);
                 cdir=pwd;
                 cd(p1);
                 eval(cmd);

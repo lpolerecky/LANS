@@ -216,6 +216,9 @@ LANS_version = '2024-12-13'; % Calculation of the QSA correction has been fixed.
 LANS_version = '2024-12-20'; % Dead-time and QSA correction GUI updated for windows.
                              % Additional Options GUI updated for windows.
                              % LANS GUI (menu) updated for windows.
+LANS_version = '2025-02-13'; % LANS GUI (menu) updated: 
+                             % minimal & full back up of processed data implemented
+                             % fixed a bug when loading data in blocks
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';

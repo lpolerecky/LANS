@@ -52,6 +52,9 @@ else
             pout=p;            
         end
         
+        % fill GUI objects based on what was read
+        fillinfo_detected_masses(handles, p, dname);
+        
         % shift columns and rows just before accumulation
         [p.im, p.shift_columns_rows] = shift_columns_rows_images(p.im, handles.shift_columns_rows);
         
@@ -99,7 +102,7 @@ else
                     alignmentregion_x = [10:(size(p.im{1},2)-10)];
                     alignmentregion_y = [10:(size(p.im{1},1)-10)];
                     if jj==1
-                        fprintf(1,'Finding alignment of planes based on %s.\n',pp.alignment_mass);
+                        fprintf(1,'Finding alignment of planes based on %s (%s).\n',pp.alignment_mass, formula);
                     end
                     % the ESI image can sometimes have signal spikes in some
                     % pixels, which makes the accumulated ESI image look ugly.
