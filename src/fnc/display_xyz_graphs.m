@@ -461,6 +461,17 @@ if opt1(9)
                     %ylim(ylims);
                 end;
                 
+                % display the range of the x and y scale in permil
+                if 1
+                    xlimits = get(gca, 'xlim');
+                    ylimits = get(gca, 'ylim');
+                    fprintf(1,'Limits of the scatter plot:\n');
+                    fprintf(1,'X-limits: [%.3e %.3e] <=> [%.1f %.1f] permil\n', ...
+                        xlimits, (xlimits/mean(xlimits)-1)*1e3)
+                    fprintf(1,'Y-limits: [%.3e %.3e] <=> [%.1f %.1f] permil\n', ...
+                        ylimits, (ylimits/mean(ylimits)-1)*1e3)
+                end
+                
                 % plot data also as a 2D-histogram
                 f2d=plot_2Dhist(xx,yy,xlims,ylims,50,48,xl,yl,opt1(4));
                 if opt1(10)
@@ -590,6 +601,16 @@ if opt1(9)
                 if(opt1(4))
                     set(gca,'xscale','log','yscale','log');
                     fprintf(1,'WARNING: note that data-points with zero values are NOT visible in the log-log scatter plot.\n');
+                end
+                % display the range of the x and y scale in permil
+                if 1
+                    xlimits = get(gca, 'xlim');
+                    ylimits = get(gca, 'ylim');
+                    fprintf(1,'Limits of the scatter plot:\n');
+                    fprintf(1,'X-limits: [%.3e %.3e] <=> [%.1f %.1f] permil\n', ...
+                        xlimits, (xlimits/mean(xlimits)-1)*1e3)
+                    fprintf(1,'Y-limits: [%.3e %.3e] <=> [%.1f %.1f] permil\n', ...
+                        ylimits, (ylimits/mean(ylimits)-1)*1e3)
                 end
                 if opt1(11)
                     % export this figure as eps

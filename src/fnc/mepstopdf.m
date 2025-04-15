@@ -114,7 +114,7 @@ if(~isempty(command))
             % remove the EPS file if it is not requested to be kept
             if ~additional_settings.export_eps
                 delete(infile);
-                fprintf(1,'%s deleted.\n',infile);
+                %% fprintf(1,'%s deleted.\n',infile);
             end
             
         end

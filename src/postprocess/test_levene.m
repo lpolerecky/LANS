@@ -51,7 +51,8 @@ else
     end    
     
     % add also the mean values
-    plot(mm,[1:length(mm)],'rs','MarkerFaceColor','r','MarkerSize',10);
+    %plot(mm,[1:length(mm)],'rs','MarkerFaceColor','r','MarkerSize',10);
+    plot(mm,[1:length(mm)],'rs','MarkerSize',12, 'LineWidth',2);
     %hold on
 
     % set tick labels properly

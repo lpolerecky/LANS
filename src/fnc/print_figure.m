@@ -28,7 +28,7 @@ end
 %     fname = strrep(fname, '.eps', '.pdf');
 %     print(f, '-dpdf', fname);
 
-fprintf(1,'Graphics exported to %s\n',fname);
+%% fprintf(1,'Graphics exported to %s\n',fname);
 
 % print also as PNG
 global additional_settings;

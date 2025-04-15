@@ -196,8 +196,9 @@ if(~isempty(foutname))
                     disp(['*** File ',mtmp,' missing!']);
                     if ~isfile(ftmp)
                         % if the pdf really does not exist, then set the
-                        % filename to empty                        
-                        ftmp=[];
+                        % filename to a non-existent file                        
+                        %ftmp=[];
+                        ftmp='non_exististent_file01293712.txt';
                     end
                     
                 end;
@@ -213,7 +214,7 @@ if(~isempty(foutname))
                     else
                         fprintf(fid,'%d: missing &\n',id{j});
                     end;
-                else
+                else                    
                     if isfile(ftmp)
                         %fprintf(fid,'%d: \\includegraphics[width=0.43\\textwidth]{%s}\n',id{j},ftmp);
                         fprintf(fid,'%d[%d]: \\includegraphics[width=0.42\\textwidth]{%s}\n',j,tmnt{j},ftmp);

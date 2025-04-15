@@ -728,7 +728,7 @@ if selected_compare(handles)==2
                 % test whether value significantly different from zero
                 ind0 = find(g==gn{ii});
                 [ht,pt,cit]=ttest(x(ind0));
-                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\t%.1f\t%.1e\t\t%.1e\t%.1e\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii), 100*nn(ii)/sum(nn),pt,cit);
+                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\t%.1f\t%.1e\t\t%.3e\t%.3e\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii), 100*nn(ii)/sum(nn),pt,cit);
             end
                      
         if nc>1
@@ -818,7 +818,7 @@ if selected_compare(handles)==3
                 % test whether value significantly different from zero
                 ind0 = find(g==str2num(gn{ii}));
                 [ht,pt,cit]=ttest(x(ind0));
-                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\t%.1f\t%.1e\t\t%.1e\t%.1e\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii), 100*nn(ii)/sum(nn),pt,cit);
+                fprintf(1,'%s\t%.3e\t%.3e\t%.3e\t%d\t%.1f\t%.1e\t\t%.3e\t%.3e\n',gn{ii},mm(ii),sem(ii),ss(ii),nn(ii), 100*nn(ii)/sum(nn),pt,cit);
             end
             
             tt = get(handles.popupmenu3,'value'); % test type       
@@ -909,9 +909,9 @@ set(handles.edit2,'String',sprintf('[%.1f %.1f]',get(handles.axes1,'ylim')));
 v=get(handles.axes1,'xlim');
 omag=round(log10(mean(v)));
 if omag>=0
-    fmt2='%.1f';
+    fmt2='%.2f';
 else
-    fmt2='%.1e';
+    fmt2='%.2e';
 end;
 if v(1)==0
    fmt=['[%d ' fmt2 ']'];
