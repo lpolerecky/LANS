@@ -10,7 +10,7 @@ Although LANS has matured pretty well over the years, it may still contain bugs 
 
 Contact detail: `l (dot) polerecky (at) uu (dot) nl`
 
-**Current version: 2025-02-13**
+**Current version: 2025-02-15**
 
 ## Basic features and functions
 
