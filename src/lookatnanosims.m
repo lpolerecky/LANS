@@ -219,7 +219,7 @@ LANS_version = '2024-12-20'; % Dead-time and QSA correction GUI updated for wind
 LANS_version = '2025-02-13'; % LANS GUI (menu) updated: 
                              % minimal & full back up of processed data implemented
                              % fixed a bug when loading data in blocks
-LANS_version = '2025-06-25s'; % LANS GUI for win updated: 
+LANS_version = '2025-06-25'; % LANS GUI for win updated: 
                              % minimal & full back up of processed data implemented
 
 % name of the external image file (empty by default)
