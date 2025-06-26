@@ -635,8 +635,12 @@ N=length(all_treatments);
 fid=fopen(metafile,'w');
 fprintf(fid, '# %s\n',base_dir);
 for ii=1:N
+    file_name = all_datasets{ii};
+    if contains(file_name,' ')
+        file_name = sprintf('"%s"', file_name);
+    end
     fprintf(fid,'%d\t%s\t%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n',...
-        ii,all_datasets{ii},all_treatments(ii),all_cellclasses{ii},...
+        ii,file_name,all_treatments(ii),all_cellclasses{ii},...
         specialx1,specialy1,specialx2,specialy2,specialx3,specialy3);
 end;
 fclose(fid);

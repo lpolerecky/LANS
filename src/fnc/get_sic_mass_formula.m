@@ -3,23 +3,25 @@ function [fla2, mass_id] = get_sic_mass_formula(sic_mass)
 % convert the string in sic_mass to a formula for
 % calculating intensity modulation "mass"      
 
-% new approach: 17-01-2025
-% substitute every digit by m{digid}
+% make sure it only contains no letters (such as log, sqrt, etc.)
+sic_mass = regexprep(sic_mass,'[a-zA-Z]','');
+
+%% new approach: 26-06-2025
+% substitute every digit by m{digid}, keep track of mass id's
 sic_mass_mod = [];
 mass_id = [];
 for ii=1:length(sic_mass)
     if double(sic_mass(ii)) >= double('0') && double(sic_mass(ii)) <= double('9')
         sic_mass_mod = [sic_mass_mod 'm{', sic_mass(ii), '}'];
-        mass_id = [mass_id, sic_mass(ii)];
+        mass_id = [mass_id, str2num(sic_mass(ii))];
     else
         sic_mass_mod = [sic_mass_mod sic_mass(ii)];
     end
 end
-sic_mass_mod = regexprep(sic_mass_mod, 'log','log10');
 
 fla2 = [sic_mass_mod ';'];
 
-% old approach (before 17-01-2025)
+%% old approach (before 17-01-2025), now abandoned
 if 0
     fla1 = [];
     negative_flag = 0;

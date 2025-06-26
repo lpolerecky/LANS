@@ -2,7 +2,27 @@ function conf = get_ratio_confidence(formula, m, imscale, mass_id)
 
 conf = [];
 
-% new approach (17-01-2025)
+%% new approach (26-06-2025)
+% first, transform all selected masses from [min max] to [0 1]
+for i=1:length(mass_id)
+    k=mass_id(i);
+    mk = ( m{k} - imscale{k}(1) ) / diff(imscale{k});
+    mk(mk<0) = 0;
+    mk(mk>1) = 1;
+    m{k} = mk;
+end
+% next, apply the formula
+s1 = ['conf = ', formula];
+eval(s1);
+% if there is '-' in the formula, the values may be negative, therefore
+% shift the values upwards
+conf = conf - min(conf(:));
+% make sure that the final result is between 0 and 1
+conf(conf<0) = 0;
+conf(conf>1) = 1;
+
+%% new approach (17-01-2025), now abandoned
+if 0
 s1 = ['confim = ', formula];
 eval(s1);
 m = imscale;
@@ -11,9 +31,9 @@ eval(s2);
 conf = (confim-confsc(1))/diff(confsc);
 conf(conf<0) = 0;
 conf(conf>1) = 1;
+end
 
 % old approach (before 17-01-2025)
-
 if 0
     % calculate the denominator in the ratio
     ind_div=findstr('/',formula);

@@ -204,7 +204,10 @@ if exist(fname,'file')
                 end
                 if ~isfield(h.additional_settings,'calculate_roi_variability')
                     additional_settings.calculate_roi_variability = 0;
-                end                                
+                end
+                if ~isfield(h.additional_settings,'modulate_hue_with_white')
+                    additional_settings.modulate_hue_with_white = 0;
+                end
             end
         else
             % these are default values tested on my computer
@@ -309,6 +312,7 @@ q.calculate_LWfactor = 1;
 q.calculate_perimeter = 0;
 q.calculate_perimeter = 0;
 q.calculate_roi_variability = 0;
+q.modulate_hue_with_white = 0;
 q.shift_columns_rows = [0 0 0 0];
 
 function q = get_default_correction_settings

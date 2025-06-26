@@ -10,24 +10,43 @@ jj=0;
 alls=[];xyz=[];
 image_range = '[]';
 
-%% new parsing (implemented on 2019-07-06)
+% new parsing (implemented on 2019-07-06)
+%% new parsing (implemented on 2025-06-26)
 % In the metafile, the columns should be separated by \t. However,
 % sometimes there are spaces instead of \t. To avoid failure, substitute
 % all \t by space, and then substitute multiple spaces by one space, then
-% split the string
-Line = regexprep(Line,'\t',' ');
-Line = regexprep(Line,' *',' ');
-items = strsplit(Line,' ');
+% split the string. 
+% Before doing so, determine the filename. If the filename contains spaces,
+% it should be enclosed between " ", so determine that first, then proceed
+% with the other parts of the string. If the filename does not contain
+% spaces, then proceed as before.
+if contains(Line,'"') % filename contains spaces, so it's enclosed between " " 
+    items = strsplit(Line,'"');
+    fname = items{2};
+    Line = [items{1} items{3}];
+    Line = regexprep(Line,'\t',' ');
+    Line = regexprep(Line,' *',' ');
+    items = strsplit(Line,' ');
+else
+    Line = regexprep(Line,'\t',' ');
+    Line = regexprep(Line,' *',' ');
+    items = strsplit(Line,' ');
+    fname = items{2};
+    items = items(setdiff(1:length(items),2));
+end
+
+% here, items contain everything on the Line except for the filename. Parse
+% it to get all relevant items
 nitems = length(items);
 for ii=1:nitems
     if ii==1
         id = str2num(items{ii});
     elseif ii==2
-        fname = items{ii};
-        fname = regexprep(fname,' ','');
-    elseif ii==3
+        %fname = items{ii};
+        %fname = regexprep(fname,' ','');
+    %elseif ii==3
         tmnt = str2num(items{ii});
-    elseif ii==4
+    elseif ii==3
         if items{ii}=='*'
             ct = [all_cell_types];
         else
@@ -92,6 +111,6 @@ fname(ind)=filesep*ones(size(ind));
 
 function f=is_range(s)
 f=0;
-if ~isempty(findstr(s,'[')) & ~isempty(findstr(s,']'))
+if contains(s,'[') && contains(s,']')
     f=1;
-end;
+end

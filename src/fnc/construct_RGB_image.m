@@ -125,7 +125,11 @@ end
 function [rgb7, rgb8, rgb_true, lab2] = fill_channel_rgb(R,Raim,Rconf,Nx,Ny,ii,p_scale,lab,opt1)
 global additional_settings;
 % default output
-rgb7 = zeros(Ny,Nx);
+if additional_settings.modulate_hue_with_white
+    rgb7 = ones(Ny,Nx);
+else
+    rgb7 = zeros(Ny,Nx);
+end
 rgb8 = rgb7; 
 rgb_true = rgb7;
 lab2 = lab;
@@ -162,9 +166,17 @@ if ii>0
             % the potentially noisy pixels 
             % LP: 16-06-2025
             % orinal approach: with black bkg
-            %rgb7 = rgb7 .* Rconf;
+            % rgb7 = rgb7 .* Rconf;
             % alternative approach: with white bkg
-            rgb7 = (1 - (1-rgb7).*Rconf);
+            % rgb7 = (1 - (1-rgb7).*Rconf);
+            % LP: 26-06-2025
+            % user can now choose in the additional_settings GUI between
+            % white and black bkg for hue modulation
+            if additional_settings.modulate_hue_with_white
+                rgb7 = 1 - (1-rgb7).*Rconf;
+            else
+                rgb7 = rgb7 .* Rconf;
+            end
         end        
     end
     if opt1(8)
@@ -177,4 +189,14 @@ if ii>0
         rgb8=(RR-ch_scale8(1))/diff(ch_scale8);
     end
     rgb_true = RR;    
+else
+    
+    if opt1(7)
+        if ~isempty(Rconf) 
+            if additional_settings.modulate_hue_with_white
+                rgb7 = 1 - Rconf;
+            end
+        end
+    end
+        
 end

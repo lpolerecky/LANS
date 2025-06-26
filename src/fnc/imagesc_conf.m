@@ -39,26 +39,20 @@ else
 end
 
 % apply hue modulation
-if 0
 if prod(HI(:))~=1
+    global additional_settings;
     for ii=1:size(a1,3)
-        a1(:,:,ii)=a1(:,:,ii).*HI;
-    end
-    %a=image(a1);
-end
-end
-
-% modulation changed: show masked area as white rather than black!
-% LP: 16-06-2025
-if 1
-if prod(HI(:))~=1
-    for ii=1:size(a1,3)
-        b1 = 1-a1(:,:,ii);
-        b1 = b1.*HI;
-        a1(:,:,ii) = 1-b1;
+        % LP: 26-06-2025
+        % user can now choose in the additional_settings GUI between
+        % white and black bkg for hue modulation
+        if additional_settings.modulate_hue_with_white
+            a1(:,:,ii) = 1 - (1-a1(:,:,ii)).*HI;
+        else
+            a1(:,:,ii) = a1(:,:,ii).*HI;
+        end
     end    
 end
-end
+
 
 a = cura.Children;
 ind_image = find(isgraphics(cura.Children,'Image'));
@@ -75,26 +69,6 @@ else
         'Visible','off');
 end
 
-% apply HI correction, if requested
-% if prod(HI(:))~=1
-%     % first, cut out the darkest colors from the colormap
-%     cmap = cmap(6:size(cmap,1),:);
-%     % apply HI correction to the image displayed in the selected hue
-%     as=(IM-mi)/(ma - mi);
-%     a1=ind2rgb(uint8(as*size(cmap,1)),cmap);
-%     a1(:,:,1)=a1(:,:,1).*HI;
-%     a1(:,:,2)=a1(:,:,2).*HI;
-%     a1(:,:,3)=a1(:,:,3).*HI;
-%     a=image(a1);
-% end;
-
-
-% display the image as normal, to find out the colorbar scaling
-
-%if prod(HI(:))==1
-    % when no correction for the SI counts is requested
-%a=imagesc(IM,[mi ma]);
-%colormap(cmap);
 
 fc = get(cura,'Parent');
 

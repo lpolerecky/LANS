@@ -282,12 +282,12 @@ switch h.additional_settings.scale_bar_pos
     case 3, set(h.radiobutton3,'value',1);
     case 4, set(h.radiobutton4,'value',1);
     case 0, set(h.radiobutton5,'value',1);
-end;
+end
 switch h.additional_settings.color_bar_pos
     case 1, set(h.radiobutton6,'value',1);
     case 2, set(h.radiobutton7,'value',1);
     case 0, set(h.radiobutton8,'value',1);
-end;
+end
 set(h.edit1,'String',sprintf('%.2f',h.additional_settings.print_factors(1)));
 set(h.edit2,'String',sprintf('%.2f',h.additional_settings.print_factors(2)));
 set(h.edit3,'String',sprintf('%.2f',h.additional_settings.print_factors(3)));
@@ -296,60 +296,60 @@ set(h.edit5,'String',sprintf('%.2f',h.additional_settings.print_factors(5)));
 set(h.edit6,'String',sprintf('%.2f',h.additional_settings.print_factors(6)));
 if isfield(h,'edit7')
     set(h.edit7,'String',sprintf('%.2f',h.additional_settings.print_factors(7)));
-end;
+end
 if isfield(h.additional_settings,'export_png')
     set(h.checkbox1,'value',h.additional_settings.export_png);
-end;
+end
 set(h.checkbox2,'value',h.additional_settings.always_display_rois);
 if isfield(h.additional_settings,'export_eps')
     set(h.checkbox3,'value',h.additional_settings.export_eps);
-end;
+end
 if isfield(h.additional_settings,'export_tif')
     set(h.checkbox4,'value',h.additional_settings.export_tif);
-end;
+end
 if isfield(h.additional_settings,'compress_pdf')
     set(h.checkbox5,'value',h.additional_settings.compress_pdf);
-end;
+end
 if isfield(h.additional_settings,'title_length')
     set(h.edit8,'string', num2str(h.additional_settings.title_length));
-end;
+end
 if isfield(h.additional_settings,'defFontSize')
     set(h.edit9,'string', num2str(h.additional_settings.defFontSize));
-end;
+end
 if isfield(h.additional_settings,'include_scale_text')
     set(h.checkbox6,'value',h.additional_settings.include_scale_text);
-end;
+end
 if isfield(h.additional_settings,'scale_bar_length')
     set(h.edit10,'String',num2str(h.additional_settings.scale_bar_length));
-end;
+end
 if isfield(h.additional_settings,'autoscale_quantiles')
     set(h.edit11,'String',num2str(h.additional_settings.autoscale_quantiles(1)));
     set(h.edit12,'String',num2str(h.additional_settings.autoscale_quantiles(2)));    
-end;
+end
 if isfield(h.additional_settings,'display_error_bars')
     set(h.checkbox10,'Value',h.additional_settings.display_error_bars);
-end;
+end
 if isfield(h.additional_settings,'display_trend_lines')
     set(h.checkbox11,'Value',h.additional_settings.display_trend_lines);
-end;
+end
 if isfield(h.additional_settings,'colormap')
     set(h.popupmenu1,'Value',h.additional_settings.colormap);
-end;
+end
 if isfield(h.additional_settings,'view_pdf')
     set(h.checkbox15,'value',h.additional_settings.view_pdf);
-end;
+end
 if isfield(h.additional_settings,'include_colorbar_label')
     set(h.checkbox17,'value',h.additional_settings.include_colorbar_label);
-end;
+end
 if isfield(h.additional_settings,'apply_1e3_factor')
     set(h.checkbox14,'value',h.additional_settings.apply_1e3_factor);
-end;
+end
 if isfield(h.additional_settings,'smooth_masses_kernelsize')
     set(h.edit15,'String',num2str(h.additional_settings.smooth_masses_kernelsize));
-end;
+end
 if isfield(h.additional_settings,'smooth_esi_kernelsize')
     set(h.edit16,'String',num2str(h.additional_settings.smooth_esi_kernelsize));
-end;
+end
 
 switch h.additional_settings.title_position
     case 1, set(h.radiobutton11,'value',1);
@@ -357,28 +357,31 @@ switch h.additional_settings.title_position
     case 3, set(h.radiobutton13,'value',1);
     case 4, set(h.radiobutton14,'value',1);
     case 0, set(h.radiobutton15,'value',1);
-end;
+end
 if isfield(h.additional_settings,'fill_title_background')
     set(h.checkbox12,'value',h.additional_settings.fill_title_background);
-end;
+end
 if isfield(h.additional_settings,'title_background_color')
     set(h.edit13,'String',num2str(h.additional_settings.title_background_color));
-end;
+end
 if isfield(h.additional_settings,'title_font_size_color')
     set(h.edit14,'String',num2str(h.additional_settings.title_font_size_color));
-end;
+end
 if isfield(h.additional_settings,'calculate_LWfactor')
     set(h.checkbox18,'Value',h.additional_settings.calculate_LWfactor);
-end;
+end
 if isfield(h.additional_settings,'calculate_perimeter')
     set(h.checkbox19,'Value',h.additional_settings.calculate_perimeter);
-end;
+end
 if isfield(h.additional_settings,'calculate_roi_variability')
     set(h.checkbox20,'Value',h.additional_settings.calculate_roi_variability);
-end;
+end
 if isfield(h.additional_settings,'display_roi_ids')
     set(h.checkbox21,'Value',h.additional_settings.display_roi_ids);
-end;
+end
+if isfield(h.additional_settings,'modulate_hue_with_white')
+    set(h.checkbox22,'Value',h.additional_settings.modulate_hue_with_white);
+end
 
 %%
 
@@ -393,7 +396,7 @@ d.print_factors = [str2num(get(h.edit1,'String')), ...
 if isfield(h,'edit7')
     d.print_factors = [d.print_factors, ...
         str2num(get(h.edit7,'String'))];
-end;
+end
 
 if get(h.radiobutton1,'value')==1
     d.scale_bar_pos = 1;
@@ -407,7 +410,7 @@ elseif get(h.radiobutton5,'value')==1
     d.scale_bar_pos = 0;
 else
     d.scale_bar_pos = 1;
-end;
+end
 
 if get(h.radiobutton6,'value')==1
     d.color_bar_pos = 1;
@@ -417,121 +420,121 @@ elseif get(h.radiobutton8,'value')==1
     d.color_bar_pos = 0;
 else
     d.color_bar_pos = 1;
-end;
+end
 
 if isfield(h,'checkbox1')
     d.export_png = get(h.checkbox1,'value');
 else
     d.export_png = 0;
-end;
+end
 
 if isfield(h,'checkbox3')
     d.export_eps = get(h.checkbox3,'value');
 else
     d.export_eps = 0;
-end;
+end
 
 if isfield(h,'checkbox4')
     d.export_tif = get(h.checkbox4,'value');
 else
     d.export_tif = 0;
-end;
+end
 
 if isfield(h,'checkbox5')
     d.compress_pdf = get(h.checkbox5,'value');
 else
     d.compress_pdf = 0;
-end;
+end
 
 if isfield(h,'checkbox2')
     d.always_display_rois = get(h.checkbox2,'value');
 else
     d.always_display_rois = 0;
-end;
+end
 
 if isfield(h,'edit8')
     d.title_length = str2num(get(h.edit8,'string'));
 else
     d.title_length = 40;
-end;
+end
 
 if isfield(h,'edit9')
     d.defFontSize = str2num(get(h.edit9,'string'));
 else
     d.defFontSize = 12;
-end;
+end
 
 if isfield(h,'checkbox6')
     d.include_scale_text = get(h.checkbox6,'value');
 else
     d.include_scale_text = 0;
-end;
+end
 
 if isfield(h,'edit10')
     d.scale_bar_length = str2num(get(h.edit10,'String'));
 else
     d.scale_bar_length = 0;
-end;
+end
 
 if isfield(h,'edit11')
     d.autoscale_quantiles(1) = str2num(get(h.edit11,'String'));
 else
     d.autoscale_quantiles(1) = 0.001;
-end;
+end
 
 if isfield(h,'edit12')
     d.autoscale_quantiles(2) = str2num(get(h.edit12,'String'));
 else
     d.autoscale_quantiles(2) = 0.999;
-end;
+end
 
 if isfield(h,'checkbox10')
     d.display_error_bars = get(h.checkbox10,'value');
 else
     d.display_error_bars = 1;
-end;
+end
 
 if isfield(h,'checkbox11')
     d.display_trend_lines = get(h.checkbox11,'value');
 else
     d.display_trend_lines = 1;
-end;
+end
 
 if isfield(h,'popupmenu1')
     d.colormap = get(h.popupmenu1,'value');
 else
     d.colormap = 1;
-end;
+end
 
 if isfield(h,'checkbox15')
     d.view_pdf = get(h.checkbox15,'value');
 else
     d.view_pdf = 0;
-end;
+end
 
 if isfield(h,'checkbox17')
     d.include_colorbar_label = get(h.checkbox17,'value');
 else
     d.include_colorbar_label = 1;
-end;
+end
 
 if isfield(h,'checkbox14')
     d.apply_1e3_factor = get(h.checkbox14,'value');
 else
     d.apply_1e3_factor = 0;
-end;
+end
 
 if isfield(h,'edit15')
     d.smooth_masses_kernelsize = str2num(get(h.edit15,'String'));
 else
     d.smooth_masses_kernelsize = [5 1];
-end;
+end
 
 if isfield(h,'edit16')
     d.smooth_esi_kernelsize = str2num(get(h.edit16,'String'));
 else
     d.smooth_esi_kernelsize = [1 1];
-end;
+end
 
 if get(h.radiobutton11,'value')==1
     d.title_position = 1;
@@ -586,6 +589,13 @@ if isfield(h,'checkbox21')
     d.display_roi_ids = get(h.checkbox21,'value');
 else
     d.display_roi_ids = 1;
+end
+
+% added 26.06.2025
+if isfield(h,'checkbox22')
+    d.modulate_hue_with_white= get(h.checkbox22,'value');
+else
+    d.modulate_hue_with_white = 0;
 end
 
 h.additional_settings = d;

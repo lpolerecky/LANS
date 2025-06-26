@@ -120,7 +120,8 @@ else
 end
 
 function fout = approve_imfile(imfile)
-forbidden_chars = ' *"^][()#%&,;''';
+%forbidden_chars = ' *"^][()#%&,;''';
+forbidden_chars = '*"^][()#%&,;''';
 flag = sum( ismember(imfile,forbidden_chars) );
 
 if flag>0
