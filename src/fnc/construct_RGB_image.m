@@ -160,7 +160,11 @@ if ii>0
             % apply the hue correction. it does not make analytical sense,
             % but it does help the RGB image to look better by removing all
             % the potentially noisy pixels 
-            rgb7 = rgb7 .* Rconf;
+            % LP: 16-06-2025
+            % orinal approach: with black bkg
+            %rgb7 = rgb7 .* Rconf;
+            % alternative approach: with white bkg
+            rgb7 = (1 - (1-rgb7).*Rconf);
         end        
     end
     if opt1(8)

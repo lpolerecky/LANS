@@ -39,11 +39,25 @@ else
 end
 
 % apply hue modulation
+if 0
 if prod(HI(:))~=1
     for ii=1:size(a1,3)
         a1(:,:,ii)=a1(:,:,ii).*HI;
     end
     %a=image(a1);
+end
+end
+
+% modulation changed: show masked area as white rather than black!
+% LP: 16-06-2025
+if 1
+if prod(HI(:))~=1
+    for ii=1:size(a1,3)
+        b1 = 1-a1(:,:,ii);
+        b1 = b1.*HI;
+        a1(:,:,ii) = 1-b1;
+    end    
+end
 end
 
 a = cura.Children;
@@ -56,7 +70,9 @@ if ~isempty(ind_image)
 else
     axes(cura);
     a = image(a1);
-    set(cura, 'DataAspectRatio', [1 1 1], 'XTick',[], 'YTick',[],'box','on');
+    set(cura, 'DataAspectRatio', [1 1 1], ...
+        'XTick',[], 'YTick',[],'box','on', ...
+        'Visible','off');
 end
 
 % apply HI correction, if requested

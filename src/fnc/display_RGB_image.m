@@ -48,7 +48,8 @@ if ~isempty(rgb7) || ~isempty(rgb8)
             
             % modify the axis properties to look the same as mass/ratio
             % images
-            set(ax,'DataAspectRatio',[1 1 1],'xtick',[],'ytick',[]);            
+            set(ax,'DataAspectRatio',[1 1 1],'xtick',[],'ytick',[],...
+                'Visible','off');            
             sfac=size(rgb7,1)/size(rgb7,2);
             if sfac<=1
                 set(ax,'Position',[0.1 0.06+0.5*0.9*(1-sfac) 0.8 0.9*sfac]);
