@@ -24,7 +24,7 @@ if prod(HI(:))~=1
     % if hue modulation requested, cut out the darkest colors from the colormap
     cmap = cmap(6:size(cmap,1),:);
 end
-
+                
 % if the image is full of NaN's, which happens when cells are plotted, make
 % the image look white
 [h,w]=size(IM);
@@ -38,9 +38,10 @@ else
     a1=ind2rgb(uint8(as*size(cmap,1)),cmap);
 end
 
+global additional_settings;
+
 % apply hue modulation
-if prod(HI(:))~=1
-    global additional_settings;
+if prod(HI(:))~=1    
     for ii=1:size(a1,3)
         % LP: 26-06-2025
         % user can now choose in the additional_settings GUI between
@@ -53,23 +54,95 @@ if prod(HI(:))~=1
     end    
 end
 
-
 a = cura.Children;
 ind_image = find(isgraphics(cura.Children,'Image'));
+
 if ~isempty(ind_image)
+    
     a = a(ind_image);
     a.CData = a1;
     cura.YLim = [0.5 h+0.5];
     cura.XLim = [0.5 w+0.5];
+    % this is sufficient to change the scale of image & colorbar!
+    cura.CLim = [mi ma];
+    fc = get(cura,'Parent');
+    ch = get(fc,'Children');
+    ind_cb = find(isgraphics(ch,'ColorBar'));
+
+    if ~isempty(ind_cb)
+        cb = ch(ind_cb);
+    else
+        cb = colorbar;
+    end
+        
+    xt = cb.Ticks;
+    xtl = cb.TickLabels;
+    
 else
+    
     axes(cura);
-    a = image(a1);
+    % a = image(a1);
+    a = imagesc(IM,[mi ma]);
     set(cura, 'DataAspectRatio', [1 1 1], ...
-        'XTick',[], 'YTick',[],'box','on', ...
-        'Visible','off');
+        'XTick',[], 'YTick',[],'box','on', ...        
+        'Visible','on');
+    if additional_settings.modulate_hue_with_white
+        set(cura,'XColor','w', 'YColor','w');
+    else
+        set(cura,'XColor','k', 'YColor','k');
+    end    
+    fc = get(cura,'Parent');
+    if cbpos ~= 0
+        
+        ch = get(fc,'Children');
+        ind_cb = find(isgraphics(ch,'ColorBar'));
+        
+        if ~isempty(ind_cb)
+            cb = ch(ind_cb);
+        else
+            cb = colorbar;
+        end
+
+        if cbpos==2
+            if ~strcmp(get(cb,'location'),'manual')
+                set(cb,'location','southoutside');
+            end
+            xylim = 'x';
+        else
+            if ~strcmp(get(cb,'location'),'manual')
+                set(cb,'location','eastoutside');
+            end
+            xylim = 'y';
+        end        
+        
+        xt = cb.Ticks;
+        xtl = cb.TickLabels;
+    
+    else
+        
+        xt = [];
+        xtl = [];
+        cb = [];
+        % if everything except the image is excluded from the figure
+        % make the axes invisible (good for plotting images with white
+        % modulation
+        set(fc,'Color',[1 1 1]); 
+        set(cura,'Color',[1 1 1]*0.1); 
+        set(fc,'InvertHardCopy','off');
+        
+    end
+    
+    colormap(cmap);
+    % at the end, we replace the original non-modulated image with the
+    % modulated!
+    a.CData = a1;    
+    
 end
 
-
+%% LP: the following code is obsolete from 27-06-2025
+% it contains earlier attempts to figure out nice way to set the ticks. in
+% the end, best way is to rely on default values calculated by matlab
+if 0
 fc = get(cura,'Parent');
 
 if cbpos ~= 0
@@ -144,11 +217,16 @@ if cbpos ~= 0
         xt=round(xt/f2)*f2;
     end
     
+    % LP: 27-06-2025
+    if log10(f2)>2
+        xt = [xt(1) xt(floor((length(xt)+1)/2)) xt(end)];
+    end
+    
     % LP: last update 21-05-2021
     for ii=1:length(xt)
-        if log10(f2)>2             
+        if log10(f2)>2            
             xtl{ii,1} = [num2str(xt(ii)/f2) '\times10^{' num2str(log10(f2)), '}' ];
-        elseif log10(f2)<=-3
+        elseif log10(f2)<-4
             xtl{ii,1} = [num2str(xt(ii)/(f2*10)) '\times10^{' num2str(log10(f2*10)), '}'];
         elseif log_flag
             xtl{ii,1} = ['10^{', num2str(xt(ii)), '}'];
@@ -156,11 +234,6 @@ if cbpos ~= 0
             xtl{ii,1} = num2str(xt(ii));
         end
     end
-    
-    % LP: last update 21-05-2021
-    %xt=get(cb,[xylim 'tick']);
-    %xtl=get(cb,[xylim 'ticklabel']);
-    %delete(cb);
           
 else
     
@@ -171,3 +244,4 @@ else
     
 end
 
+end

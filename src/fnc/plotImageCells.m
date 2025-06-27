@@ -144,7 +144,7 @@ if(ishandle(f))
     fpos=my_get(f,'Position');
 else
     FigPos=get(0,'DefaultFigurePosition');
-	FigPos(3:4)=1.2*FigPos(4)*[1 1];
+	FigPos(3:4)=1.2*FigPos(4)*[1 1.02];
     ScreenUnits=get(0,'Units');
     set(0,'Units','pixels');
     ScreenSize=get(0,'ScreenSize');
@@ -235,7 +235,7 @@ if o1(6) && prod(mi<ma)
     end
     
     % add title
-    add_image_title(ax,title_,mass_,fac,size(IM),o1(15));
+    add_image_title(ax,title_,mass_,fac,size(IM),o1(15),o1(4));
     
     % add cell outline, if requested
     if(o1(1) && ~isempty(CELLS))
@@ -261,21 +261,46 @@ if o1(6) && prod(mi<ma)
             sfac=size(IM,1)/size(IM,2);
             xylim='x';
             if sfac<=1
-                set(ax,'Position',[0.1 0.13+0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
+                set(ax,'Position',[0.1 0.15+0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
                 if isempty(b)
                     b=colorbar('location','SouthOutside');
                 end
-                set(b,'Position',[0.14 0.1+0.5*0.8*(1-sfac) 0.72 0.02]);
+                set(b,'Position',[0.17, 0.12+0.5*0.8*(1-sfac), (1-2*0.17), 0.02]);
             else
                 set(ax,'Position',[0.1+0.5*0.8*(1-1/sfac) 0.11 0.8/sfac 0.8]);
                 if isempty(b)
                     b=colorbar('location','SouthOutside');
                 end
-                set(b,'Position',[0.14+0.5*0.8*(1-1/sfac) 0.08 0.68/sfac 0.02]);
+                set(b,'Position',[0.17+0.5*0.8*(1-1/sfac) 0.08 0.66/sfac 0.02]);
             end  
-            set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
-                'TickDirection', 'out', ...
-                'TickLabels', xtl_auto);
+            
+            if 0
+                % LP: 27-06-2025 (test)
+                % do this to get colorbar scaling calculated automatically
+                % by matlab
+                frnd=figure('Visible','on');
+                ax2 = imagesc(IM,[mi ma]);
+                ax2 = ax2.Parent;
+                if additional_settings.color_bar_pos==2
+                    cb2=colorbar('location','SouthOutside');
+                elseif additional_settings.color_bar_pos==1
+                    cb2=colorbar('location','EastOutside');
+                end
+                set(cb2,'Position', get(b, 'Position'))
+                set(ax2,'Position', get(ax, 'Position'), ...
+                    'XTick',[],'YTick',[])
+                %xt_auto = get(cb2, 'Ticks');
+                %xtl_auto = get(cb2, 'TickLabels');
+                %cb2_Ruler_Exponent = cb2.Ruler.Exponent;
+                %delete(frnd);
+                figure(f);
+            end
+            
+            %set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
+            %   'TickDirection', 'out', ...
+            %    'TickLabels', xtl_auto);
+            %b.Ruler.Exponent = -3;
+            b.Ruler.TickLabelRotation=0;
 
         elseif additional_settings.color_bar_pos==1
 
@@ -296,9 +321,10 @@ if o1(6) && prod(mi<ma)
                 end
                 set(b,'Position',[gcap(1)+gcap(3)+0.02 0.11 0.02 0.8]);
             end
-            set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
-                'TickDirection', 'out', ...
-                'TickLabels', xtl_auto);
+            
+            %set(b,'Ticks', (xt_auto-mi)/(ma-mi), ...
+            %    'TickDirection', 'out', ...
+            %    'TickLabels', xtl_auto);
             b.Ruler.TickLabelRotation=0;
 
         end
