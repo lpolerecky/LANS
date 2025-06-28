@@ -273,13 +273,13 @@ for ii=1:min([length(im) 8])
         %imagesc(log10(double(a)), log10(double(s)));
         %cmap = get(handles.popupmenu2,'value');
         cmap = get(handles.popupmenu2,'value');
-        [~, ~, ~, cmap2] = imagesc_conf(log10(double(a)), log10(double(s(1))), log10(double(s(2))), a_conf, cmap, 0, ax);
+        [~, ~, ~, cmap2] = imagesc_conf_win6(log10(double(a)), log10(double(s(1))), log10(double(s(2))), a_conf, cmap, 0, ax);
         title(ax,['log(', t, ')'], 'FontSize',fontsize,'fontweight','normal');
     else
         %imagesc(a, s);
         %cmap = get(handles.popupmenu2,'value');
         cmap = get(handles.popupmenu2,'value');
-        [~, ~, ~, cmap2] = imagesc_conf(a, s(1), s(2), a_conf, cmap, 0, ax);
+        [~, ~, ~, cmap2] = imagesc_conf_win6(a, s(1), s(2), a_conf, cmap, 0, ax);
         title(ax,t,'FontSize',fontsize,'fontweight','normal');
     end
     if(sr)
