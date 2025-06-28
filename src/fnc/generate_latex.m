@@ -150,7 +150,7 @@ sfac = handles.p.height/handles.p.width;
 if 0 && sfac>=1
     size_option='height=0.3\textheight';
 else
-    size_option='width=0.41\textwidth';
+    size_option='width=0.4\textwidth';
 end
 for ii=1:ceil(nf/2)
     jj=(ii-1)*2+1;
