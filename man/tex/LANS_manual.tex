@@ -18,11 +18,18 @@ Department of Earth Sciences, Utrecht University, Utrecht, The Netherlands (2013
 \date{User's manual, version 28-06-2025\\[3mm]
 \url{https://github.com/lpolerecky/LANS}}
 
+\definecolor{darkgold}{RGB}{120,75,4}
+\definecolor{darkgreen}{RGB}{4,120,4}
+\definecolor{purple}{RGB}{128,0,128}
 \newcommand{\ttt}[1]{\texttt{#1}}
 \newcommand{\lans}[1]{{\color{magenta}#1}}
+\newcommand{\lanscb}[1]{{\color{darkgreen}#1}}
+\newcommand{\lanstf}[1]{{\color{cyan}#1}}
 %\newcommand{<name>}[<args>]{ <code> }
 \usepackage{marginnote}
 \newcommand\mnote{\marginnote{\fbox{\textbf{\bf Note}}}}
+\newcommand\ra{\rightarrow}
+\newcommand\addon[1]{-- {\small #1}}
 
 \begin{document}
 
@@ -194,7 +201,7 @@ In this document, we assume that the raw and processed nanoSIMS data are organiz
 \caption{\label{tab1:file_structure} Hierarchical organization of the raw and processed nanoSIMS data implemented in Look@NanoSIMS. An example of such data organization along with a more detailed explanation is shown in Fig.~\ref{fig2:data_organization}.}
 \begin{tabular}{l@{ $\rightarrow$ }c@{ $\rightarrow$ }l@{ $\rightarrow$ }l@{ $\rightarrow$ }l}
 \hline
-root & project & measurment day 1 & raw dataset 1.1 & \textbf{dataset folder 1.1}\\
+root & project & measurment day 1 & raw dataset 1.1 & \color{red}{dataset folder} 1.1\\
 \multicolumn{2}{c}{} & & raw dataset 1.2  & dataset folder 1.2\\
 \multicolumn{2}{c}{} & & $\cdots$ & $\cdots$ \\
 \multicolumn{1}{c}{} & & measurement day 2 & raw dataset 2.1  & dataset folder 2.1\\
@@ -202,10 +209,10 @@ root & project & measurment day 1 & raw dataset 1.1 & \textbf{dataset folder 1.1
 \multicolumn{2}{c}{} & & $\cdots$ & $\cdots$\\
 \multicolumn{1}{c}{} & & $\cdots$ & $\cdots$ & $\cdots$\\
 \hline
-\multicolumn{2}{r}{\textbf{dataset folder} $i$ $\rightarrow$} & dat & \multicolumn{2}{l}{text output (ion counts, ratios)} \\
-\multicolumn{2}{r}{$\rightarrow$} & pdf & \multicolumn{2}{l}{graphical output (images, graphs)} \\
-\multicolumn{2}{r}{$\rightarrow$} & \multicolumn{3}{l}{\hspace{-2mm}processing definition files (alignment, ROIs, preferences)} \\
-\multicolumn{2}{r}{$\rightarrow$} & \multicolumn{3}{l}{\hspace{-2mm}OutputG.pdf (output summary)}\\
+\multicolumn{2}{r}{\color{red}{dataset folder} $i$ $\rightarrow$} & \color{orange}{dat} & \multicolumn{2}{l}{\color{orange}{numbers}} \\
+\multicolumn{2}{r}{$\rightarrow$} & \textcolor{darkgold}{pdf} & \multicolumn{2}{l}{\textcolor{darkgold}{images \&\ graphs}} \\
+\multicolumn{2}{r}{$\rightarrow$} & \multicolumn{3}{l}{\hspace{-2mm}processing definition files (\textcolor{purple}{alignment, ROIs, preferences})} \\
+\multicolumn{2}{r}{$\rightarrow$} & \multicolumn{3}{l}{\hspace{-2mm}\textcolor{purple}{OutputG.pdf (output summary)}}\\
 \hline
 \end{tabular}
 \end{table}
@@ -233,8 +240,115 @@ At the highest level of the data organization is a root folder that contains \em
     \label{fig2:data_organization}
 \end{figure}
 
+%%
+
+\section{Data processing with Look@NanoSIMS --- quick summary}
+
+This section provides a quick summary of steps taken during a typical data processing session. Refer to Sections~\ref{sec:level1}, \ref{sec:level2} and \ref{sec:level3} for more details, depending on the level of analysis. Throughout this document, we will use colored text when refering to a specific \lans{menu item or action button}, \lanscb{checkbox} or \lanstf{text field} in the program's GUI.
 
 
+\subsection{Analysis of a single dataset --- ``from scratch''}
 
+\begin{enumerate}
+
+\item We start from the \lans{Input} menu. Define \lans{dead-time and QSA correction settings}.
+
+\addon{Usually, these corrections are not necessary and this step can be skipped.}
+
+\item \lans{Load RAW dataset} from disk. 
+
+\addon{Before you do this, click on \lans{Ask for range of planes and mases before loading} if you want to select specific planes and masses when loading the raw data from disk. This may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.}
+
+\item \lans{Autoscale plane images} to set the scale for all masses automatically. 
+
+\item \lans{Display plane images for all masses} to view the raw data as scaled images, plane by plane and in linear or log scale. 
+
+\addon{In this step, you will be able to decide which mass will be used as a \lanstf{base mass for alignment} of planes during accumulation.}
+
+\item Define \lanstf{base mass for alignment} and then select \lans{display alignment mass} to check the data plane by plane. 
+
+\addon{While viewing the data, \lanscb{deselect planes} that should be excluded from accumulation (e.g., if the data in that plane is corrupt).}
+
+\addon{At the end of this checking, \lans{define alignment region} within the image. This region will be used when calculating misalignment between subsequent planes. }
+
+\item \lans{Accumulate plane images} to accumulate ion counts over all selected planes.  
+
+\addon{Before you do that, check \lanscb{align images when accumulating} if you do want to perform drift-correction of planes during accumulation.}
+
+\mnote
+\addon{At the end of automatic drift-correction, you will be prompted to accept or reject the drift-correction information. If you \lans{accept}, the information will be stored in the file \ttt{xyalign.mat} and all planes for all masses will be accumulated based on this information. If you \lans{reject}, you can reiterate steps 4--6 until you arrive at a dataset with accumulated planes. If, anytime at a later point during your data analysis, you realize that you are not satisfied with the drift-correction, you need to first delete the \ttt{xyalign.mat} file (\lans{Preferences} $\ra$ \lans{Remove xyalign.mat from disk}) and then repeat steps 2--6.}
+
+\item \lans{Autoscale accumulated images} and then \lans{display accumulated images for all masses} to view the accumulated ion count images for all masses. 
+
+\addon{This will export the results in a PNG file. You can choose whether you want to display the ion counts in a linear or log scale by checking \lanscb{Log10-transform}.}
+
+\item \lans{Output} $\ra$ \lans{Display masses} to display the accumulated images for all masses.
+
+\addon{Before you do that, check \lanscb{Display images} and \lanscb{Export PDF graphics} checkboxes in the \ttt{Output options} area of LANS (at the bottom of the main GUI). The latter option is needed if you want to export the results as PDF.}
+
+\mnote
+\addon{You can tweak the appearance of the images, and many more output options, via \lans{Preferences} $\ra$ \lans{Additional output options}.}
+
+\item \lans{Output} $\ra$ \lans{Display ratios} to display ratio images derived from the accumulated ion count images.
+
+\addon{Before you do that, type \lanstf{expressions} and \lanstf{scales} for ratio images in the corresponding text fields. Also, do not forget to check \lanscb{Export PDF graphics}.}
+
+\item Define regions of interest (ROIs) using \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool}.
+
+\addon{Typically, much of nanoSIMS data analysis revolves around ROIs.}
+
+\addon{Before you open the ROIs definition tool, specify the \lanstf{ROI definition template}.  This can be an individual mass, ratio, an RGB overlay of masses or ratios, or an external image.}
+
+\addon{If an external image is chosen as a ROI definition template, it needs to be first aligned with the nanoSIMS image, which can be done via the \lans{External} menu (part of advanced analysis).}
+
+\item \lans{Export ROIs image as graphics} to export the ROI outlines as PDF. 
+
+\addon{This will also include a~unique identification numbers for each ROI.}
+
+\item Select \lans{ROIs} $\ra$ \lans{Classify} to classify the defined ROIs. 
+
+\addon{It is often useful to classify the ROIs. This can be done \lans{manually} or \lans{automatically} based on ROI-specific information.}
+
+\item The type of subsequent analysis and result visualization depends on the options selected in the \ttt{Output options} area of LANS. For example, you can display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms}. You can also \lanscb{combine images as RGB} overlays, \lanscb{plot x-y-z graphs} (scatter plots), or \lanscb{compare ROIs} using simple statistical methods. 
+
+After you define your choices, the analysis is done by selecting \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios}. 
+
+\addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
+
+\mnote
+\addon{Displaying depth profiles of ion counts and ion count ratios in ROIs can be useful as a quality check of the data.}
+
+\addon{When displaying images, you can \lanscb{log-transform} the values, \lanscb{include ROI outlines}, or \lanscb{modulate the hue} based on a specific combination of masses (part of advanced analysis).}
+
+\addon{When exploring RGB overlays, including images and scatter plots, you can do so on a \lanscb{pixel-by-pixel} level or as \lanscb{ROI-averaged}.}
+
+\item Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a comprehensive PDF file. 
+
+\mnote
+\addon{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the \ttt{PDF\_VIEWER} variable (in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to quickly see the results summary in a nicely organized way.}
+
+\item Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session (we recommend to use the file name \ttt{prefs.mat}).
+
+\mnote
+\addon{This should be the last step of processing of an individual dataset. We emphasize that you do this, because this file will be \emph{very useful} if you want to re-process the current dataset in the future.}
+
+\addon{Specifically, the file contains all information for the currently processed dataset that you see in the GUI, including the detected masses, planes selected for alignment, formulas for ion count ratios, scales, all output options, etc.}
+
+\end{enumerate}
+
+%%
+
+\section{Data processing with Look@NanoSIMS --- basic level}
+\label{sec:level1}
+
+%%
+
+\section{Data processing with Look@NanoSIMS --- intermediate level}
+\label{sec:level2}
+
+%%
+
+\section{Data processing with Look@NanoSIMS --- advanced level}
+\label{sec:level3}
 
 \end{document}
