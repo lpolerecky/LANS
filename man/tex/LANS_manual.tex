@@ -245,29 +245,31 @@ At the highest level of the data organization is a root folder that contains \em
 
 \clearpage
 
-\section{Data processing with Look@NanoSIMS --- quick summary}
+\section{A typical data processing session with Look@NanoSIMS}
 
-This section provides a quick summary of steps taken during a typical data processing session. Refer to Sections~\ref{sec:level1}, \ref{sec:level2} and \ref{sec:level3} for more details, depending on the level of analysis. Throughout this document, we will use colored text when refering to a specific \lans{menu item or action button}, \lanscb{checkbox} or \lanstf{text field} in the program's GUI.
+This section provides a \emph{quick summary} of steps taken during a typical data processing session with Look@NanoSIMS. Refer to Sections~\ref{sec:level1}, \ref{sec:level2} and \ref{sec:level3} for more details, depending on the level of analysis. Throughout this document, we will use colored text when refering to a specific \lans{menu item or action button}, \lanscb{checkbox} or \lanstf{text field} in the program's GUI.
 
 
 \subsection{Analysis of a single dataset ``from scratch''}
 \label{sec:analysis_from_scratch}
 
+This analysis is considered a ``basic level''. It includes steps that will bring you from a raw dataset to basic output such as values and images of ion counts and ion count ratios.
+
 \begin{enumerate}
 
-\item Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings}.
+\item Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.
 
-\addon{Usually, these corrections are not necessary and this step can be skipped.}
+\addon{Usually, these corrections are not necessary and this step can be skipped (part of advanced analysis).}
 
 \item Select \lans{Input} $\ra$ \lans{Load RAW dataset} to select raw data from disk. 
 
-\addon{Before you do this, click on \lans{Ask for range of planes and mases before loading} if you want to select specific planes and masses when loading the raw data from disk. This may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.}
+\addon{Before you do this, click on \lans{Ask for range of planes and mases before loading} if you want to select specific planes and masses when loading the raw data from disk. This is unnecessary in most cases, but it may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.}
 
 \addon{When searching for the dataset, choose the file type \ttt{im.zip} or \ttt{im} depending on whether the raw data has been compressed or not.}
 
 \item Select \lans{Input} $\ra$ \lans{Autoscale plane images} to set the scale for all masses automatically. 
 
-\item Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view the raw data as scaled images, plane by plane and in linear or log scale. 
+\item Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view the raw data as scaled images, plane by plane and in a~linear or log scale. 
 
 \addon{In this step, you will be able to decide which mass will be used as a \lanstf{base mass for alignment} of planes during accumulation.}
 
@@ -281,8 +283,10 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \addon{Before you do that, check \lanscb{align images when accumulating} if you do want to perform drift-correction of planes during accumulation.}
 
+\addon{At the end of automatic drift-correction, you will be prompted to accept or reject the drift-correction information. If you \lans{accept}, the information will be stored in the file \ttt{xyalign.mat} and all planes for all masses will be accumulated based on this information. If you \lans{reject}, you can reiterate steps 4--6 until you arrive at a dataset with accumulated planes.}
+
 \mnote
-\addon{At the end of automatic drift-correction, you will be prompted to accept or reject the drift-correction information. If you \lans{accept}, the information will be stored in the file \ttt{xyalign.mat} and all planes for all masses will be accumulated based on this information. If you \lans{reject}, you can reiterate steps 4--6 until you arrive at a dataset with accumulated planes. If, anytime at a later point during your data analysis, you realize that you are not satisfied with the drift-correction, you need to first delete the \ttt{xyalign.mat} file (\lans{Preferences} $\ra$ \lans{Remove xyalign.mat from disk}) and then repeat steps 2--6.}
+\addon{If you realize, anytime at a later point during your data analysis, that you are not satisfied with the drift-correction, you need to first delete the \ttt{xyalign.mat} file (\lans{Preferences} $\ra$ \lans{Remove xyalign.mat from disk}) and then repeat steps 2--6.}
 
 \item Select \lans{Input} $\ra$ \lans{Autoscale accumulated images} and then \lans{Input} $\ra$ \lans{Display accumulated images for all masses} to view the accumulated ion count images for all masses. 
 
@@ -297,7 +301,9 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \item Select \lans{Output} $\ra$ \lans{Display ratios} to display ratio images derived from the accumulated ion count images.
 
-\addon{Before you do that, type \lanstf{expressions} and \lanstf{scales} for ratio images in the corresponding text fields. Also, do not forget to check \lanscb{Export PDF graphics}.}
+\addon{Before you do that, type \lanstf{expressions} and \lanstf{scales} for ratio images in the corresponding text fields.}
+
+\addon{Also, do not forget to check \lanscb{Export PDF graphics}.}
 
 \item Define regions of interest (ROIs) using \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool}.
 
@@ -305,7 +311,7 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \addon{Before you open the ROIs definition tool, specify the \lanstf{ROI definition template}.  This can be an individual mass, ratio, an RGB overlay of masses or ratios, or an external image.}
 
-\addon{If an external image is chosen as a ROI definition template, it needs to be first aligned with the nanoSIMS image, which can be done via the \lans{External} menu (part of advanced analysis).}
+%\addon{If an external image is chosen as a ROI definition template, it needs to be first aligned with the nanoSIMS image, which can be done via the \lans{External} menu (part of advanced analysis).}
 
 \item Select \lans{ROIs} $\ra$ \lans{Export ROIs image as graphics} to export the ROI outlines as PDF. 
 
@@ -313,7 +319,7 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \item Select \lans{ROIs} $\ra$ \lans{Classify} to classify the defined ROIs. 
 
-\addon{It is often useful to classify the ROIs. This can be done \lans{manually} or \lans{automatically} based on ROI-specific information.}
+\addon{It is useful, although typically not essential, to classify the ROIs. This can be done \lans{manually} or \lans{automatically} based on ROI-specific information.}
 
 \item Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Output} $\ra$ \lans{Display ratios} to perform various types of data analysis and visualization.
 
@@ -321,7 +327,7 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
 
-\addon{Displaying depth profiles of ion counts and ion count ratios in ROIs can be useful as a quality check of the data.}
+%\addon{Displaying depth profiles of ion counts and ion count ratios in ROIs can be useful as a quality check of the data.}
 
 \addon{When displaying images, you can \lanscb{log-transform} the values, \lanscb{include ROI outlines}, or \lanscb{modulate the hue} based on a specific combination of masses (part of advanced analysis).}
 
@@ -329,24 +335,23 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \item Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a comprehensive PDF file. 
 
-\mnote
-\addon{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the \ttt{PDF\_VIEWER} variable (in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to quickly see the results summary in a nicely organized way.}
+%\mnote\addon{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the \ttt{PDF\_VIEWER} variable (in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to quickly see the results summary in a nicely organized way.}
 
 \item Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session (we recommend to use the file name \ttt{prefs.mat}).
 
-\addon{This should be the last step of processing of an individual dataset. We emphasize that you do this, because this file will be \emph{very useful} if you want to re-process the current dataset in the future.}
+\addon{This should be the last step of processing of an individual dataset. We emphasize that you do this step because the settings file will be \emph{very useful} if you want to re-process the current dataset in the future.}
 
-\addon{Specifically, the file contains all information for the currently processed dataset that you see in the GUI, including the detected masses, planes selected for alignment, formulas for ion count ratios, scales, all output options, etc.}
+%\addon{Specifically, the file contains all information for the currently processed dataset that you see in the GUI, including the detected masses, planes selected for alignment, formulas for ion count ratios, scales, all output options, etc.}
 
 \end{enumerate}
 
 %%
 
-\subsection{Continuation of previously stored analysis of a single dataset}
+\subsection{Continuation of a previously stored single-dataset analysis}
 
 \begin{enumerate}
 
-\item Do step 1 described in Section~\ref{sec:analysis_from_scratch}.
+\item Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.
 
 \item Select \lans{Input} $\ra$ \lans{Load+accumulate+display RAW or PROCESSED dataset}. 
 
@@ -366,17 +371,17 @@ This section provides a quick summary of steps taken during a typical data proce
 
 \subsection{Analysis of multiple datasets}
 
+This so-called ``metafile processing'' analysis is considered an ``intermediate level''. It assumes that you have analyzed, on a~basic level, multiple datasets. Using the steps described below, you will be able to quickly synthesize the output from these analyses --- isotope ratio values and images, scattered across multiple files and folders --- and store them in \emph{one} output file. This output can then be used for visualization and further analysis (e.g., statistical analysis) by LANS or third-party software. 
+
 \begin{enumerate}
 
 \item Ensure that the raw and processed data are organized as described in Section~\ref{sec:data_organization} (see also Fig.~\ref{fig2:data_organization}).
 
 \item Select \lans{Process multiple} $\ra$ \lans{Generate metafile} to define a list of datasets that will be analyzed together.
 
-\addon{Typically, the datasets selected in the list are part of a particular project or correspond to a particular set of treatments within a project.}
+%\addon{Typically, the datasets selected in the list are part of a~project or correspond to a~particular set of treatments within a~project.}
 
 \item Select \lans{Process multiple} $\ra$ \lans{Process metafile} to perform the analysis of multiple datasets.
-
-\addon{This so-called ``metafile processing'' analysis allows you to do couple of useful things: (i) It compiles isotope ratio values for \emph{all} selected datasets into \emph{one} output file. This output can then be used for visualization and further analysis (e.g., statistical analysis) by LANS or third-party software. (ii) It compiles isotope ratio images for \emph{all} selected datasets into \emph{one} PDF output.}
 
 \end{enumerate}
 
