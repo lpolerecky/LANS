@@ -78,6 +78,10 @@ if ~isempty(ind_image)
     xt = cb.Ticks;
     xtl = cb.TickLabels;
     
+    if cbpos == 0 
+        delete(cb);
+    end
+    
 else
     
     axes(cura);

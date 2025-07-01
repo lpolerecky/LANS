@@ -2107,15 +2107,53 @@ function h=Load_Display_Preferences_Callback(hObject, eventdata, handles)
 h = [];
 workdir=get(handles.edit2,'String');
 workdir=fixdir(workdir);
-if(isfolder(workdir))
+if isfolder(workdir)
     newdir=workdir;
 else
     newdir='';
 end
+
 global MAT_EXT
 def_file = [workdir 'prefs' MAT_EXT];
-fprintf(1,'Select the Preferences file (default %s)\n',def_file);
 
+if ~isfile(def_file)
+    % LP: 01-07-2025
+    % if the prefs file does not exist, test for the existence of the
+    % zipped backup of the folder with processed data. if it exists, ask
+    % whether the user would like to unzip it. If yes, then unzip it and
+    % load the data from there. 
+    backup_zipped_filename = [workdir(1:(end-1)), '.zip'];
+    if isfile(backup_zipped_filename)
+        [a b c] = fileparts(backup_zipped_filename);
+        answer = questdlg(sprintf('Backup file %s%s found in the current folder.\nDo you want to unpack it and use its content?', b,c), ...
+            'Backup found', ...
+            'Yes','No','No');
+        if isempty(answer)
+            answer = 'No';
+        end
+        switch answer
+            case 'Yes'
+                
+                % Unpack the backup file
+                fprintf('Unpacking %s%s ...', b,c);                
+                global UNZIP_COMMAND;    
+                s = ['!' UNZIP_COMMAND ' ' b c];
+                cdir=pwd;
+                cd(a);
+                eval(s);
+                cd(cdir);
+                fprintf(1,' done.\n');
+                % also update the newdir, since it should exist now
+                newdir=workdir;
+                def_file = [workdir 'prefs' MAT_EXT];
+                
+            case 'No'
+                fprintf('Leaving as is.\n');
+        end
+    end
+end
+
+fprintf(1,'Select the Preferences file (default %s)\n',def_file);
 [FileName,newdir,~] = uigetfile('*.mat', 'Select the Preferences file', def_file);
 if(FileName~=0)
     imfile = [newdir, FileName];

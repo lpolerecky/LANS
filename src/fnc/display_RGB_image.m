@@ -23,12 +23,20 @@ if ~isempty(rgb7) || ~isempty(rgb8)
             
             % the same code as in plotImageCells.m to place the figure
             mf=figure(35+ii);
-            set(mf,'ToolBar','none','MenuBar','none','Name','RGB');
-            ax=subplot(1,1,1);
-            hold off;
-            if isempty(get(mf,'children'))
+            fc=get(mf,'Children');
+            ind_ax=find(isgraphics(fc,'Axes'));
+            if ~isempty(ind_ax)
+                ax = fc(ind_ax);
+                ind_im = find(isgraphics(ax.Children,'Image'));
+                if ~isempty(ind_im)
+                    set(ax.Children(ind_im), 'CData', rgb);
+                end
+                fpos = get(mf,'Position');
+            else
+                set(mf,'ToolBar','none','MenuBar','none','Name','RGB');
+                ax=subplot(1,1,1); hold off;
                 FigPos=get(0,'DefaultFigurePosition');
-                FigPos(3:4)=1.2*FigPos(4)*[1 1];
+                FigPos(3:4)=1.2*FigPos(4)*[1 1.02];
                 ScreenUnits=get(0,'Units');
                 set(0,'Units','pixels');
                 ScreenSize=get(0,'ScreenSize');
@@ -38,21 +46,42 @@ if ~isempty(rgb7) || ~isempty(rgb8)
                 fpos=FigPos;
                 set(mf,'Units','pixels');
                 set(mf,'Position',fpos);
-                set(mf,'ToolBar','none','MenuBar','none','Name','RGB');
-            else
-                fpos = get(mf,'Position');
+                
+                imagesc(rgb);
+                
             end
-
-            % display the image
-            imagesc(rgb);
+            
+%             set(mf,'ToolBar','none','MenuBar','none','Name','RGB');
+%             ax=subplot(1,1,1);
+%             hold off;
+%             if isempty(get(ax,'children'))
+%                 FigPos=get(0,'DefaultFigurePosition');
+%                 FigPos(3:4)=1.2*FigPos(4)*[1 1.02];
+%                 ScreenUnits=get(0,'Units');
+%                 set(0,'Units','pixels');
+%                 ScreenSize=get(0,'ScreenSize');
+%                 set(0,'Units',ScreenUnits);
+%                 FigPos(1)=1/2*(ScreenSize(3)-FigPos(3));
+%                 FigPos(2)=2/3*(ScreenSize(4)-FigPos(4));
+%                 fpos=FigPos;
+%                 set(mf,'Units','pixels');
+%                 set(mf,'Position',fpos);
+%                 %set(mf,'ToolBar','none','MenuBar','none','Name','RGB');
+%             else
+%                 fpos = get(mf,'Position');
+%             end
+% 
+%             % display the image
+%             imagesc(rgb);
             
             % modify the axis properties to look the same as mass/ratio
             % images
             set(ax,'DataAspectRatio',[1 1 1],'xtick',[],'ytick',[],...
-                'Visible','off');            
+                'Visible','on');            
             sfac=size(rgb7,1)/size(rgb7,2);
             if sfac<=1
-                set(ax,'Position',[0.1 0.06+0.5*0.9*(1-sfac) 0.8 0.9*sfac]);
+                %set(ax,'Position',[0.1 0.06+0.5*0.9*(1-sfac) 0.8 0.9*sfac]);
+                set(ax,'Position',[0.1 0.1+0.5*0.8*(1-sfac) 0.8 0.8*sfac]);
             else
                 set(ax,'Position',[0.1+0.5*0.8*(1-1/sfac) 0.11 0.8/sfac 0.8]);
             end
@@ -60,17 +89,8 @@ if ~isempty(rgb7) || ~isempty(rgb8)
             % include title and xlabel, if requested
             if opt1(15)
                       
-                % too difficult to make it general, idea abandoned
-                if 0
-                rlab = reformat_ratio_string(xl,additional_settings.defFontSize);
-                glab = reformat_ratio_string(yl,additional_settings.defFontSize);
-                blab = reformat_ratio_string(zl,additional_settings.defFontSize);
                 xlab = ['\fontsize{' num2str(additional_settings.defFontSize),'}', ...
-                    '\color{red}',rlab,' \color{green}',glab,' \color{blue}' blab];
-                else
-                    xlab = ['\fontsize{' num2str(additional_settings.defFontSize),'}', ...
                         '\color{red}',xl,' \color{green}',yl,' \color{blue}' zl];
-                end
                 
                 title(xlab,'interpreter','tex');
                 
@@ -85,6 +105,14 @@ if ~isempty(rgb7) || ~isempty(rgb8)
                     %    'color','k','BackgroundColor','none','Margin',2*size(rgb7,1)/128,...
                     %    'FontSize',additional_settings.defFontSize,'interpreter','none');   
                 end
+                
+            else
+                % if everything except the image is excluded from the figure
+                % make the axes invisible (good for plotting images with white
+                % modulation
+                set(mf,'Color',[1 1 1]); 
+                set(ax,'XColor',[1 1 1]*0.9, 'YColor',[1 1 1]*0.9 ); 
+                set(mf,'InvertHardCopy','off');
                 
             end
             
