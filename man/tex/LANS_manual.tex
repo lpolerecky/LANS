@@ -30,6 +30,8 @@ Department of Earth Sciences, Utrecht University, Utrecht, The Netherlands (2013
 \newcommand\mnote{\marginnote{\fbox{\textbf{\bf Note}}}}
 \newcommand\ra{\rightarrow}
 \newcommand\addon[1]{-- {\small #1}}
+\newcommand\figref[0]{\textbf{Figure}}
+\newcommand\s[1]{\noindent\textbf{Step #1:}}
 
 \begin{document}
 
@@ -253,7 +255,7 @@ This section provides a \emph{quick summary} of steps taken during a typical dat
 \subsection{Analysis of a single dataset ``from scratch''}
 \label{sec:analysis_from_scratch}
 
-This analysis is considered a ``basic level''. It includes steps that will bring you from a raw dataset to basic output such as values and images of ion counts and ion count ratios.
+This analysis is considered a ``basic level''. It includes steps that will bring you from a raw dataset to basic output such as values and images of ion counts and ion count ratios. More details are provided in Section~\ref{sec:level1}.
 
 \begin{enumerate}
 
@@ -325,13 +327,13 @@ This analysis is considered a ``basic level''. It includes steps that will bring
 
 \addon{The results displayed will depend on the options selected in the \ttt{Output options} area of LANS. For example, you can display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms}. You can also \lanscb{combine images as RGB} overlays, \lanscb{plot x-y-z graphs} (scatter plots), or \lanscb{compare ROIs} using simple statistical methods.}
 
-\addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
-
 %\addon{Displaying depth profiles of ion counts and ion count ratios in ROIs can be useful as a quality check of the data.}
 
 \addon{When displaying images, you can \lanscb{log-transform} the values, \lanscb{include ROI outlines}, or \lanscb{modulate the hue} based on a specific combination of masses (part of advanced analysis).}
 
 \addon{When exploring RGB overlays, including images and scatter plots, you can do so on a \lanscb{pixel-by-pixel} level or as \lanscb{ROI-averaged}.}
+
+\addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
 
 \item Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a comprehensive PDF file. 
 
@@ -371,7 +373,7 @@ This analysis is considered a ``basic level''. It includes steps that will bring
 
 \subsection{Analysis of multiple datasets}
 
-This so-called ``metafile processing'' analysis is considered an ``intermediate level''. It assumes that you have analyzed, on a~basic level, multiple datasets. Using the steps described below, you will be able to quickly synthesize the output from these analyses --- isotope ratio values and images, scattered across multiple files and folders --- and store them in \emph{one} output file. This output can then be used for visualization and further analysis (e.g., statistical analysis) by LANS or third-party software. 
+This analysis, also called ``metafile processing'', is considered an ``intermediate level''. It assumes that you have analyzed, on a~basic level, multiple datasets, which left you with isotope ratio values and images scattered across multiple files and folders. Metafile processing allows you to quickly synthesize these data into \emph{one} output file, which can then be used for visualization and further analysis (e.g., statistical analysis) by LANS or other, third-party software. It is done in three basic steps (more details are provided in Section~\ref{sec:level2}):
 
 \begin{enumerate}
 
@@ -385,10 +387,65 @@ This so-called ``metafile processing'' analysis is considered an ``intermediate 
 
 \end{enumerate}
 
+%%
 
+\subsection{Advanced-level analyses in Look@NanoSIMS}
+
+Over the years, different ways of analysis of nanoSIMS data have been added to Look@NanoSIMS. In this document, they are lumped into the category ``advanced level'', because they have been implemented to look at nanoSIMS data in a special or uncommon way. Many of them may not be very advanced at all, and most of them are likely useful only for a limited number of users. Still, it's good to know about them, just in case. Briefly, they include:
+
+\begin{enumerate}
+
+\item Hue modulation of ratio images based on a combination of mass images.
+
+\item Integrating an external image into the nanoSIMS dataset. This includes alignment and overlays of external and nanoSIMS images, definition of ROIs based on the external image, and resampling of nanoSIMS data to match the resolution of the external image.
+
+\item Loading datasets in blocks, including the possibility to load and combine multiple raw datasets (measured in sequence) and analyze it as one dataset.
+
+\item Visualization of lateral profiles across depth.
+
+\item Loading datasets with more than 8 masses. Such datasets can be acquired using the peak-switching mode, and they can contain up to 16 masses.
+
+\item Simple statistical analysis of ROI-specific ratios, including correlation, ANOVA, Kruskal-Wallis test.
+
+\item Add more after checking.
+
+\end{enumerate}
+%
+More details are provided in Section~\ref{sec:level3}.
+
+%%%%
 
 \section{Data processing with Look@NanoSIMS --- basic level}
 \label{sec:level1}
+
+\addtolength{\parskip}{2mm}
+
+\subsection{Load nanoSIMS dataset from disk}
+
+\s1 Select \lans{Input} $\ra$ \lans{Dead-time and QSA correction settings} to enable dead-time and quasi-simul\-ta\-neous arrival (QSA) corrections. Define the relevant parameters in the window that pops up (\figref). The corrections will be applied based on these parameters during loading of the raw data. Note that you can specify the parameters for up to 16 masses. This can be relevant if the dataset was acquired using a peak-switching mode.
+
+\s2 Select \lans{Ask for range of planes and masses before loading} if you want to interactively define which planes and masses should be extracted during loading of the raw dataset. This is unnecessary in most cases, but it may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.
+
+\s3 Select \lans{Shift columns or rows when loading raw data}. This data correction is relevant for data acquired by the NanoSIMS 50L instrument at Utrecht University and probably very few others around the world. It concerns a glitch in the acquisition software, which causes the data in pixels from the first column (or row) to appear in the last column (or row), or vice versa. This option allows you to shift the pixels to the correct position during loading of the raw dataset.
+
+\s4. Select \lans{Load RAW dataset} to load the raw dataset from disk in a standard way (i.e., plane by plane). When searching for the dataset, choose the file type: \ttt{im.zip} or \ttt{im}, depending on whether the raw data has been compressed or not. After selecting the raw data file, observe the progress of loading in the Matlab console. When the loading is finished, names of the masses will automatically be filled in the corresponding \lanstf{mass} text fields. Additionally, \ttt{[]} will be added in the \lanstf{planes} text field, which stands for ``all planes''.
+
+\addon{Sometimes, the mass name entry in the binary \ttt{im} file is incorrectly saved. If this happens, a~``strange-looking'' name such as \ttt{au197} will be filled as the corresponding \lanstf{mass}, referring to the actual mass detected (in atomic units). If you know that the detected isotope was (in this example) ${}^{197}$Au, you can rewrite the string from \ttt{au197} to \ttt{197Au} and use it as the name of the mass in further analysis.}
+
+
+\subsection{Display of mass images plane-by-plane}
+
+\s1 Select \lans{Autoscale plane images} to automatically fill in the \lanstf{scale} for each detected mass. The scale, in the form of \ttt{[min max]}, is calculated as the 0.001 and 0.999 quantile of the ion counts across all pixels and planes. The quantiles can be adjusted using \lans{Preferences} $\ra$ \lans{Additional output options}. 
+
+\mnote
+\addon{Alternatively, define the scale manually by typing in the \ttt{[min max]} values. When you then press \ttt{Enter}, the corresponding mass will be displayed in a new window using the color scale defined by the specified range. This is a quick way to adjust the color scale for optimal display.}
+
+\s2 Select \lans{Display plane images for all masses} to view secondary ion counts detected in individual planes for all masses (\figref). This is the actual data in its \emph{rawest} form.
+
+\addon{Use arrows to skip through the planes forward and backward.}
+
+\addon{Click on \lans{Export as PNG} to export all masses in a particular plane as a PNG file.}
+
 
 %%
 
