@@ -31,7 +31,13 @@ Department of Earth Sciences, Utrecht University, Utrecht, The Netherlands (2013
 \newcommand\ra{\rightarrow}
 \newcommand\addon[1]{-- {\small #1}}
 \newcommand\figref[0]{\textbf{Figure}}
-\newcommand\s[1]{\noindent\textbf{Step #1:}}
+%\newcommand\s[1]{\noindent\textbf{Step #1:}}
+\newcounter{step}
+\setcounter{step}{0}
+%\newcommand\s{\addtocounter{step}{1}\paragraph{Step \thestep:}\hspace{-2mm}}
+\newcommand\s{\addtocounter{step}{1}\noindent\textbf{Step \thestep:}{ }}
+\newcommand\bul{\noindent$\bullet${ }}
+\newcommand\bb[1]{\textbf{#1}}
 
 \begin{document}
 
@@ -249,101 +255,66 @@ At the highest level of the data organization is a root folder that contains \em
 
 \section{A typical data processing session with Look@NanoSIMS}
 
-This section provides a \emph{quick summary} of steps taken during a typical data processing session with Look@NanoSIMS. Refer to Sections~\ref{sec:level1}, \ref{sec:level2} and \ref{sec:level3} for more details, depending on the level of analysis. Throughout this document, we will use colored text when refering to a specific \lans{menu item or action button}, \lanscb{checkbox} or \lanstf{text field} in the program's GUI.
+This section provides a \emph{quick summary} of steps taken during a typical data processing session with Look@NanoSIMS. Refer to Sections~\ref{sec:level1} and \ref{sec:level2} for more details, depending on the level of analysis. Throughout this document, we will use colored text when refering to a specific \lans{menu item or action button}, \lanscb{checkbox} or \lanstf{text field} in the program's GUI.
 
 
-\subsection{Analysis of a single dataset ``from scratch''}
+\subsection{Analysis of a single dataset --- ``from scratch''}
 \label{sec:analysis_from_scratch}
 
-This analysis is considered a ``basic level''. It includes steps that will bring you from a raw dataset to basic output such as values and images of ion counts and ion count ratios. More details are provided in Section~\ref{sec:level1}.
+The following steps will bring you from a raw dataset to basic output such as images or ROI-specific values of ion counts and ion count ratios. More details are provided in Section~\ref{sec:level1}.
 
 \begin{enumerate}
 
 \item Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.
 
-\addon{Usually, these corrections are not necessary and this step can be skipped (part of advanced analysis).}
+\item Select \lans{Input} $\ra$ \lans{Load RAW dataset} to load raw data from disk. The raw data is stored in an \ttt{im.zip} or \ttt{im} file depending on whether it has been compressed or not.
 
-\item Select \lans{Input} $\ra$ \lans{Load RAW dataset} to select raw data from disk. 
+\item Select \lans{Input} $\ra$ \lans{Autoscale plane images} to automatically set the scale for all masses. 
 
-\addon{Before you do this, click on \lans{Ask for range of planes and mases before loading} if you want to select specific planes and masses when loading the raw data from disk. This is unnecessary in most cases, but it may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.}
+\item Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view the raw data as images, one plane at a time, displayed with a scale specified in the previous step. 
 
-\addon{When searching for the dataset, choose the file type \ttt{im.zip} or \ttt{im} depending on whether the raw data has been compressed or not.}
+\item Define \lanstf{base mass for alignment} and then select \lans{Input} $\ra$ \lans{Display alignment mass} to check the data plane by plane, \lanscb{deselect planes} with artifacts or corrupt data, and \lans{define a region} for performing a drift-correction. 
 
-\item Select \lans{Input} $\ra$ \lans{Autoscale plane images} to set the scale for all masses automatically. 
+\item Select \lans{Input} $\ra$ \lans{Accumulate plane images} to accumulate drift-corrected ion counts over selected planes.  
 
-\item Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view the raw data as scaled images, plane by plane and in a~linear or log scale. 
+\item Select \lans{Input} $\ra$ \lans{Autoscale accumulated images} and then \lans{Input} $\ra$ \lans{Display accumulated images for all masses} to display the accumulated ion count images for all masses and export them in a PNG file.
 
-\addon{In this step, you will be able to decide which mass will be used as a \lanstf{base mass for alignment} of planes during accumulation.}
+\item Define \lanstf{expressions} for ion count ratios and the corresponding \lanstf{scales}. 
 
-\item Define \lanstf{base mass for alignment} and then select \lans{Input} $\ra$ \lans{Display alignment mass} to check the data plane by plane. 
+\item If you want to quantify ion counts and ion count ratios in regions of interest (ROIs), select \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool} to define the ROIs and store them on disk. Additionally, you can clasify the ROIs via \lans{ROIs} $\ra$ \lans{Classify} $\ra$ \lans{manually} or \lans{automatically}.
 
-\addon{While viewing the data, \lanscb{deselect planes} that should be excluded from accumulation (e.g., if the data in that plane is corrupt).}
+\item Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Output} $\ra$ \lans{Display ratios} to perform various types of data analysis and visualization, including:
 
-\addon{At the end of this checking, \lans{define alignment region} within the image. This region will be used when calculating misalignment between subsequent planes. }
+\begin{itemize}
+\item display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms},
+\item \lanscb{combine images as RGB} overlays,
+\item \lanscb{plot x-y-z graphs} (scatter plots) of ROI-specific ion counts or ratios,  
+\item \lanscb{compare ROIs} with respect to ion counts or ratios using simple statistical methods.
+\end{itemize}
+%
+Note that the appearance of the output can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options}.
 
-\item Select \lans{Input} $\ra$ \lans{Accumulate plane images} to accumulate ion counts over all selected planes.  
-
-\addon{Before you do that, check \lanscb{align images when accumulating} if you do want to perform drift-correction of planes during accumulation.}
-
-\addon{At the end of automatic drift-correction, you will be prompted to accept or reject the drift-correction information. If you \lans{accept}, the information will be stored in the file \ttt{xyalign.mat} and all planes for all masses will be accumulated based on this information. If you \lans{reject}, you can reiterate steps 4--6 until you arrive at a dataset with accumulated planes.}
-
-\mnote
-\addon{If you realize, anytime at a later point during your data analysis, that you are not satisfied with the drift-correction, you need to first delete the \ttt{xyalign.mat} file (\lans{Preferences} $\ra$ \lans{Remove xyalign.mat from disk}) and then repeat steps 2--6.}
-
-\item Select \lans{Input} $\ra$ \lans{Autoscale accumulated images} and then \lans{Input} $\ra$ \lans{Display accumulated images for all masses} to view the accumulated ion count images for all masses. 
-
-\addon{This will export the results in a PNG file. You can choose whether you want to display the ion counts in a linear or log scale by checking \lanscb{Log10-transform}.}
-
-\item Select \lans{Output} $\ra$ \lans{Display masses} to display the accumulated images for all masses.
-
-\addon{Before you do that, check \lanscb{Display images} and \lanscb{Export PDF graphics} checkboxes in the \ttt{Output options} area of LANS (at the bottom of the main GUI). The latter option is needed if you want to export the results as PDF.}
-
-\mnote
-\addon{You can tweak the appearance of the images, and many more output options, via \lans{Preferences} $\ra$ \lans{Additional output options}.}
-
-\item Select \lans{Output} $\ra$ \lans{Display ratios} to display ratio images derived from the accumulated ion count images.
-
-\addon{Before you do that, type \lanstf{expressions} and \lanstf{scales} for ratio images in the corresponding text fields.}
-
-\addon{Also, do not forget to check \lanscb{Export PDF graphics}.}
-
-\item Define regions of interest (ROIs) using \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool}.
-
-\addon{Typically, much of nanoSIMS data analysis revolves around ROIs.}
-
-\addon{Before you open the ROIs definition tool, specify the \lanstf{ROI definition template}.  This can be an individual mass, ratio, an RGB overlay of masses or ratios, or an external image.}
-
-%\addon{If an external image is chosen as a ROI definition template, it needs to be first aligned with the nanoSIMS image, which can be done via the \lans{External} menu (part of advanced analysis).}
-
-\item Select \lans{ROIs} $\ra$ \lans{Export ROIs image as graphics} to export the ROI outlines as PDF. 
-
-\addon{This will also include a~unique identification numbers for each ROI.}
-
-\item Select \lans{ROIs} $\ra$ \lans{Classify} to classify the defined ROIs. 
-
-\addon{It is useful, although typically not essential, to classify the ROIs. This can be done \lans{manually} or \lans{automatically} based on ROI-specific information.}
-
-\item Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Output} $\ra$ \lans{Display ratios} to perform various types of data analysis and visualization.
-
-\addon{The results displayed will depend on the options selected in the \ttt{Output options} area of LANS. For example, you can display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms}. You can also \lanscb{combine images as RGB} overlays, \lanscb{plot x-y-z graphs} (scatter plots), or \lanscb{compare ROIs} using simple statistical methods.}
+%\addon{The results displayed will depend on the options selected in the \ttt{Output options} area of LANS. For example, you can display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms}. You can also \lanscb{combine images as RGB} overlays, \lanscb{plot x-y-z graphs} (scatter plots), or \lanscb{compare ROIs} using simple statistical methods.}
 
 %\addon{Displaying depth profiles of ion counts and ion count ratios in ROIs can be useful as a quality check of the data.}
 
-\addon{When displaying images, you can \lanscb{log-transform} the values, \lanscb{include ROI outlines}, or \lanscb{modulate the hue} based on a specific combination of masses (part of advanced analysis).}
+%\addon{When displaying images, you can \lanscb{log-transform} the values, \lanscb{include ROI outlines}, or \lanscb{modulate the hue} based on a specific combination of masses (part of advanced analysis).}
 
-\addon{When exploring RGB overlays, including images and scatter plots, you can do so on a \lanscb{pixel-by-pixel} level or as \lanscb{ROI-averaged}.}
+%\addon{When exploring RGB overlays, including images and scatter plots, you can do so on a \lanscb{pixel-by-pixel} level or as \lanscb{ROI-averaged}.}
 
-\addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
+%\addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
 
-\item Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a comprehensive PDF file. 
+\item Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a~comprehensive PDF file. 
 
 %\mnote\addon{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the \ttt{PDF\_VIEWER} variable (in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to quickly see the results summary in a nicely organized way.}
 
-\item Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session (we recommend to use the file name \ttt{prefs.mat}).
+\item Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session in a file (we recommend to use the file name \ttt{prefs.mat}). This is useful when you want to return to the analysis of the same file in the future, but also if you want to later combine results of your analyses of multiple datasets (``metafile processing''), as explained below. Therefore, it is highly recommended that you do this.
 
-\addon{This should be the last step of processing of an individual dataset. We emphasize that you do this step because the settings file will be \emph{very useful} if you want to re-process the current dataset in the future.}
+%\addon{This should be the last step of processing of an individual dataset. We emphasize that you do this step because the settings file will be \emph{very useful} if you want to re-process the current dataset in the future.}
 
 %\addon{Specifically, the file contains all information for the currently processed dataset that you see in the GUI, including the detected masses, planes selected for alignment, formulas for ion count ratios, scales, all output options, etc.}
+
+\item Optionally, select \lans{Preferences} $\ra$ \lans{Create full backup of processed data} to back up the processed data in a compressed (\ttt{zip}) file. This is useful for sharing the results of your data processing and analysis with collaborators.
 
 \end{enumerate}
 
@@ -351,29 +322,33 @@ This analysis is considered a ``basic level''. It includes steps that will bring
 
 \subsection{Continuation of a previously stored single-dataset analysis}
 
+If you want to continue with the analysis of a dataset that you have analysed previously, you can save some time by following these steps:
+
 \begin{enumerate}
 
 \item Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.
 
-\item Select \lans{Input} $\ra$ \lans{Load+accumulate+display RAW or PROCESSED dataset}. 
+\item Select \lans{Input} $\ra$ \lans{Load+accumulate+display RAW or PROCESSED dataset}. After you select the raw data and preferences files (\ttt{im.zip} or \ttt{im} file and \ttt{prefs.mat}, respectively), the data will be loaded, drift-corrected, accumulated and displayed automatically.
 
-\addon{You will be prompted to select the raw data (\ttt{im.zip} or \ttt{im} file) as well as the preferences file (e.g., \ttt{prefs.mat}). }
+%\addon{You will be prompted to select the raw data (\ttt{im.zip} or \ttt{im} file) as well as the preferences file (e.g., \ttt{prefs.mat}). }
 
-\addon{After you do that, steps 2 (loading), 6 (drift-correction and accumulation) and 7 (display) described in Section \ref{sec:analysis_from_scratch} will be performed automatically.}
+%\addon{After you do that, steps 2 (loading), 6 (drift-correction and accumulation) and 7 (display) described in Section \ref{sec:analysis_from_scratch} will be performed automatically.}
  
-\item Select \lans{ROIs} $\ra$ \lans{Load ROIs from disk}.
+\item Select \lans{ROIs} $\ra$ \lans{Load ROIs from disk} to load the previously defined ROIs from disk.
 
-\addon{Choose the previously selected ROIs file, e.g., \ttt{cells.mat}. Modify ROIs definition or classification, if required.}
+%\addon{Choose the previously selected ROIs file, e.g., \ttt{cells.mat}. Modify ROIs definition or classification, if required.}
 
-\item Continue with steps 13--15 described in Section~\ref{sec:analysis_from_scratch}.
+%\item Continue with steps 13--15 described in Section~\ref{sec:analysis_from_scratch}.
 
 \end{enumerate}
+%
+After completing these steps, you can continue with further processing and analysis as described in the previous section (steps 8--13).
 
 %%
 
-\subsection{Analysis of multiple datasets}
+\subsection{Analysis of multiple datasets --- ``metafile processing''}
 
-This analysis, also called ``metafile processing'', is considered an ``intermediate level''. It assumes that you have analyzed, on a~basic level, multiple datasets, which left you with isotope ratio values and images scattered across multiple files and folders. Metafile processing allows you to quickly synthesize these data into \emph{one} output file, which can then be used for visualization and further analysis (e.g., statistical analysis) by LANS or other, third-party software. It is done in three basic steps (more details are provided in Section~\ref{sec:level2}):
+After the analysis of several single datasets, you are left with isotope ratio values and images scattered across \emph{multiple} files and folders. You can quickly merge these multiple files into \emph{one} output file using the following steps. More details are provided in Section~\ref{sec:level2}.
 
 \begin{enumerate}
 
@@ -386,65 +361,247 @@ This analysis, also called ``metafile processing'', is considered an ``intermedi
 \item Select \lans{Process multiple} $\ra$ \lans{Process metafile} to perform the analysis of multiple datasets.
 
 \end{enumerate}
+%
+The output generated by metafile processing can be used for visualization and further analysis (e.g., statistical analysis) by LANS or other, third-party software.
 
 %%
 
-\subsection{Advanced-level analyses in Look@NanoSIMS}
+\section{Overview of advanced-level analyses in Look@NanoSIMS}
 
-Over the years, different ways of analysis of nanoSIMS data have been added to Look@NanoSIMS. In this document, they are lumped into the category ``advanced level'', because they have been implemented to look at nanoSIMS data in a special or uncommon way. Many of them may not be very advanced at all, and most of them are likely useful only for a limited number of users. Still, it's good to know about them, just in case. Briefly, they include:
+Over the years, different ways of analysis and visualization of nanoSIMS data have been added to Look@NanoSIMS. In this document, they are lumped into the category ``advanced level'', because they have been implemented to look at nanoSIMS data in a special or uncommon way. Many of them may not be very advanced at all, and most of them are likely useful only for a limited number of users. Still, it's good to know about them, just in case. Briefly, they include:
 
 \begin{enumerate}
 
-\item Hue modulation of ratio images based on a combination of mass images.
+\item \lanscb{Hue modulation} of ratio images based on a combination of mass images.
 
-\item Integrating an external image into the nanoSIMS dataset. This includes alignment and overlays of external and nanoSIMS images, definition of ROIs based on the external image, and resampling of nanoSIMS data to match the resolution of the external image.
+\item Integrating an \lans{external image} into the nanoSIMS dataset. This includes \lans{alignment} and \lans{overlays} of external and nanoSIMS images, definition of \lanstf{ROIs based on the external image}, and \lans{resampling} of nanoSIMS data to match the resolution of the external image.
 
-\item Loading datasets in blocks, including the possibility to load and combine multiple raw datasets (measured in sequence) and analyze it as one dataset.
+\item Loading datasets in \lans{blocks}, including the possibility to load and combine multiple raw datasets (measured in sequence) and analyze them as one dataset.
 
-\item Visualization of lateral profiles across depth.
+\item Visualization of \lanscb{lateral profiles across depth}.
 
 \item Loading datasets with more than 8 masses. Such datasets can be acquired using the peak-switching mode, and they can contain up to 16 masses.
 
 \item Simple statistical analysis of ROI-specific ratios, including correlation, ANOVA, Kruskal-Wallis test.
 
-\item Add more after checking.
-
 \end{enumerate}
 %
-More details are provided in Section~\ref{sec:level3}.
+More details about how to perform these analyses are provided in Section~\ref{sec:level3}.
 
 %%%%
 
 \section{Data processing with Look@NanoSIMS --- basic level}
 \label{sec:level1}
 
+This section describes in greater detail how to get from a raw dataset to basic output such as images or ROI-specific values of ion counts and ion count ratios. The dataset \ttt{2017-09-28-GAP2017\_1.im.zip} will be used as an example.
+
 \addtolength{\parskip}{2mm}
 
 \subsection{Load nanoSIMS dataset from disk}
 
-\s1 Select \lans{Input} $\ra$ \lans{Dead-time and QSA correction settings} to enable dead-time and quasi-simul\-ta\-neous arrival (QSA) corrections. Define the relevant parameters in the window that pops up (\figref). The corrections will be applied based on these parameters during loading of the raw data. Note that you can specify the parameters for up to 16 masses. This can be relevant if the dataset was acquired using a peak-switching mode.
+\s Select \lans{Input} $\ra$ \lans{Dead-time and QSA correction settings} to enable dead-time and quasi-simul\-ta\-neous arrival (QSA) corrections. Define the relevant parameters in the window that pops up (\figref). The corrections will be \bb{applied} based on these parameters \bb{during loading} of the raw data. Note that you can specify the parameters for up to 16 masses. This can be relevant if the dataset was acquired using a peak-switching mode.
 
-\s2 Select \lans{Ask for range of planes and masses before loading} if you want to interactively define which planes and masses should be extracted during loading of the raw dataset. This is unnecessary in most cases, but it may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.
+\s Select \lans{Ask for range of planes and masses before loading} if you want to interactively define \bb{a range of} planes and masses that should be extracted during loading of the raw dataset. This is unnecessary in most cases, but it may be useful if your dataset is huge (e.g., more than 1~GB of data) and the memory (RAM) on your computer is insufficient.
 
-\s3 Select \lans{Shift columns or rows when loading raw data}. This data correction is relevant for data acquired by the NanoSIMS 50L instrument at Utrecht University and probably very few others around the world. It concerns a glitch in the acquisition software, which causes the data in pixels from the first column (or row) to appear in the last column (or row), or vice versa. This option allows you to shift the pixels to the correct position during loading of the raw dataset.
+\s Select \lans{Shift columns or rows when loading raw data}. This data correction is relevant for data acquired by the NanoSIMS 50L instrument at Utrecht University and probably very few others around the world. It concerns a glitch in the acquisition software, which causes the data in pixels from the first column (or row) to appear in the last column (or row), or vice versa. This option allows you to \bb{shift} the pixels to the \bb{correct} position during loading of the raw dataset.
 
-\s4. Select \lans{Load RAW dataset} to load the raw dataset from disk in a standard way (i.e., plane by plane). When searching for the dataset, choose the file type: \ttt{im.zip} or \ttt{im}, depending on whether the raw data has been compressed or not. After selecting the raw data file, observe the progress of loading in the Matlab console. When the loading is finished, names of the masses will automatically be filled in the corresponding \lanstf{mass} text fields. Additionally, \ttt{[]} will be added in the \lanstf{planes} text field, which stands for ``all planes''.
+\s Select \lans{Load RAW dataset} to load the raw dataset from disk in a standard way (i.e., plane by plane). When searching for the dataset, choose the file type: \ttt{im.zip} or \ttt{im}, depending on whether the raw data has been compressed or not. After selecting the raw data file, observe the progress of loading in the Matlab console. When the loading is finished, names of the masses will automatically be filled in the corresponding \lanstf{mass} text fields. Additionally, \ttt{[]} will be added in the \lanstf{planes} text field, which stands for ``all planes''.
 
 \addon{Sometimes, the mass name entry in the binary \ttt{im} file is incorrectly saved. If this happens, a~``strange-looking'' name such as \ttt{au197} will be filled as the corresponding \lanstf{mass}, referring to the actual mass detected (in atomic units). If you know that the detected isotope was (in this example) ${}^{197}$Au, you can rewrite the string from \ttt{au197} to \ttt{197Au} and use it as the name of the mass in further analysis.}
 
+%%
 
 \subsection{Display of mass images plane-by-plane}
 
-\s1 Select \lans{Autoscale plane images} to automatically fill in the \lanstf{scale} for each detected mass. The scale, in the form of \ttt{[min max]}, is calculated as the 0.001 and 0.999 quantile of the ion counts across all pixels and planes. The quantiles can be adjusted using \lans{Preferences} $\ra$ \lans{Additional output options}. 
+\setcounter{step}{0}
 
-\mnote
-\addon{Alternatively, define the scale manually by typing in the \ttt{[min max]} values. When you then press \ttt{Enter}, the corresponding mass will be displayed in a new window using the color scale defined by the specified range. This is a quick way to adjust the color scale for optimal display.}
+\s Select \lans{Autoscale plane images} to automatically fill in the \lanstf{scale} for each detected mass. The scale, in the form of \ttt{[min max]}, is calculated as the 0.001 and 0.999 quantile of the ion counts across all pixels and planes. The quantiles can be adjusted using \lans{Preferences} $\ra$ \lans{Additional output options}. 
 
-\s2 Select \lans{Display plane images for all masses} to view secondary ion counts detected in individual planes for all masses (\figref). This is the actual data in its \emph{rawest} form.
+\s Select \lans{Display plane images for all masses} to view secondary ion counts detected in individual planes for all masses (\figref). This is the actual data in its \emph{rawest} form, i.e., ion counts per pixel per plane.
 
-\addon{Use arrows to skip through the planes forward and backward.}
+\bul Use arrows to skip through the planes forward and backward.
 
-\addon{Click on \lans{Export as PNG} to export all masses in a particular plane as a PNG file.}
+\bul Click on \lans{Export as PNG} to export all masses in a particular plane as a PNG file. If you additionally check \lanscb{Export all}, you can export all planes, each into a separate PNG file.
+
+When exploring the ion count images, you can often notice a small \bb{drift} when going from one plane to the next. This drift is caused by temperature instabilities during the measurements (a~big jump can also be caused by an~earthquake!). You will be able to correct for this drift in the next step. At this point, you should decide on the mass that will be used to calculate the drift correction (called \lanstf{Base mass for alignment}). As a~rule of thumb, it should be one with a relatively \bb{high ion counts} and \bb{clear contrast} across the image. In this example, it will be \ttt{12C14N}.
+
+%%
+
+\subsection{Drift-correction and accumulation of planes}
+\setcounter{step}{0}
+
+The drift-corrected accumulation of planes is controlled by settings specified in the \ttt{Accumulation options} box and by the numbers in the \lanstf{planes} field (Figure). 
+
+\s Specify the \lanstf{Base mass for alignment}, based on your choice in the previous step (in this example: \ttt{12C14N}). 
+
+\s Select \lans{Input} $\ra$ \lans{Display alignment mass}. 
+
+\bul In the window that pops up (Figure), click on \lans{arrows} to browse through the individual planes. 
+
+\bul Check \lanscb{Deselect} to mark the plane that should be excluded from accumulation (e.g., if the data in that plane is corrupt).
+
+\bul At the very end, select the \lans{alignment region} and close the window. The drift correction will be calculated based on this region. It is recommended to define it as a minimum rectangular region in the image that contains pronounced spatial heterogeneities (such as a cell or a group of cells).
+
+\bul After you close the window, the x and y ranges of the alignment region will be written in the respective fields of \lanstf{Special region for alignment}. Also, the range of selected planes will be written in the \lanstf{planes} field. You can edit these fields if you know the correct values, but be careful not to make any syntax errors. 
+
+\s Check \lanscb{Align images when accumulating} if you want to apply automated drift correction during the accumulation of planes.
+
+\s Select \lans{Input} $\ra$ \lans{Accumulate plane images} to start the accumulation of drift-corrected images. 
+
+\addon{You will be asked whether to employ a \lans{New} or \lans{Old} algorithm. In most cases, you will choose the new one. The old one is more robust if the drift-correction is based on images with very low ion counts (i.e., very pixelated images).}
+
+\addon{Observe the drift-correction progress in the Matlab console. At the end of it, you will be prompted to accept or reject the drift-correction information.}
+
+\addon{If you \lans{accept}, the information will be stored in the file \ttt{xyalign.mat} and all planes for all masses will be accumulated based on this information. This information will be used in the future if you load the raw dataset using \lans{Input} $\ra$ \lans{Load+accumulate+display RAW or PROCESSED dataset}.}
+
+\addon{If you \lans{reject}, you can reiterate the previous steps (1--4) until you arrive at a dataset with accumulated planes.}
+
+\addon{If you realize, anytime at a later point during your data analysis, that you are not satisfied with the drift-correction, you need to first delete the \ttt{xyalign.mat} file (via \lans{Preferences} $\ra$ \lans{Remove xyalign.mat from disk}) and then repeat the previous steps (1--4).}
+
+%%
+
+\subsection{Display accumulated mass images}
+\setcounter{step}{0}
+
+\s Select \lans{Input} $\ra$ \lans{Autoscale accumulated images} to update the \lanstf{scale} fields with a range optimized for displaying accumulated mass images. 
+
+\addon{The optimum scale is calculated as the 0.001 and 0.999 quantiles of the accumulated ion counts across the image pixels. These quantiles can be adjusted via \lans{Preferences} $\ra$ \lans{Additional output options}.}
+
+\s Alternatively, define the scale \bb{manually} by typing in the \ttt{[min max]} (minumum and maximum) values by yourself. When you then press \ttt{Enter}, the corresponding mass will be displayed in a new window using the color scale defined by the specified range. This is a \bb{quick way to adjust} the color scale for optimal display.
+
+\s Select \lans{Input} $\ra$ \lans{Display accumulated images for all masses} to display the images, lumped together for all masses, and
+export them in a PNG file.
+
+\s Check the \lanscb{Display images} checkbox and then select \lans{Output} $\ra$ \lans{Display masses} to display the images in a nicer way and separately for each mass. 
+
+\addon{The image appearance can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options}.}
+
+\addon{In steps 3--4, you can choose whether you want to display the ion counts in a~linear or log scale by checking \lanscb{Log10-transform}.}
+
+\addon{Check \lanscb{Export PDF graphics} to ensure that the displayed image is exported as PDF.}
+
+%%
+
+\subsection{Display ratio images}
+\setcounter{step}{0}
+
+\s Type \bb{formulas} for calculating ratio images in the  \lanstf{expression} fields. The formula can be any valid arithmetic expression containing any of the detected masses, such as:
+
+\begin{itemize}
+\item \ttt{13C/12C} to calculate the $^{13}C/^{12}C$ isotope ratio,
+\item \ttt{13C/(12C+13C)} to calculate the $^{13}C$ atom fraction,
+\item \ttt{32S/12C} to calculate the $^{32}S/^{12}C$ ion count ratio (a proxy for the S/C elemental ratio), 
+\item \ttt{19F/plane} to calculate the average $^{19}F$ ion counts per detected plane, 
+\item \ttt{19F/plane/pixel} to calculate the average $^{19}F$ ion count per plane per pixel (only applicable if ROIs are defined; see below).
+\end{itemize}
+
+\s For each expression, type in the \lanstf{scale} to the correspoding field. The scale should be in the form \ttt{[min max]} (minumum and maximum).
+
+\addon{When you press \ttt{Enter} after you type the scale, the corresponding ratio image will be displayed in a new window using the color scale defined by the specified range. This is a \bb{quick way to adjust} the color scale for optimal display.}
+
+\s Check the \lanscb{Display images} checkbox and then select \lans{Output} $\ra$ \lans{Display ratios} to display the ratio images.
+
+\addon{The image appearance can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options}.}
+
+%%
+
+\subsection{Display RGB overlays}
+\setcounter{step}{0}
+
+Mass and ratio images can be combined into RGB overlays.
+
+\s To specify the red, green and blue channels of the RGB overlay, enter identification numbers (1--8, found to the left of the mass names or ratio expressions) in the corresponding \lanstf{R}, \lanstf{G} and \lanstf{B} fields.
+
+\addon{If one or more of the fields is left empty, the corresponding color channel(s) will be black.}
+
+\s Check \lanscb{Combine images as RGB}.
+
+\s Check \lanscb{Pixel by pixel} to combine the images without modification.
+
+\s Check \lanscb{ROI-averaged} to use ROI-averaged values when creating the overlays.
+
+\s Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios} to display the RGB overlay derived from mass or ratio images, respectively.
+
+\addon{If you want to overlay mass image(s) with ratio image(s), enter
+the corresponding name(s) of the mass(es) into the \lanstf{expression} fields, enter the corresponding identification number in one of the \lanstf{color} fields, and select \lans{Output} $\ra$ \lans{Display ratios}.}
+
+\addon{In addition to PDF, the RGB images are also exported as TIF files (in the \ttt{tif} sub-folder).}
+
+%%
+
+\subsection{Define regions of interest (ROIs)}
+\setcounter{step}{0}
+
+Typically, much of nanoSIMS data analysis revolves around ROIs. Look@NanoSIMS offers many options for defining ROIs, as described below. Once you get used to it and learn the ``tricks'', ROI definition can be very efficient.
+
+\s Specify the \lanstf{ROI definition template}. 
+
+\addon{This can be an individual mass, ratio, an RGB overlay of masses or ratios, or an external image.}
+
+\addon{In this example, we will use an RGB overlay of \ttt{12C15N/12C14N}, \ttt{12C14N} and \ttt{31P}. Since we want to combine ratios and masses, we enter \ttt{12C14N} as expression \#3, \ttt{31P} as expression \#4, and copy the scale for both in the corresponding \lanstf{scale} field. Then, we enter \ttt{2}, \ttt{3} and \ttt{4} to the fields for \lanstf{R}, \lanstf{G} and \lanstf{B}, respectively. Finally, we enter \ttt{rgb2} as the \lanstf{ROI definition template} (entering \ttt{rgb} means that we use an RGB overlay, \ttt{2} means that we use an overlay of ratios).}
+
+\addon{The ROI template can optionally be \bb{smoothed} before it is used for ROI definition. Smoothing is done using a median filter with a~two-dimensional kernel size (in pixels) specified in the \lanstf{Smoothing kernel} field. If applied, ROI outlines will generally be smoother if defined using the \lans{interactive thresholding} approach (see below). In this example, we will not do any smoothing and just use \ttt{[1 1]} as the smoothing kernel.}
+
+\s Select \lans{ROIs} $\ra$ \lans{Display template for ROI definition} to verify that the template looks as intended. 
+
+\s Select \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool} to open a~window dedicated to ROI definition (Figure). 
+
+\addon{During this process, you will be prompted to select the \ttt{ROI file} (e.g., \ttt{cells.mat}) and \ttt{ROI classification file} (e.g., \ttt{cells.dat}). Select them if these files have been previously created and you want to reuse them, or press \lans{Cancel} if they do not exist (yet).} 
+
+\addon{If they exist and you do select them both, they will be \bb{linked}. This means that when you add or remove a ROI from the image file, the corresponding ROI will also be added or removed from the classification file.}
+
+The following steps refer to the \ttt{ROIs definition window}. When defining ROIs, you should \bb{always check messages} in the Matlab console. They will provide specific instructions or other relevant information. 
+
+\setcounter{step}{0}
+
+\s Select \lans{Action} $\ra$ \lans{Draw ROIs freehand} (\ttt{Ctrl+D}) to draw a ROI using a mouse.
+
+\addon{Immediately after drawing a~ROI, you can still move it around using a mouse. \bb{Double-click} on the ROI to confirm its final position.}
+
+\addon{When prompted, specify whether the ROI outline should be defined as the \lans{coarse polygon} you have just drawn or as an \lans{ellipse that circumscribes} this polygon.}
+
+\s Experiment with different ways of defining ROIs, including drawing them as \lans{ellipses} (\ttt{Ctrl+E}) or \lans{rectangles} (\ttt{Ctrl+t}).
+
+\addon{As before, you can use the mouse to resize the ROI and then double-click on the ROI to confirm it.}
+
+\addon{Beware that if you draw a ROI over another, previously defined ROI, the last one will take the priority.}
+
+\s Select \lans{Action} $\ra$ \lans{Interactive thresholding} (\ttt{Ctrl+A}) to define a ROI more efficiently. 
+
+\addon{This approach is applicable if the signal used for recognizing the ROI stands out relative to the surrounding background.}
+
+\addon{When an RGB overlay is used as a template for ROI definition, the color channel used for automatic ROI drawing can be changed via \lans{Select interactive channel} $\ra$ \lans{red}, \lans{green} or \lans{blue}.}
+
+\addon{After invoking \lans{Interactive thresholding}, click with a left-mouse button on the image in a pixel with a high signal. You will notice that a ROI outline is drawn. The outline corresponds to a contour where the signal values do not fall below the value in the selected (clicked) pixel multiplied by a threshold value.}
+
+\addon{The threshold value is 0.5 by default, but it can be changed interactively by pressing the \lans{up} or \lans{down} arrow key, respectively. When doing so, the ROI outline will cover a larger or smaller area. If a different pixel is selected, the ROI outline is automatically redrawn according to the current threshold. By combining mouse clicks with \lans{up}/\lans{down} arrows, you can rapidly optimize the ROI definition.}
+
+\addon{When you are satisfied with the defined ROI, press \ttt{Enter} to confirm it. Press \ttt{Esc} if you want to cancel the current interactive ROI definition.} 
+
+\addon{It is important to be aware that the \lans{interactive ROI definition} sequence of actions must \bb{always} be terminated properly by pressing either \ttt{Enter} or \ttt{Esc}. If this is not done, the program will proceed in an unexpected or confusing way and may need to be terminated ``the hard way''. Thus, \bb{always} watch additional instructions in the Matlab console.}
+
+\s Select \lans{Display ROIs} $\ra$ \lans{Display ROIs with ROI ID's} (\ttt{Ctrl+W}) to display the currently defined ROIs.
+
+\addon{If the ROIs have been classified, you can display only ROIs of a~specific class by typing the corresponding class identification letter in the dialog that opens.}
+
+\addon{Notice that ROI identification numbers (ID's) are generated automatically and increase from left to right when sorting the ROIs based on their central point.}
+
+\addon{If you want to display ROIs with specific ID's, you can do so by typing the ID's in the dialog that opens.}
+
+\s Merging of multiple ROIs can be done via \lans{Action} $\ra$ \lans{Merge multiple ROIs into one}. 
+
+\addon{To do this, you will need to know the updated ROI ID's. They can be obtained by displaying the ROIs, as explained in the previous step.}
+
+\s Explore the \lans{Action} menu to test other ways to \lans{define}, \lans{split} or \lans{remove} ROIs (Figure).
+
+
+
+
+
+%\item If relevant, select \lans{ROIs} $\ra$ \lans{Classify} $\ra$ \lans{manually} or \lans{automatically} to classify the defined ROIs. 
+
+%\addon{This can be done \lans{manually} or \lans{automatically} based on ROI-specific information.}
+
 
 
 %%
@@ -456,5 +613,11 @@ More details are provided in Section~\ref{sec:level3}.
 
 \section{Data processing with Look@NanoSIMS --- advanced level}
 \label{sec:level3}
+
+% earlier text:
+
+%\addon{If an external image is chosen as a ROI definition template, it needs to be first aligned with the nanoSIMS image, which can be done via the \lans{External} menu (part of advanced analysis).}
+
+
 
 \end{document}
