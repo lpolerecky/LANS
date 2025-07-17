@@ -33,7 +33,7 @@ else
     a = image(a1);
     set(cura, 'DataAspectRatio', [1 1 1], ...
         'XTick',[], 'YTick',[],'box','on', ...
-        'Visible','off');
+        'Visible','on');
 end
 
 fc = get(cura,'Parent');
