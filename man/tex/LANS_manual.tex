@@ -320,25 +320,9 @@ The following steps will bring you from a raw dataset to basic output such as im
 %
 Note that the appearance of the output can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options}.
 
-%\addon{The results displayed will depend on the options selected in the \ttt{Output options} area of LANS. For example, you can display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms}. You can also \lanscb{combine images as RGB} overlays, \lanscb{plot x-y-z graphs} (scatter plots), or \lanscb{compare ROIs} using simple statistical methods.}
-
-%\addon{Displaying depth profiles of ion counts and ion count ratios in ROIs can be useful as a quality check of the data.}
-
-%\addon{When displaying images, you can \lanscb{log-transform} the values, \lanscb{include ROI outlines}, or \lanscb{modulate the hue} based on a specific combination of masses (part of advanced analysis).}
-
-%\addon{When exploring RGB overlays, including images and scatter plots, you can do so on a \lanscb{pixel-by-pixel} level or as \lanscb{ROI-averaged}.}
-
-%\addon{Ensure that the checkboxes \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} are checked if you want the results to be exported as numbers and images.}
-
 \item Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a~comprehensive PDF file. 
 
-%\mnote\addon{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the \ttt{PDF\_VIEWER} variable (in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to quickly see the results summary in a nicely organized way.}
-
 \item Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session in a file (we recommend to use the file name \ttt{prefs.mat}). This is useful when you want to return to the analysis of the same file in the future, but also if you want to later combine results of your analyses of multiple datasets (``metafile processing''), as explained below. Therefore, it is highly recommended that you do this.
-
-%\addon{This should be the last step of processing of an individual dataset. We emphasize that you do this step because the settings file will be \emph{very useful} if you want to re-process the current dataset in the future.}
-
-%\addon{Specifically, the file contains all information for the currently processed dataset that you see in the GUI, including the detected masses, planes selected for alignment, formulas for ion count ratios, scales, all output options, etc.}
 
 \item Optionally, select \lans{Preferences} $\ra$ \lans{Create full backup of processed data} to back up the processed data in a compressed (\ttt{zip}) file. This is useful for sharing the results of your data processing and analysis with collaborators.
 
@@ -422,6 +406,8 @@ More details about these analyses are provided in Section~\ref{sec:level3}.
 \label{sec:level1}
 
 This section describes in greater detail how to get from a raw dataset to basic output such as images or ROI-specific values of ion counts and ion count ratios. As an example, we will use the dataset \ttt{2017-09-28-GAP2017\_1.im.zip}.
+
+\bb{Note:} When using Look@NanoSIMS, you will likely create many graphs and images, which may clutter your screen. Select \lans{Output} $\ra$ \lans{Close all figures} in the main GUI, or press~\ttt{Ctrl+g}, any time during the processing session to quickly close all figures at once.
 
 \addtolength{\parskip}{2mm}
 
@@ -571,9 +557,9 @@ the corresponding name of the mass into one of the \lanstf{expression} fields, s
 
 Typically, much of nanoSIMS data analysis revolves around regions of interest (ROIs). There are many options for defining ROIs in Look@NanoSIMS, as described below. Once you get used to it and learn the ``tricks'', ROI definition can be very efficient. 
 
-We re-emphasize the importance of looking at the comments written in the Matlab console while defining ROIs. They provide more details about what to do while performing specific steps. The key constraint is: if you start an action, you \emph{must} finish it. If you don't, the program will likely get ``stuck'' and you may need to terminate it. We won't go into details here, but briefly, this peculiarity is related to the way Matlab handles user's input in a drawing mode. Thus, beware and keep an eye on the messages in the console.
+We re-emphasize the importance of looking at the comments written in the Matlab console while defining ROIs. They provide more details about what to do while performing specific steps. The key constraint is: if you start an action, you \emph{must} finish it. If you don't, the program will likely get ``stuck'' and you may need to terminate it. We won't go into details here, but briefly, this peculiarity is related to the way Matlab handles user's input in a drawing mode. Thus, beware and keep an eye on the messages in the console. You can also learn more about this topic via \lans{Help} provided in the ROI definition tool window.
 
-\s Specify the \lanstf{ROI definition template}. 
+\s In the main Look@NanoSIMS GUI, specify the \lanstf{ROI definition template}. 
 
 \bul This can be an individual mass, ratio, an RGB overlay of masses or ratios, or an external image.
 
@@ -679,12 +665,91 @@ ROIs can be classified manually or automatically. Here, we focus on manual ROI c
 
 %%
 
-\subsection{Exporting ROI-specific data}
+\subsection{Display and export ROI-specific data}
+\setcounter{step}{0}
 
+\s Ensure that ROIs have been defined and, if required, classified.
 
+\bul If ROIs have been defined in an earlier Look@NanoSIMS session, you first need to load them via \lans{ROIs} $\ra$ \lans{Load ROIs from disk}.
 
+\s Check \lanscb{Plot x-y-z graph} in the \ttt{Output options} box and type identifiers (1--8) of the masses or ratios that you want to include in a~scatter plot in the \lanstf{R/x}, \lanstf{G/y} and \lanstf{B/z} fields. 
+
+\bul If all three fields are filled in, the ROI-specific values will be plotted in a~3D scatter plot (x--y--z). If only two of the three fields are filled in, a~2D scatter plot (x--y) will be created.
+
+\bul In the \ttt{Ratios} or \ttt{Detected masses} box, ensure that the checkboxes corresponding to the identifiers filled in the \lanstf{R/x}, \lanstf{G/y} and \lanstf{B/z} fields are checked, too. 
+
+\s Check \lanscb{ROI-averaged} or \lanscb{Pixel by pixel} (also in the \ttt{Output options} box) if you want to display a~scatter plot for ROI-specific or pixel-specific values, respectively.
+
+\bul You can have both of them checked at the same time. 
+
+\s Check \lanscb{Export ASCII data} and \lanscb{Export PDF graphics} to ensure that the data and graphs will be exported (in the \ttt{dat} and \ttt{pdf} sub-folders of the dataset folder, respectively).
+
+\s When plotting scatter plots, it is typically not necessary anymore to display the corresponding images. If this is the case for you, uncheck the \lanscb{Display images} checkbox.
+
+\s Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios} to create scatter plots of the ROI-specific or pixel-specific values of the desired quantities and export the values and graphs.
+
+\bul In the process, you will be prompted to select a~ROI classification file. If the file exists (and it is up-to-date), select it. In this case, different colors will be used to mark ROI from different classes. 
+
+\bul If the ROI classification file does not exist, click \ttt{Cancel} or press \ttt{Esc} when prompted for the file. In this case, all ROIs will be treated equally and displayed in one color.
+
+\bul If you only want to display values for specific classes, you can enter the identifiers for those classes in the \lanstf{For classes} field (just below the R/x, G/y and B/z fields) first, then select \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios}.
+
+\bul If you choose to display ROI-specific values, it is possible to add a~ROI identifier and an~error-bar to each data point. This is achieved by selecting the corresponding options via \lans{Preferences} $\ra$ \lans{Additional output options}. The error-bar size will indicate the Poisson error, derived from the total ion counts per ROI.
+
+\bul Formatting of the data output is explained in Section~\ref{sec:DataOutputFormat}.
 
 %%
+
+\subsection{Display depth profiles in ROIs}
+\setcounter{step}{0}
+
+NanoSIMS measurements are conducted by sputtering away the sample material in multiple scans over the same field of view while collecting the ion counts. The resulting image stack therefore reflects elemental and isotopic distribution of the sample along the vertical dimension. You can easily display and export this vertical (depth) variation in ROIs using the following steps.
+
+\s Ensure that ROIs have been defined or loaded into the current Look@NanoSIMS session.
+
+\s Check \lanscb{Display depth profiles in ROIs} in the \ttt{Output options} box.
+
+\bul Typically, you will want to uncheck all other checkboxes in the \ttt{Output options} box to prevent cluttering of your screen with too many figures.
+
+\s Check \lanscb{Detected masses} or \lanscb{Ratios} for which you want to have the depth profiles displayed.
+
+\s Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios}.
+
+\bul Observe the output in the Matlab console, which informs you about significant trends with depth of the particular mass or ratio in ROIs.
+
+\bul In the process, the depth profiles are exported in data files with an extension \ttt{dap} (located in the \ttt{dat} sub-folder of the dataset folder).
+
+\s In the new window that pops up, select ROI identifiers for which you want to display the depth profiles. Then, select the mass or ratio in the list for which you want to display the depth profiles.
+
+\s Select \lans{Export depth profile} to export the graph with depth profiles in the currently selected ROIs.
+
+%%
+
+\subsection{Finalize the processing of an individual dataset}
+\setcounter{step}{0}
+
+One way to communicate the results of the NanoSIMS data processing with colleagues or collaborators is to share the graphical output generated by Look@NanoSIMS. To be able to go back to the processing of a~particular dataset at a~later point or share the processed data, it is useful to save the data processing settings or make a~backup of the processed data in a~compressed file. Look@NanoSIMS allows you to perform these actions automatically using the following steps:
+
+\s Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a~comprehensive PDF file. 
+
+\bul Before you do this, check boxes in the \ttt{Output options} box to specify which kind of results you want to have included in the graphical output, including  \lanscb{images}, \lanscb{scatter plots}, \lanscb{histograms}, or \lanscb{depth profiles}.
+
+\bul If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the full path to a~PDF viewer in the \ttt{PDF\_VIEWER} variable (in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to see the results quickly, without the need for browsing through the different folders on your computer.
+
+\s Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session in a file (we recommend to use the file name \ttt{prefs.mat}). 
+
+\bul This is useful when you want to return to the analysis of the same file in the future, but also if you want to later combine results of your analyses of multiple datasets (``metafile processing''), as explained below. Therefore, it is highly recommended that you do this.
+
+\bul Specifically, the preferences file will contain all information for the currently processed dataset that you see in the main GUI, including the detected masses, planes selected for alignment, formulas for ion count ratios, scales, all output options, etc.
+
+\s Select \lans{Preferences} $\ra$ \lans{Backup (full) folder with processed data} to back up \emph{all} processed data in a~compressed (\ttt{zip}) file.
+
+\s Alternatively, select \lans{Preferences} $\ra$ \lans{Backup (minimal) folder with processed data} to make a~\emph{minimal} backup of the processed data.
+
+\bul From this minimal backup, the rest of the processed data can easily be generated by repeating the processing steps in Look@NanoSIMS. 
+
+\bul This minimal backup includes the preferences (e.g., \ttt{prefs.mat}), plane alignment information (\ttt{xyalign.mat}), ROI definition (e.g., \ttt{cells.mat}), and ROI classification (e.g., \ttt{cells.dat}).
+
 
 \section{Data processing with Look@NanoSIMS --- intermediate level}
 \label{sec:level2}
