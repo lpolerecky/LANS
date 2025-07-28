@@ -57,6 +57,8 @@ global LANS_version;
 set(handles.figure1,'Name',['Look@NanoSIMS (version ',LANS_version,')'])
 fp=get(handles.figure1,'Position');
 
+%set(handles.figure1, 'Position', [1 1 fp(3:4)]);
+
 h = load_settings(handles,get_ini_file('r'));
 handles.dtc = h.dtc;
 handles.shift_columns_rows = h.shift_columns_rows;

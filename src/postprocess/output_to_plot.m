@@ -332,7 +332,7 @@ fprintf(1,'adding data in a 2D plot ... ');
 fprintf(1,'done\n');
 
 %% export graphics
-fbs = ['fit_button' num2str(fig)];
+fbs = ['fit_button' num2str(fig-60)];
 fb = findobj('tag',fbs);
 if ~isempty(fb)
     set(fb,'visible','off');

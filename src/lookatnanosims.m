@@ -82,8 +82,8 @@ clear CELLSFILE IM_FILE_EXT verbose;
 global CELLSFILE IM_FILE_EXT verbose;
 
 % default name of the file with ROIs definitions
-CELLSFILE = 'cells';
-%CELLSFILE = 'rois';
+CELLSFILE = 'ROIs';
+%CELLSFILE = 'cells';
 
 % default extension of the input binary im file
 IM_FILE_EXT = '.im.zip';
@@ -221,6 +221,8 @@ LANS_version = '2025-02-13'; % LANS GUI (menu) updated:
                              % fixed a bug when loading data in blocks
 LANS_version = '2025-06-25'; % LANS GUI for win updated: 
                              % minimal & full back up of processed data implemented
+
+LANS_version = '2025-07-27'; % LANS GUI for lnx updated (for Matlab 2024b)
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';

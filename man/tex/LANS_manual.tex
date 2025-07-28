@@ -11,7 +11,7 @@
 \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
 \linespread{1.2}
 
-\title{{\LARGE \bf Look@NanoSIMS}\footnote{\textbf{Citation}: L. Polerecky et al. (2012). Look@NanoSIMS --- a tool for the analysis of nanoSIMS data in environmental microbiology. \textit{Environmental Microbiology} 14 (4): 1009--1023. DOI: 10.1111/j.1462-2920.2011.02681.x}}
+\title{{\LARGE \bf Look@NanoSIMS}\footnote{\textbf{Citation}: L.~Polerecky et al.~(2012). Look@NanoSIMS --- a tool for the analysis of nanoSIMS data in environmental microbiology. \textit{Environmental Microbiology} 14 (4): 1009--1023. DOI: 10.1111/j.1462-2920.2011.02681.x}}
 \author{{\large\bf Lubos Polerecky}\footnote{Feedback and questions can be sent to: l.polerecky@uu.nl}\\[6mm]
 {\small Department of Earth Sciences, Utrecht University, Utrecht, The Netherlands (2013--today)} \\%[1mm]
 {\small Max-Planck Institute for Marine Microbiology, Bremen, Germany (2002--2013)}\\[3mm]}
@@ -579,7 +579,7 @@ After these steps, a new window (\ttt{ROIs definition tool}, Figure) will open, 
 
 \setcounter{step}{0}
 
-\s Select \lans{Action} $\ra$ \lans{Draw ROIs freehand} (\ttt{Ctrl+D}) to draw a ROI using a mouse.
+\s Select \lans{Action} $\ra$ \lans{Draw ROIs freehand} (\ttt{Ctrl+d}) to draw a ROI using a mouse.
 
 \bul Click the left mouse button, hold it, and draw a region of interest. 
 
@@ -595,7 +595,7 @@ After these steps, a new window (\ttt{ROIs definition tool}, Figure) will open, 
 
 \bul Note that if you draw a ROI over another, previously defined ROI, the last one will take the priority. In this way, you can draw ROIs inside ROIs.
 
-\s Select \lans{Action} $\ra$ \lans{Interactive thresholding} (\ttt{Ctrl+A}) to define a ROI more efficiently. 
+\s Select \lans{Action} $\ra$ \lans{Interactive thresholding} (\ttt{Ctrl+a}) to define a ROI more efficiently. 
 
 \bul This approach is only applicable if the signal used for recognizing the ROI stands out relative to the surrounding background.
 
@@ -776,13 +776,13 @@ It is assumed that you have processed multiple NanoSIMS datasets using steps des
 \subsection{Generate metafile}
 \setcounter{step}{0}
 
-The first step involves the definition of a~list of datasets and variables that you want to merge and analyze together. In the context of Look@NanoSIMS, this list is stored in a~so-called metafile, which is a~simple text file containing the required information including the absolute path to the processed data structure, relative paths for the individual datasets, and variables of interest. This file can be generated in a~simple text editor, but it is better to start using a~dedicated tool in Look@NanoSIMS to avoid syntax errors.
+The first step involves the definition of a~list of datasets and variables that you want to merge and analyze together. In the context of Look@NanoSIMS, this list is stored in a~so-called metafile, which is a~simple text file containing the required information including the absolute path to the processed data structure, relative paths for the individual datasets, and variables of interest. This file can be generated in a~simple text editor, but it is better to start using a~dedicated tool in Look@NanoSIMS to avoid syntax or formatting errors.
 
 \s From the menu in the main LANS window, select \lans{Process multiple} $\ra$ \lans{Generate metafile} to open a~new tool window dedicated to metafile definition (Figure). 
 
 \s In this tool window, click on \lans{Select base folder} to select the absolute path to the processed datasets.
 
-\bul It is assumed that the folders with the processed datasets are located in this path or in subfolders under it.
+\bul It is assumed that the folders with the processed datasets are located in this path or in sub-folders under it.
 
 \s Click on \lans{Select dataset}, navigate to a~specific processed dataset, and select it.
 
@@ -829,11 +829,11 @@ The first step involves the definition of a~list of datasets and variables that 
 
 \bul This should be the case if you conducted the data processing attentively and in accordance with instructions described in Section~\ref{sec:level1}. If there are inconsistencies, they will be reported later on in the console (see below).
 
-\s In the main LANS window, select \lans{Process multiple} $\ra$ \lans{Process metafile} to open a~new tool window dedicated to metafile processing.
+\s In the main LANS window, select \lans{Process multiple} $\ra$ \lans{Process metafile} to open a~new tool window dedicated to metafile processing (Figure).
 
 \s In this tool window, select the \lanstf{base folder}.
 
-\bul Typically, this folder will be the same as specified during metafile definition. However, if you reorganized the data on your computer, or if you conduct the metafile processing on a~different computer, the data organization may be quite different. Thus, this feature makes the metafile processing more portable across different computers.
+\bul Typically, this folder will be the same as specified during metafile definition. However, if you reorganized the data on your computer, or if you conduct the metafile processing on a~different computer, the data organization may be quite different. Thus, this feature makes the metafile processing portable across different computers.
 
 \s Select the \lanstf{metafile}.
 
@@ -843,53 +843,103 @@ The first step involves the definition of a~list of datasets and variables that 
 
 \bul However, since the optimal scale for the images or graphs may initially be unknown, it is a~good idea to start with an empty scale, indicated by \ttt{[]}. This will have no effect on the displayed graphs or images for the corresponding variable.
 
-\s Check \lanscb{log} if you want the variable to be log-transformed before display, separately for each variable.
+\s Check \lanscb{log} if you want the variable to be log-transformed before display.
+
+\bul This can be done separately for each variable.
 
 \s Specify the mapping between ROI classes and \lanstf{colors} and between treatments and \lanstf{symbols} in the respective fields. 
 
 \bul This mapping will be applied when plotting scatter plots.
 
-\s Save the metafile processing settings using \lans{Action} $\ra$ \lans{Save settings}.
+\bul Colors and symbols recognized by Matlab are already listed between the parentheses (e.g., colors: \ttt{r} for red, \ttt{g} for green, \ttt{b} for blue, \ttt{k} for black, etc., symbols: \ttt{o} for circles, \ttt{s} for squares, \ttt{x} for crosses, \ttt{.} for points, etc.).
+
+\s Save the metafile processing settings using \lans{Settings} $\ra$ \lans{Save settings}.
 
 \bul This is useful if you plan to return to the same metafile processing session in the future.
 
-\bul Once save, the settings can be loaded using \lans{Action} $\ra$ \lans{Load settings}.
+\bul Previously saved settings can be loaded using \lans{Settings} $\ra$ \lans{Load settings}.
 
 Subsequent metafile processing analyses depend on your preferences and include several possibilities, as described next. 
 
 \subsubsection{Export images for selected variables}
+\label{sec:621}
 \setcounter{step}{0}
 
-\s Select \lans{Action} $\ra$ \lans{Export images separately for each variable}. 
+\s Select the \lanstf{ROI definition file} in the corresponding field.
+
+\bul This is only relevant if you want to include ROIs in reexported images.
+
+\bul It is important that the ROI definition files have the \emph{same name} for \emph{all} datasets in the metafile (e.g., \ttt{cells.mat} or \ttt{ROIs.mat}). This explains why you need to use consistently the same filename when defining ROIs during the analysis of individual datasets.
+
+\s Select \lans{Tools} $\ra$ \lans{Export images for each variable as PDF}, or press \ttt{Ctrl+M}. 
 
 \bul This action will combine images of the variables from multiple datasets and export them in a~PDF output, \bb{one file per variable}. This allows you to view all images from a~specific project in one place, which is useful for a~visual comparative analysis.
 
-\bul The visual comparison can be made easier if all images are displayed in the same scale. This is achieved by setting the minimum and maximum values in the corresponding \lanstf{scale} field, as explained above. If the scale is specified, images of the corresponding variable will be reexported as PDF using the new scale. 
+\bul The visual comparison can be made easier if all images are displayed in the same scale. This is achieved by setting the minimum and maximum values in the corresponding \lanstf{scale} field, as explained above. If you specify the scale, formatted as \ttt{[min max]}, all images of the corresponding variable will be reexported as PDF using the new scale. If you do not want to reexport the images (e.g., because you have already done so earlier), you need to set the corresponding scale back to \ttt{[]} (i.e., an empty vector).
 
-\bul When doing this, you can use the \lanscb{Include ROIs} checkbox to set whether the ROI outline should be included or excluded, or the \lanscb{log} checkbox to set whether a~log-transformed data should be displayed.
+\bul When doing this, you can use the \lanscb{log} checkbox to set whether a~log-transformed data should be displayed, or the \lanscb{Include ROI outlines} checkbox to set whether the ROI outlines should be included. For the ROI outlines, you can also specify their \lanstf{color} in the corresponding field (e.g., \ttt{w} for white). 
 
 \bul Observe the console for possible error messages, which are issued if a~particular file is missing. It may be that there is a~typo in the metafile, or that you forgot to export the variable for a~particular dataset. If this is the case, you will need to reanalyze that dataset and fix the issue.
 
-\bul Observe the console to see the exact locations of the output created by this action.
+\bul Observe the console to see the exact locations of the output created by this action. For example, if your metafile is called \ttt{mf1.txt} and the variables of interest include \ttt{13C/12C} and \ttt{12C15N/12C14N}, the images will be exported in files called \ttt{13C-12C.pdf} and \ttt{12C15N-12C14N.pdf}, respectively, located in the sub-folder \ttt{mf1} of the \lanstf{base folder}.
 
 \subsubsection{Export ROI-specific data for selected variables}
+\label{sec:622}
 \setcounter{step}{0}
 
-\s Select \lans{Action} $\ra$ \lans{Export ROI-specific data as graphs} $\ra$ \lans{All data in one graph}.
+\s Select the \lanstf{ROI definition file} in the corresponding field.
+
+\bul It is important that the ROI definition files have the \emph{same name} for \emph{all} datasets in the metafile (e.g., \ttt{cells.mat} or \ttt{ROIs.mat}). This explains why you need to use consistently the same filename when defining ROIs during the analysis of individual datasets.
+
+\s Select the \lanstf{ROI classification file} in the corresponding field.
+
+\bul This is only relevant if you want to plot ROIs from different classes in different colors.
+
+\bul Similar to the ROI definition files, the ROI classification files must have the \emph{same name} for \emph{all} datasets in the metafile (e.g., \ttt{cells.dat} or \ttt{ROIs.dat}). This explains why you need to use consistently the same filename when classifying ROIs during the analysis of individual datasets.
+
+\s Select checkboxes in the \ttt{Graph options} box to specify whether you want to plot a~\lanscb{2D} scatter plot or a~\lanscb{3D} scatter plot, or whether you want to include \lanscb{error-bars} for each data-point. 
+
+\bul When plotting 2D scatter plots, 2, 4 or 6 variables must be specified in the metafile. When plotting 3D scatter plots, 3 or 6 variables must be specified in the metafile. 
+
+\bul When including error-bars, Poisson error is used as the size of the error-bar.
+
+\s Select \lans{Tools} $\ra$ \lans{Export and display data in ROIs} $\ra$ \lans{For all datasets in one graph}, or press \ttt{Ctrl+P}.
 
 \bul This action will merge ROI-specific data, such as ion counts or ion count ratios, from multiple datasets and export the results in one data file (with an~extension \ttt{dac}). This file is probably the most useful output for your project, if the project conclusions are drawn from ROI-specific data derived from the analysis of multiple NanoSIMS datasets.
 
-\bul In addition to data export, this action will also plot the ROI-specific values in a~scatter plot (2D or 3D). This scatter plot offers several useful functions for exploring or quality checking the data. For example, if you point with a~mouse to a~particular data point, an annotation will appear providing relevant information about the data point (e.g., the source dataset, ROI identifier, ROI class). You can also click on the \lans{Fit data} button to quickly perform preliminary linear regression analyses on manually selected data points.
+\bul In addition to merging and exporting the data, this action will also plot the ROI-specific values in a~scatter plot (2D or 3D). This scatter plot offers several useful functions for exploring or quality checking the data. For example, if you point with a~mouse to a~particular data point, an annotation will appear providing relevant information about the data point (e.g., the source dataset, ROI identifier, ROI class). You can also click on the \lans{Fit data} button to quickly perform preliminary linear regression analyses on manually selected data points.
 
-\bul When performing this action, observe the console to see possible errors (i.e., missing data files) and other relevant messages, including the exact locations of the generated output.
+\bul Observe the console for possible error messages, which are issued if a~particular file is missing. It may be that there is a~typo in the metafile, or that you forgot to export the data for a~particular dataset. If this is the case, you will need to reanalyze that dataset and fix the issue.
 
-\subsubsection{Reprocess metafile}
+\bul Observe the console to see the exact locations of the output created by this action. For example, if your metafile is called \ttt{mf1.txt} and the variables of interest include \ttt{13C/12C} and \ttt{12C15N/12C14N}, the ROI-specific data will be exported in files called \ttt{13C-12C.dac} and \ttt{12C15N-12C14N.dac}, respectively, located in the sub-folder \ttt{mf1} of the \lanstf{base folder}. The scatter plot will be exported in the same folder, under the name \ttt{13C-12C-vs-12C15N-12C14N.pdf}.
+
+
+\subsubsection{Auto-process datasets}
 \setcounter{step}{0}
 
-Sometimes, it may happen that after you have merged the outputs from multiple datasets for specific variables, you realize that you need a~similar output but for a~\emph{different} variable, one that you have \emph{not} considered when analyzing the datasets individually. For example, you have defined ROIs, exported ROI-specific values for the \ttt{13C/12C} and \ttt{12C15N/12C14N} isotope ratios and combined them from all datasets in your project, but now you realize that it would also be useful to export the ROI-specific values for two more variables: \ttt{31P/plane/pixel} and \ttt{32S/plane/pixel}. 
+Sometimes, it may happen that after you have merged the outputs from multiple datasets for specific variables, you realize that you need a~similar output but for an~\emph{extra} variable, or multiple extra variables, which you have \emph{not} considered when analyzing the datasets individually. For example, you have defined ROIs, exported ROI-specific values for the \ttt{13C/12C} and \ttt{12C15N/12C14N} isotope ratios and combined them from all datasets in your project, but now you realize that it would also be useful to export the ROI-specific values for two extra variables: \ttt{31P/plane/pixel} and \ttt{32S/plane/pixel}. 
 
-One option would be to reprocess each individual dataset separately, one by one, using steps described in Section~\ref{sec:level0}. While this would not be a~big `drama' if the number of  datasets to be reanalyzed were low (e.g., 2--3), it could become a~major source of frustration for a~larger number of datasets. To avoid this situation, Look@NanoSIMS offers a~more convenient solution, accessible via \lans{Action} $\ra$ \lans{Reprocess metafile}.
+One option would be to reprocess each individual dataset separately, one by one, using steps described in Section~\ref{sec:level1}. While this would not be a~big `drama' for a~small number of datasets (e.g., 2--3), it could become a~major effort for a~larger number of datasets. To aid this situation, Look@NanoSIMS offers a~more convenient solution, accessible via \lans{Tools} $\ra$ \lans{Auto-process datasets}.
 
+When performing this action, it is essential that you have done the minimal processing of \emph{all} datasets in the metafile already and this processing was done in the same way for each dataset. That is, it is assumed that for each dataset you have (i) drift-corrected and accumulated the individual planes, (ii) defined and classified ROIs, and (iii) stored the preferences. If you have done this, files storing this \bb{minimal information} should be present in the corresponding output sub-folder for \emph{each} dataset. If this is not the case for a~specific dataset (e.g., you forgot to store the preferences), you need to reprocess it first and ensure that the information is stored.
+
+\s Specify the filenames storing the \bb{minimal information} in the corresponding \lanstf{fields}.
+
+\bul In most cases, the default filenames will be fine: \ttt{xyalign.mat} for the drift-correction information, \ttt{ROIs.mat} and \ttt{ROIs.dat} for the ROI definition and classification information, and \ttt{prefs.mat} for the preferences. 
+
+\bul If you have used other filenames, choose those instead. It is important, however, that you have used the \emph{same} filenames for \emph{each} dataset.
+
+\s Select \lans{Tools} $\ra$ \lans{Auto-process datasets}.
+
+\bul This action will reprocess \emph{each} dataset in the metafile in the same way as if you processed it yourself manually, based on the \bb{minimal information} stored in the corresponding files. 
+
+\bul Specifically: (i) the raw data will be loaded, (ii) selected planes will be drift-corrected and accumulated for all detected masses (based on the information stored in the preferences and drift-correction files), (iii) the new variables specified in the metafile will be calculated and exported as PDF images, (iv) ROI information will be loaded, and (v) ROI-specific values for the new variables will be calculated and exported in data files (extension \ttt{dac}).
+
+\bul Observe the progress of these processing steps in the console. If everything goes smoothly and the number of datasets is large, you will have time to make yourself a~cup of tea or coffee and enjoy the moment while LANS is doing the work! 
+
+\bul It may happen, however, that the processing encounters an error. For example, if one of the files with the minimal information is missing (this typically happens for files \ttt{prefs.mat} or \ttt{ROIs.mat}), an~error is issued and the auto-processing stops. If this happens, you will need to do two things. First, you need to fix the error by manually processing the relevant dataset again and making sure that the minimal information \emph{is} stored. After doing this, you could start the auto-processing again. But it would be a~waste of time if the reprocessing were done for datasets that had already been reprocessed without errors. To avoid this, you can apply the following trick: open the metafile in a~basic text editor of your choice (e.g., \ttt{notepad} or \ttt{notepad++}, but definitely not a~word-processing program such as \ttt{Word}) and add a~hash symbol (\ttt{\#}) at the very beginning of the line for each dataset that you do \emph{not} want to be reprocessed. Subsequently, save the updated metafile and select \lans{Tools} $\ra$ \lans{Auto-process datasets} to continue with the auto-processing. If an~error occurs again, you need to repeat these steps.
+
+\bul If no errors occurred, you will arrive with an output that will allow you to do the same actions as described above (Sections \ref{sec:621} or \ref{sec:622}), but now with images and data generated also for the extra variables. Before you continue with those actions, do not forget to update the metafile again, this time by removing the hash symbols on lines with datasets that you do want to include in your final metafile processing analysis. Remember: except for the very first line in the metafile, a~hash symbol at the beginning of a~line means that the corresponding dataset will be ingored during metafile processing.
 
 
 %%%%

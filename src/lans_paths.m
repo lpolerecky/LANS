@@ -32,11 +32,11 @@ if ismac
     
     % no need to make any changes here
     oldpath = getenv('PATH');
-    if isempty(strfind(oldpath,GSDIR))
+    if ~contains(oldpath,GSDIR)
         setenv('PATH', [oldpath ':' GSDIR]);
     end
     
-    if ~exist([GSDIR 'gs'])==2
+    if ~isfile([GSDIR 'gs'])
         if be_verbous
             fprintf(1,'ERROR: gs not found. Please install Ghostscript to enable PDF conversion.\n');
         end
@@ -68,14 +68,15 @@ elseif isunix
     UNZIP_COMMAND = 'unzip -q';    
     ZIP_COMMAND   = 'zip -r';
     
-    % PDF viewer; normally this should work, but (see next)
+    % PDF viewer; normally this should work (but: see next)
     %PDF_VIEWER = 'xreader';
     
     % Sometimes, calling system(PDF_VIEWER) without the LD_LIBRARY_PATH 
-    % set properly gives a segmentation fault. In this case, this should fix it:
+    % set properly gives a segmentation fault. In this case, this new
+    % syntax should fix it:
     PDF_VIEWER = 'LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu; xreader';
         
-    GUI_FONTSIZE = 10;
+    GUI_FONTSIZE = 11;
     
 elseif ispc
     
@@ -96,8 +97,13 @@ elseif ispc
     UNZIP_COMMAND = '"c:\Program Files\7-Zip\7z.exe" e';
     ZIP_COMMAND   = '"c:\Program Files\7-Zip\7z.exe" a';
 
-    % PDF viewer (SumatraPDF is recommended: not the prettiest, but it is
-    % a very small file and automatically reloads the PDF when PDF is updated)
+    % PDF viewer:
+    % SumatraPDF is recommended: it is not the prettiest design, but the
+    % program file is very small and the PDF file is automatically reloaded
+    % when it is updated, which is very handy.
+    % Acrobat Reader should definitely NOT be used, because it locks the
+    % PDF file for writing, which means that the PDF cannot be reexported
+    % by LANS if it is simultaneously opened by Acrobat Reader.
     PDF_VIEWER = '"c:\Program Files\SumatraPDF\SumatraPDF.exe"';
     
     GUI_FONTSIZE = 8;

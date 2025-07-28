@@ -2,6 +2,16 @@ function getstats_in_2D_plot(source,event)
 fprintf(1,'\nExecuting getstats_in_2D_plot\n-----------------------------\n');
 ax=gca;
 fignum=get(get(ax,'Parent'),'Number');
+
+% data to be fitted are stored in a global variable, depending on the
+% figure where they are plotted
+global XY_DATA_SCATTER_PLOT1 XY_DATA_SCATTER_PLOT2 XY_DATA_SCATTER_PLOT3
+switch fignum
+    case 61, XY_DATA_SCATTER_PLOT = XY_DATA_SCATTER_PLOT1;
+    case 62, XY_DATA_SCATTER_PLOT = XY_DATA_SCATTER_PLOT2;
+    case 63, XY_DATA_SCATTER_PLOT = XY_DATA_SCATTER_PLOT3;
+end
+
 %xpred = 0.0106; ypred = 0.00375;
 xl=get(ax,'xlim');
 yl=get(ax,'ylim');
@@ -20,7 +30,7 @@ pp=getPosition(hR);
 %xall = [];
 %yall = [];
 % this global variable is updated just before the 'fit button' is defined
-global XY_DATA_SCATTER_PLOT;                    
+%global XY_DATA_SCATTER_PLOT;                    
 
 %for i=1:length(chil)
     

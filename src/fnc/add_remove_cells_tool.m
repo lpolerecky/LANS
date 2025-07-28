@@ -2081,10 +2081,14 @@ elseif hObject == handles.display_cells
         else
             addCellNumbers(ax1,mim);
         end
-        
+
+        global additional_settings;
         set(ax1,'xcolor',[1 1 1],'ycolor',[1 1 1],...
-            'DataAspectRatio',[1 1 1],'FontSize',8,'color',0.0*[1 1 1]);    
-        title(ax1,'Currently defined ROIs (same color=same ROI)','color',[1 1 1]);%,'FontSize',8);
+            'DataAspectRatio',[1 1 1],...
+            'FontSize',additional_settings.defFontSize,...
+            'color',0.0*[1 1 1]);    
+        title(ax1,'Currently defined ROIs (same color=same ROI)','color',[1 1 1],...
+            'FontSize',additional_settings.defFontSize);
         xlabel(ax1,'Pixels','color',[1 1 1])
         ylabel(ax1,'Pixels','color',[1 1 1])
         

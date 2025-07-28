@@ -41,6 +41,13 @@ end
 
 global additional_settings;
 
+% find out the number of datapoints that will be shown (from selected
+% treatments and classes):
+N_displayed = sum(ismember(char(roi_prop.roi_class), cls_sel) & ismember(roi_prop.treatment,tmnt_sel));
+
+XY_DATA_SCATTER_PLOT = zeros(N_displayed,4);
+
+i_added = 0;
 for ii=1:size(x,1)
     % only include datapoints for selected treatments and classes
     if ismember(char(roi_prop.roi_class(ii)), cls_sel) && ismember(roi_prop.treatment(ii),tmnt_sel)
@@ -49,13 +56,31 @@ for ii=1:size(x,1)
         p1=find(cls_sel==char(roi_prop.roi_class(ii)));
         p2=find(tmnt_sel==roi_prop.treatment(ii));
         my_plot(x(ii), y(ii), [cls_col(p1),tmnt_symb(p2)],'markersize',10,'tag',tag); 
-        if(ii==1), hold on; end
+        i_added = i_added + 1;
+        if(i_added==1), hold on; end
         % make sure that the axis is not autoscaled every time a point is added
         set(ax,'Xlim',xscale, 'Ylim',yscale,'XLimMode','manual','YLimMode','manual')
         if s.disp_errorbars % additional_settings.display_error_bars 
             my_errorbar2(x(ii), y(ii), dx(ii), dy(ii), cls_col(p1));
         end
+        XY_DATA_SCATTER_PLOT(i_added,:) = [x(ii) dx(ii) y(ii) dy(ii)];
     end
+end
+if i_added ~= N_displayed
+    fprintf(1,'Number of added and displayed points do not agree with each other.\n')
+end
+
+% remember the added data in the correct global variable (used for fitting)
+global XY_DATA_SCATTER_PLOT1 XY_DATA_SCATTER_PLOT2 XY_DATA_SCATTER_PLOT3;
+XY_DATA_SCATTER_PLOT1 = 0;
+XY_DATA_SCATTER_PLOT2 = 0;
+XY_DATA_SCATTER_PLOT3 = 0;
+
+fignum = get(get(ax,'Parent'),'Number');
+switch fignum
+    case 61, XY_DATA_SCATTER_PLOT1 = XY_DATA_SCATTER_PLOT;
+    case 62, XY_DATA_SCATTER_PLOT2 = XY_DATA_SCATTER_PLOT;
+    case 63, XY_DATA_SCATTER_PLOT3 = XY_DATA_SCATTER_PLOT;
 end
 
 % populate strings for the title
