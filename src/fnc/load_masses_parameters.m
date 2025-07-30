@@ -84,7 +84,7 @@ if uss
         s=['s=my_get(handles.edit',num2str(k1),',''string'');'];
         eval(s);
         
-        if ~isempty(s)
+        %if ~isempty(s)
             
             jj=jj+1;
             p.special{jj} = s;
@@ -97,7 +97,8 @@ if uss
             else
                 p.special_scale{jj}=s;
             end
-        end
+            
+        %end
         
     end
     

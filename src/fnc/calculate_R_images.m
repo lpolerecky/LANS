@@ -161,25 +161,36 @@ for ii=1:Nm
             ind1 = strfind(formula,'=');
             ind2 = strfind(formula,'./');
             ind3 = strfind(formula,'m');
+            Rnom{ii} = [];   % default empty
+            Rdenom{ii} = []; % default empty
             if length(ind2)==1 %&& length(ind3)==2
                 %if isempty(ind2)
                 %    ind2 = length(formula);
                 %end
                 nomstr = sprintf('Rnom{ii} =%s;',formula((ind1+1):(ind2-1)));
+                eval(nomstr);
                 % find denominator
                 ind1 = strfind(formula,'/');
                 if ~isempty(ind1)
                     ind2 = strfind(formula,';');
                     denomstr = sprintf('Rdenom{ii}=%s;',formula((ind1+1):(ind2-1)));
                 else
-                    denomstr = 'Rdenom{ii}=1;'; % there is no denominator
-                end
-                eval(nomstr);
+                    denomstr = 'Rdenom{ii}=ones(size(Rnom{ii}));'; % there is no denominator
+                end                
                 eval(denomstr);
             else
-                fprintf(1,'WARNING: formula contains more than one ''/''. Unable to determine numerator and denominator.\n')
-                Rnom{ii} = [];
-                Rdenom{ii} = [];
+                if length(ind2)>1
+                    fprintf(1,'WARNING: formula contains more than one ''/''. Unable to determine numerator and denominator.\n')    
+                else
+                    fprintf(1,'WARNING: formula contains no ''/''. Expression used as numerator.\n')
+                    if ~isempty(ind1)
+                        ind2 = strfind(formula,';');
+                        nomstr = sprintf('Rnom{ii} =%s;',formula((ind1+1):(ind2-1)));
+                        eval(nomstr);
+                        denomstr = 'Rdenom{ii}=ones(size(Rnom{ii}));'; % there is no denominator                        
+                        eval(denomstr);
+                    end
+                end
             end
                 
             % fill variable m with accummulated COUNTS in ROIs and calculate the

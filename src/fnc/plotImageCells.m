@@ -404,6 +404,7 @@ end
 
 % plot also histogram of the pixel values belonging to cells 
 % do it for all defined cell types
+global CELLSFILE
 if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
     
     % define number of bins in the histogram, depending on the unique
@@ -560,7 +561,7 @@ end
 % export the data as BW Tiff image as well, if B&W option was selected
 if (o1(6) & o3 & additional_settings.export_tif) & ef
     
-    Nbits = 8;
+    Nbits = 16;
     % make a Nbits-bit dataset
     maxbw=2^Nbits-1;
     expim=(IM-mi)/(ma-mi)*maxbw;

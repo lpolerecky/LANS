@@ -1,11 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is the startup script of the Look@NanoSIMS (LANS) program. To run
-% the program, simply type lookatnanosims in Matlab command window and 
+% the program, simply type lookatnanosims in the Matlab command window and 
 % press Enter.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Look@NanoSIMS was written by Lubos Polerecky @ MPI-Bremen 2008-2012.
-% Development continued by LP @ Utrecht University 2013-2022.
-% See http://nanosims.geo.uu.nl/LANS for more details about the program.
+% Development continued by LP @ Utrecht University 2013-2025.
+% See https://github.com/lpolerecky/LANS for more details about the program.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Read these NOTES before proceeding. Really. :)
@@ -13,7 +13,7 @@
 % The graphical user interface (GUI) is defined in different *.fig files
 % saved in the figs folder. By setting the units of the GUI objects to
 % 'characters', the GUIs shoud look similar (and good) for all platforms
-% (e.g. linux, windows, mac). Since Matlab version 2014, however, this
+% (e.g. Linux, Windows, MacOS). Since Matlab version 2014, however, this
 % may no longer be the case. Thus, if you open the older LANS version with
 % a newer Matlab version, or vice versa, the appearance of LANS may not
 % look as good as you would like to. If this is the case, I recommend that
@@ -25,17 +25,18 @@
 % liking. Alternatively, do this through the menu: File -> New -> GUI ->
 % Open existing GUI -> Browse. 
 %
-% The exported images (eps and pdf files) depend on the platform, and it
-% seems that also on the Matlab version used. If you are not happy with the
-% look of the exported images or plots (e.g. the fonts are too big or too
-% small), select Settings -> Additional output options in the main menu of
-% LANS to modify the appearance of the exported figures. You will need to
-% experiment with the print factors until you get optimal results.
+% The appearance of exported images (eps and pdf files) depends on the
+% platform, and it seems that also on the Matlab version used. If you are
+% not happy with the appearance of the exported images or plots (e.g., the
+% fon size is too large or too small), select Preferences -> Additional
+% output options in the main menu of LANS to modify the appearance of the
+% exported figures. You will need to experiment with the print factors
+% until you get optimal results.
 %
 % To enable all features implemented in LANS, you will also need to have
 % the following programs/packages installed on your system: 
-% - LaTeX, including binaries for epstopdf and pdflatex, the URL (url.sty)
-% and HYPERREF (hyperref.sty) packages.
+% - LaTeX, including binaries for epstopdf and pdflatex, and the following
+% packages: graphicx, geometry, url, hyperref, adjustbox
 % - Ghostscript (for converting EPS files to PDF).
 % - a program for unzipping zip files (e.g. 7-zip under Windows, or unzip 
 % under Linux or Mac-OS).
@@ -46,29 +47,32 @@
 % packages to make things work seemlessly: 
 % - texlive-latex-base
 % - texlive-latex-recommended
-% + whatever other dependencies that come with these packages.
+% - texlive-latex-extra
+% - texlive-latex-science
+% + any dependencies that come with these packages.
 % The unzip program is installed by default.
 %
-% If you use Mac-OS, first check your system to find out where the 
+% If you use MacOS, first check your system to find out where the 
 % pdflatex and ghostscript binaries are located (e.g., /usr/texbin/ and 
 % /usr/local/bin). Then modify accordingly the LATEXDIR and GSDIR variables 
-% in the paths.m file. The unzip program is installed by default. The
+% in the lans_paths.m file. The unzip program is installed by default. The
 % preview program probably too.
 %
 % If you use Windows, standard installation of MikTeX, Ghostscript and
 % 7-Zip will do the job to make everything work correctly in LANS. However,
-% in Windows 10 you also need to verify that the helvetic font is
-% installed, otherwise the epstopdf conversion may not work.
+% in Windows 10 you also need to verify that the helvetica font is
+% installed, otherwise, for some unknown reason, the epstopdf conversion
+% may not work. 
 %
 % To make sure that all the paths are correctly defined, check the file 
-% paths.m in the LANS folder. 
+% lans_paths.m in the LANS folder. 
 %
 % It seems that secondary ion counts on some (newer?) systems are stored as 
 % ushort (16-bit unsigned integer), whereas on some (older?) systems they
 % are  stored as uint8 (8-bit unsigned integers). Perhaps this is because
 % of the differences between the 32-bit and 64-bit operating systems that
 % run the Cameca instrument, but I am not 100% sure. Therefore, if you
-% experience problems with loading an im file, e.g. the program tells you
+% experience problems with loading an im file, e.g., the program tells you
 % that there are 0 planes even though there are for sure more, it may well
 % be that this is the cause. In that case, open the file read_im_file.m in
 % the fnc folder and see whether you can hack it to make things work. If
@@ -107,7 +111,8 @@ global EXTERNAL_IMAGEFILE;
 global PDF_VIEWER;
 global GUI_FONTSIZE;
 
-% list of versions, last line = the current version
+%% list of LANS versions, last line = the current version
+% this is recording the history of updates
 LANS_version = '11/11/2011';
 LANS_version = '22/02/2012-beta';
 LANS_version = '24/04/2012';
@@ -129,11 +134,11 @@ LANS_version = '2017-06-01';
 LANS_version = '2017-09-07';
 LANS_version = '2017-11-04';
 
-% these versions require min Matlab 2017b
+% these versions require minimally Matlab 2017b
 LANS_version = '2017-12-18-matlab2017b';
 LANS_version = '2018-02-18-matlab2017b';
 
-% these versions require min Matlab 2018a (developed in Matlab 2018a)
+% these versions require minimally Matlab 2018a (developed in Matlab 2018a)
 LANS_version = '2018-05-20-matlab2018a';
 LANS_version = '2018-06-22';
 LANS_version = '2018-11-12';
@@ -143,7 +148,7 @@ LANS_version = '2019-12-18';
 LANS_version = '2020-03-03';
 LANS_version = '2020-03-19';
 
-% these versions require min Matlab 2019b
+% these versions require mininmally Matlab 2019b
 LANS_version = '2020-03-28';
 LANS_version = '2020-04-22';
 LANS_version = '2020-05-01';
@@ -222,6 +227,7 @@ LANS_version = '2025-02-13'; % LANS GUI (menu) updated:
 LANS_version = '2025-06-25'; % LANS GUI for win updated: 
                              % minimal & full back up of processed data implemented
 
+% these versions require mininmally Matlab 2024b
 LANS_version = '2025-07-27'; % LANS GUI for lnx updated (for Matlab 2024b)
 
 % name of the external image file (empty by default)
