@@ -19,7 +19,8 @@ set(ax,'xlim',[min(min(minmaxband(:,2:3))) max(max(minmaxband(:,2:3)))],'ylim',[
 % add the patches for each rank, incl. the rank name
 for jj=1:size(minmaxband,1)        
     patch([minmaxband(jj,2) minmaxband(jj,3) minmaxband(jj,3) minmaxband(jj,2)],...
-        [min(y)-1 min(y)-1 max(y)+1 max(y)+1],[jj jj jj jj]);
+        [min(y)-1 min(y)-1 max(y)+1 max(y)+1],[jj jj jj jj], ...
+        'FaceAlpha',0.5);
     if jj==1, hold on; end;
     text(mean(minmaxband(jj,2:3)), 1.01*(max(y)-min(y)+2),...
         [num2str(minmaxband(jj,1))], 'HorizontalAlignment','center'); %,'FontSize',14);
