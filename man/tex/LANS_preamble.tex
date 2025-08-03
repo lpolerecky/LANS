@@ -1,0 +1,199 @@
+% define colors
+\definecolor{lightgrey}{RGB}{240,240,240}
+\definecolor{skyblue}{RGB}{135,206,250}
+\definecolor{darkgold}{RGB}{120,75,4}
+\definecolor{gold}{RGB}{239,191,4}
+\definecolor{darkgreen}{RGB}{4,120,4}
+\definecolor{darkblue}{RGB}{4,4,190}
+\definecolor{purple}{RGB}{128,0,128}
+
+% modify spacing around items
+\setlist[itemize]{
+	topsep=0pt plus 2pt minus 4pt,
+	parsep=1pt plus 1pt, 
+	itemsep=1pt plus 1pt}
+\setlist[enumerate]{
+	leftmargin=15pt, 
+	topsep=2pt plus 2pt minus 4pt, 
+	parsep=4pt plus 1pt, 
+	itemsep=1pt plus 1pt}
+
+% define appearance of figure caption and reference
+\captionsetup{font={small,sl}, labelfont={small,bf,sl}}
+\renewcommand{\thefigure}{\textbf{\arabic{section}.\arabic{figure}}}
+\hypersetup{colorlinks=true,linkcolor=purple,urlcolor=purple}
+
+%%% define boxes
+
+% lans function box
+\newcommand{\lans}[1]{\tcbox[nobeforeafter,
+	tcbox raise base,
+	%colback=lightgrey,
+	%colframe=lightgrey,
+	colback=gray!15, 
+	colframe=gray!15,
+	coltext=black,
+	fontupper=\sf,
+	left=0mm, right=0mm, top=0mm, bottom=0mm, 
+	boxsep=0.25mm, 
+	arc=0mm]{#1}}
+
+% lans checkbox box
+\newcommand{\lanscb}[1]{\tcbox[nobeforeafter,
+	tcbox raise base,
+	%colback=darkgreen!15,
+	%colframe=darkgreen!15,
+	colback=darkgreen!15,
+	colframe=darkgreen!15,
+	coltext=black,
+	fontupper=\sf,
+	left=0mm, right=0mm, top=0mm, bottom=0mm, 
+	boxsep=0.25mm, 
+	arc=0mm]{#1}}
+
+% lans textfield box
+\newcommand{\lanstf}[1]{\tcbox[nobeforeafter,
+	tcbox raise base,
+	colback=cyan!15,
+	colframe=cyan!15,
+	coltext=black,
+	fontupper=\sf,
+	left=0mm, right=0mm, top=0mm, bottom=0mm, 
+	boxsep=0.25mm, 
+	arc=0mm]{#1}}
+
+% step box
+\newcommand\stepbox[1]{%
+	\vskip0.2\baselineskip
+	\marginnote{\tcbox[nobeforeafter,
+	tcbox raise base,
+	colback=gold!20,
+	colframe=gold!20,
+      	fontupper=\footnotesize,
+	left=1mm, right=1mm, top=1mm, bottom=1mm, 
+	boxsep=0mm, 
+	arc=0mm]{#1}}\noindent}
+\newcommand\s{\addtocounter{step}{1}	\stepbox{Step~\thestep}}
+
+% note box
+\newcommand\nb{%
+       \vskip0.5\baselineskip
+	\marginnote{\tcbox[nobeforeafter,
+	tcbox raise base,
+	colback=purple!20,
+	colframe=purple!20,
+      	fontupper=\footnotesize,
+	left=1mm, right=1mm, top=1mm, bottom=1mm, 
+	boxsep=0mm, 
+	arc=0mm]{Notes}}\noindent}
+
+% section box:
+\xpatchcmd{\section}{\normalfont\Large\bfseries}{\sectionbox}{}{\PatchFailed}
+\newcommand*{\sectionbox}[1]{%	
+	\begin{tcolorbox}[
+	colback=purple!100,% background
+	colframe=purple!100,% frame colour
+	coltext=white, % text color
+      width=\linewidth,%
+      halign=left,
+      valign=center,
+      fontupper=\large\bfseries,
+      arc=1mm, %auto outer arc,
+    	boxrule=0mm,%
+    	boxsep=.15\baselineskip,%
+    	rounded corners,%
+    	left*=0pt,%
+    	right*=0pt,%
+    	grow to right by=0.5\baselineskip,%
+    	grow to left by=0.5\baselineskip%
+       ]{#1}
+	\end{tcolorbox} 
+} %
+
+% subsection box:
+\xpatchcmd{\subsection}{\normalfont\large\bfseries}{\subsectionbox}{}{\PatchFailed}
+\newcommand*{\subsectionbox}[1]{%
+	\begin{tcolorbox}[
+	colback=gold!70,% background
+       colframe=gold!70,% frame colour
+       coltext=black, % text color
+       width=\linewidth,%
+       halign=left,
+       valign=center,
+       fontupper=\large\bfseries,
+       arc=1mm, auto outer arc,
+    	boxrule=0mm,%
+    	boxsep=.15\baselineskip,%
+    	rounded corners,%
+   	left*=0pt,%
+    	right*=0pt,%
+    	grow to right by=0.5\baselineskip,%
+    	grow to left by=0.5\baselineskip%
+       ]{#1}
+	\end{tcolorbox} 
+} %
+
+% skyblue box
+\newcommand{\skybluebox}[1]{%
+\begin{tcolorbox}[
+	colback=skyblue!10, 
+	coltext=black, coltitle=black,
+	colframe=skyblue!70,
+	grow to right by=0.5\baselineskip,
+	grow to left by=0.5\baselineskip,
+    	rounded corners,%
+   	left*=0pt,%
+    	right*=0pt,%
+	fonttitle=\bfseries,
+	boxsep=1mm,
+	title=#1]}
+
+% gold box
+\newcommand{\goldbox}[1]{%
+\begin{tcolorbox}[
+	colback=gold!10, 
+	coltext=black, coltitle=black,
+	colframe=gold!70,
+    	rounded corners,%
+   	left*=0pt,%
+    	right*=0pt,%
+	grow to right by=0.5\baselineskip,
+	grow to left by=0.5\baselineskip,
+	fonttitle=\bfseries,
+	boxsep=1mm,
+	title={#1}]}
+
+% green box
+\newcommand{\greenbox}[1]{%
+\begin{tcolorbox}[
+	colback=white, 
+	coltext=black, coltitle=black,
+	colframe=darkgreen!30,
+	grow to right by=0.5\baselineskip,
+	grow to left by=0.5\baselineskip,
+    	rounded corners,%
+   	left*=0pt,%
+    	right*=0pt,%
+	fonttitle=\bfseries,
+	boxsep=1mm,
+	title=#1]}
+
+% graybox (gb)
+\newcommand{\gb}{%
+	\begin{tcolorbox}[%
+	colback=lightgrey!10,%
+    	colframe=lightgrey!50,%
+    	boxrule=0mm,%
+    	boxsep=.1\baselineskip,%
+    	arc=1mm,%
+    	rounded corners,%
+    	breakable,%
+    	left*=6pt,%
+    	right*=6pt,%
+    	boxsep=0mm,
+	grow to right by=0\baselineskip,%
+    	grow to left by=0.0\baselineskip%
+	]}
+
+% end of any tcolorbox
+\newcommand{\tcbe}{\end{tcolorbox}}

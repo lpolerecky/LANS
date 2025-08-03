@@ -7,37 +7,16 @@
 \tcbuselibrary{breakable}
 \usepackage{xpatch}
 \usepackage{xcolor}
-% define colors
-\definecolor{lightgrey}{RGB}{240,240,240}
-\definecolor{skyblue}{RGB}{135,206,250}
-\definecolor{darkgold}{RGB}{120,75,4}
-\definecolor{gold}{RGB}{239,191,4}
-\definecolor{darkgreen}{RGB}{4,120,4}
-\definecolor{darkblue}{RGB}{4,4,190}
-\definecolor{purple}{RGB}{128,0,128}
 
 \usepackage{marginnote}
 \usepackage{enumitem}
-\setlist[itemize]{
-	topsep=0pt plus 2pt minus 4pt,
-	parsep=1pt plus 1pt, 
-	itemsep=1pt plus 1pt}
-\setlist[enumerate]{
-	leftmargin=15pt, 
-	topsep=2pt plus 2pt minus 4pt, 
-	parsep=4pt plus 1pt, 
-	itemsep=1pt plus 1pt}
 \usepackage{caption}
-\captionsetup{font={small,sl}, labelfont={small,bf,sl}}
-\renewcommand{\thefigure}{\textbf{\arabic{section}.\arabic{figure}}}
-
 
 \usepackage[bookmarksopen=true, 
 				pdfauthor=Lubos Polerecky,
 				pdftitle=Look@NanoSIMS,
 				pdfsubject=User manual]{hyperref}
 
-\hypersetup{colorlinks=true,linkcolor=purple,urlcolor=purple}
 \linespread{1.2}
 
 % LP commands
@@ -49,158 +28,9 @@
 \newcommand\bul{\noindent$\bullet${ }}
 \newcommand\bb[1]{\textbf{#1}}
 
-%%% define boxes
+% load more definitions and latex options
+\input{LANS_preamble}
 
-% lans function box
-\newcommand{\lans}[1]{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=lightgrey,
-	colframe=lightgrey,
-	fontupper=\sf,
-	left=0mm, right=0mm, top=0.5mm, bottom=0mm, 
-	boxsep=0mm, 
-	arc=0mm]{#1}}
-
-% lans checkbox box
-\newcommand{\lanscb}[1]{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=darkgreen!15,
-	colframe=darkgreen!15,
-	fontupper=\sf,
-	left=0mm, right=0mm, top=0.5mm, bottom=0mm, 
-	boxsep=0mm, 
-	arc=0mm]{#1}}
-
-% lans textfield box
-\newcommand{\lanstf}[1]{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=cyan!15,
-	colframe=cyan!15,
-	fontupper=\sf,
-	left=0mm, right=0mm, top=0.5mm, bottom=0mm, 
-	boxsep=0mm, 
-	arc=0mm]{#1}}
-
-% step box
-\newcommand\s{%
-	\addtocounter{step}{1}%
-	\vskip0.2\baselineskip
-	\marginnote{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=gold!20,
-	colframe=gold!20,
-      	fontupper=\footnotesize,
-	left=1mm, right=1mm, top=1mm, bottom=1mm, 
-	boxsep=0mm, 
-	arc=0mm]{Step~\thestep}}\noindent}
-
-% note box
-\newcommand\nb{%
-       \vskip0.5\baselineskip
-	\marginnote{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=purple!20,
-	colframe=purple!20,
-      	fontupper=\footnotesize,
-	left=1mm, right=1mm, top=1mm, bottom=1mm, 
-	boxsep=0mm, 
-	arc=0mm]{Notes}}\noindent}
-
-% section box:
-\xpatchcmd{\section}{\normalfont\Large\bfseries}{\sectionbox}{}{\PatchFailed}
-\newcommand*{\sectionbox}[1]{%	
-	\begin{tcolorbox}[
-	colback=purple!100,% background
-	colframe=purple!100,% frame colour
-	coltext=white, % text color
-      width=\linewidth,%
-      halign=left,
-      valign=center,
-      fontupper=\large\bfseries,
-      arc=1mm, %auto outer arc,
-    	boxrule=0mm,%
-    	boxsep=.15\baselineskip,%
-    	rounded corners,%
-    	left*=0pt,%
-    	right*=0pt,%
-    	grow to right by=0.5\baselineskip,%
-    	grow to left by=0.5\baselineskip%
-       ]{#1}
-	\end{tcolorbox} 
-} %
-
-% subsection box:
-\xpatchcmd{\subsection}{\normalfont\large\bfseries}{\subsectionbox}{}{\PatchFailed}
-\newcommand*{\subsectionbox}[1]{%
-	\begin{tcolorbox}[
-	colback=gold!70,% background
-       colframe=gold!70,% frame colour
-       coltext=black, % text color
-       width=\linewidth,%
-       halign=left,
-       valign=center,
-       fontupper=\large\bfseries,
-       arc=1mm, auto outer arc,
-    	boxrule=0mm,%
-    	boxsep=.15\baselineskip,%
-    	rounded corners,%
-   	left*=0pt,%
-    	right*=0pt,%
-    	grow to right by=0.5\baselineskip,%
-    	grow to left by=0.5\baselineskip%
-       ]{#1}
-	\end{tcolorbox} 
-} %
-
-% skyblue box
-\newcommand{\skybluebox}[1]{%
-\begin{tcolorbox}[
-	colback=skyblue!10, 
-	coltext=black, coltitle=black,
-	colframe=skyblue!70,
-	grow to right by=0.5\baselineskip,
-	grow to left by=0.5\baselineskip,
-    	rounded corners,%
-   	left*=0pt,%
-    	right*=0pt,%
-	fonttitle=\bfseries,
-	boxsep=0mm,
-	title=#1]}
-
-\newcommand{\goldbox}[1]{%
-\begin{tcolorbox}[
-	colback=gold!10, 
-	coltext=black, coltitle=black,
-	colframe=gold!70,
-    	rounded corners,%
-   	left*=0pt,%
-    	right*=0pt,%
-	grow to right by=0.5\baselineskip,
-	grow to left by=0.5\baselineskip,
-	fonttitle=\bfseries,
-	boxsep=0mm,
-	title=#1]}
-
-% graybox (gb)
-\newcommand{\gb}{%
-	\begin{tcolorbox}[%
-	colback=lightgrey!10,%
-    	colframe=lightgrey!50,%
-    	boxrule=0mm,%
-    	boxsep=.1\baselineskip,%
-    	arc=1mm,%
-    	rounded corners,%
-    	breakable,%
-    	left*=6pt,%
-    	right*=6pt,%
-    	boxsep=0mm,
-	grow to right by=0\baselineskip,%
-    	grow to left by=0.0\baselineskip%
-	]}
-
-\newcommand{\tcbe}{\end{tcolorbox}}
-
-%%%
 % Title, author, date
 \title{\LARGE \bf Look@NanoSIMS}
 \author{{\large\bf by Lubos Polerecky}\\[6mm]
@@ -208,16 +38,10 @@
 {\small Max-Planck Institute for Marine Microbiology, Bremen, Germany (2002--2013)}\\[3mm]}
 \date{User's manual, version 28-06-2025}
 
-
 \begin{document}
-
-%\iffalse
-\iftrue
 
 \maketitle
 \reversemarginpar 
-
-%%
 
 \section*{Summary}
 \textbf{Look@NanoSIMS}, or shortly \textbf{LANS}, is a program for processing and analysis of ion count image data produced by the NanoSIMS instrument. The original development of the program started back in 2008, but its active development continues until today based on input and requests from users (yes, it's more like a~long-term hobby). Although the program may be considered an `old school' in a number of aspects, it has matured well over the years. Once you get used to it, become aware of all of its features and figure out all the tricks, it allows you to analyze NanoSIMS data very thoroughly and efficiently. This document describes how to get started with the program and carry out such analyses from basic to advanced levels. 
@@ -227,8 +51,8 @@
 \goldbox{Citation:}
 Please use the following citation if you use Look@NanoSIMS:
 
-L.~Polerecky et al.~(2012). Look@NanoSIMS --- a tool for the analysis of nanoSIMS data in environmental microbiology. \textit{Environmental Microbiology} 14 (4): 1009--1023.\\
-DOI: 10.1111/j.1462-2920.2011.02681.x
+\textsf{Polerecky et al.~(2012). Look@NanoSIMS --- a tool for the analysis of nanoSIMS data in environmental microbiology. \textit{Environmental Microbiology} 14 (4): 1009--1023.\\
+DOI: 10.1111/j.1462-2920.2011.02681.x}
 \tcbe
 
 \vskip4mm
@@ -241,19 +65,43 @@ If you have questions or want to provide feedback, you can contact the author vi
 \vskip1mm\noindent You can also arrange a~video-conference meeting via Teams or Zoom if your questions are more difficult or you would like to collaborate on implementing a~new feature in Look@NanoSIMS.
 \tcbe
 
+\vskip4mm
+
+\greenbox{Notation:}
+Throughout this document, we will use text in coloured boxes when refering to a specific \lans{menu item} or \lans{action button}, \lanscb{checkbox} or \lanstf{text field} in the program's graphical user interface.
+\tcbe
+
 \newpage
 
 \tableofcontents
 
 \newpage
 
-%\input{LANS_install}
-%\input{LANS_fileorg}
-%\input{LANS_typical}
-%\input{LANS_lesscommon}
-%\input{LANS_appearance}
-%\input{LANS_singledataset}
-%\input{LANS_metafileproc}
-\input{LANS_lesscommon_full}
+%%% Specify sections that should be included
+
+%\input{core/LANS_install}
+%\input{core/LANS_fileorg}
+%\input{core/LANS_typical}
+%\input{extras/LANS_lesscommon}
+%\input{core/LANS_appearance}
+%\input{core/LANS_singledataset}
+%\input{core/LANS_metafileproc}
+
+\section{Less commonly used functions in LANS}
+\label{sec:level3}
+
+This section describes functions of Look@NanoSIMS that are useful under special circumstances. Many of these functions have been added based on stimulus from colleagues and collaborators, who wanted to look at their NanoSIMS data in a special way. Thus, these functions likely distinguish Look@NanoSIMS from other programs used for NanoSIMS data processing.
+
+%\input{extras/LANS_hue_modulation}
+\input{extras/LANS_ext_image}
+%\input{extras/LANS_depth_var}
+%\input{extras/LANS_load8plus}
+%\input{extras/LANS_export_png}
+%\input{extras/LANS_export_tif}
+
+% We skip this section. It's there, but it's very rarely used, even by me. Manual ROI 
+% classificiation is almost always fast enough.
+%\subsection{Semi-automatic ROI classification}
+%\setcounter{step}{0}
 
 \end{document}
