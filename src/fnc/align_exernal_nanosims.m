@@ -529,7 +529,7 @@ elseif hObject == handles.align_interactively
     im2 = handles.nanosimsimage;
     s2 = handles.nanosimsimage_xyscale;
     if size(im1,3)>1
-        im1 = rgb2gray(im1);
+        im1 = rgb2gray_lans(im1);
     end
     x1 = floor(get(handles.axes1,'xlim')); x1=x1(1):x1(2);
     y1 = floor(get(handles.axes1,'ylim')); y1=y1(1):y1(2);
@@ -565,7 +565,7 @@ elseif hObject == handles.show_alignment2
     im2 = handles.nanosimsimage;
     s2 = handles.nanosimsimage_xyscale;
     if size(im1,3)>1
-        im1 = rgb2gray(im1);
+        im1 = rgb2gray_lans(im1);
     end
     x1 = floor(get(handles.axes1,'xlim')); x1=x1(1):x1(2);
     y1 = floor(get(handles.axes1,'ylim')); y1=y1(1):y1(2);
@@ -828,23 +828,31 @@ if size(im,3)>3
     im = im(:,:,1:3);
 end
 axes(handles.axes1);
+
 if size(im,3)>1
+    % rgb image loaded, rescale it such that max=1
     mim = max(im(:));
     if mim~=0
         im = im/mim;
     end
     image(im);
+    % update the min/max fields
+    set(handles.min_ext,'String', num2str(min(im(:))))
+    set(handles.max_ext,'String', num2str(max(im(:))))
 else
     %global additional_settings;
     %sc=quantile(double(im(:)),additional_settings.autoscale_quantiles);
     sc = find_image_scale(double(im));
     min1 = str2num(get(handles.min_ext,'String'));
     max1 = str2num(get(handles.max_ext,'String'));
-    if isnumeric(min1), sc(1)=min1; end
-    if isnumeric(max1), sc(2)=max1; end
-    imagesc(im,sc);
+    %if isnumeric(min1), sc(1)=min1; end
+    %if isnumeric(max1), sc(2)=max1; end    
+    imagesc(im,sc);    
     global additional_settings;
     colormap(get_colormap(additional_settings.colormap));
+    % update the min/max fields
+    set(handles.min_ext,'String', num2str(sc(1)))
+    set(handles.max_ext,'String', num2str(sc(2)))
 end
 set(handles.checkbox1,'value',0);
 % fill and remember output
@@ -884,7 +892,15 @@ if newext == 1
         xyscale=a.xyscale;
     end
 else
-    im=imread(handles.nanosimsimagefile);
+    im=double(imread(handles.nanosimsimagefile));
+    % rgb image loaded, rescale it such that max=1
+    mim = max(im(:));
+    if mim~=0
+        im = im/mim;
+    end
+    % update the min/max fields
+    set(handles.min_ns,'String', num2str(min(im(:))))
+    set(handles.max_ns,'String', num2str(max(im(:))))
     vscale = find_image_scale(im,0,additional_settings.autoscale_quantiles, 0);
     xyscale = size(im,2);
 end
@@ -1207,33 +1223,37 @@ if isfield(handles,'extimage')
     x1 = get(ax,'xlim');
     y1 = get(ax,'ylim');    
     if ~isempty(im)
+        % redisplay the external image
         axes(ax); hold off
         sc = find_image_scale(im,0,additional_settings.autoscale_quantiles, log_flag,0);
         min1 = str2num(get(handles.min_ext,'String'));
         max1 = str2num(get(handles.max_ext,'String'));
         if isnumeric(min1), sc(1)=min1; end
         if isnumeric(max1), sc(2)=max1; end
-        if size(im,3)>1
-            if log_flag
-                im = log10(im);
-                sc = log10(sc);
-                im = (im-sc(1))/diff(sc);
-                im(im<0) = 0;
-                im(im>1) = 1;
-            end
-            image(im);
+        % log-transform, if needed
+        if log_flag
+            im2 = log10(im);
+            sc = log10(sc);
+            if isinf(sc(1)), sc(1)=sc(2)-3; end
         else
-            if log_flag
-                im = log10(im);
-                sc = log10(sc);
-                if isinf(sc(1)), sc(1)=sc(2)-3; end
-            end
+            im2 = im;
+        end
+        % display image, two ways depending on whether it's an rgb or
+        % a grayscale image
+        if size(im,3)>1
+            im2 = (im2-sc(1))/diff(sc);
+            im2(im2<0) = 0;
+            im2(im2>1) = 1;
+            image(im2);
+        else
             if contains(get(hObject,'Tag'),'min_') || contains(get(hObject,'Tag'),'max_')    
                 fprintf(1,'Ext image scale set to [%.2e, %.2e]\n', sc); 
             end
-            imagesc(im, sc);
+            imagesc(im2, sc);
             colormap(get_colormap(additional_settings.colormap));
         end
+
+        % add the points
         hold on;
         if isfield(handles,'extplist')
             plist = handles.extplist;
@@ -1266,25 +1286,23 @@ if isfield(handles,'nanosimsimage')
         max1 = str2num(get(handles.max_ns,'String'));
         if isnumeric(min1), sc(1)=min1; end
         if isnumeric(max1), sc(2)=max1; end
-        if size(im,3)>1
-            if log_flag
-                im = log10(im);
-                sc = log10(sc);
-                im = (im-sc(1))/diff(sc);
-                im(im<0) = 0;
-                im(im>1) = 1;
-            end
-            image(im);
+        if log_flag
+            im2 = log10(im);
+            sc = log10(sc);
+            if isinf(sc(1)), sc(1)=sc(2)-3; end
         else
-            if log_flag
-                im = log10(im);
-                sc = log10(sc);
-                if isinf(sc(1)), sc(1)=sc(2)-3; end
-            end
+            im2 = im;
+        end
+        if size(im,3)>1
+            im2 = (im2-sc(1))/diff(sc);
+            im2(im2<0) = 0;
+            im2(im2>1) = 1;
+            image(im2);
+        else
             if contains(get(hObject,'Tag'),'min_') || contains(get(hObject,'Tag'),'max_')
                 fprintf(1,'Nanosims image scale set to [%.2e, %.2e]\n', sc); 
             end
-            imagesc(im, sc);
+            imagesc(im2, sc);
             colormap(get_colormap(additional_settings.colormap));
         end
         hold on;

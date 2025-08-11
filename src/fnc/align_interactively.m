@@ -68,7 +68,7 @@ rgb = zeros(size(im2,1),size(im2,2),3);
 
 im1s = im1;
 if size(im1s,3)>1
-    im1s = rgb2gray(im1s);
+    im1s = rgb2gray_lans(im1s);
 end
 im2s = im2;
 

@@ -296,6 +296,8 @@ end
 % display masses in a separate window that will be then exported as PNG
 if handles.flag
     nim=length(im);
+    % limit nim to a max of 8 (this will effect datasets with 8+ masses)
+    nim = min([nim 8]);
     if nim>4
         noc=ceil(nim/2);
         jmax=2;

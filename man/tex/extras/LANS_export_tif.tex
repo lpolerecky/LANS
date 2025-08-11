@@ -1,0 +1,18 @@
+\subsection{Exporting graphics as TIF}
+\setcounter{step}{0}
+
+\goldbox{}
+Sometimes, you may want to export the nanoSIMS image data as TIF images. Such images can be used, for example, for quantitative image analysis by other, third-party software.  Use the following steps to export the images of ion counts and ion count ratios as TIF files. 
+\tcbe
+
+\s In the main LANS window, select \lans{Preferences} $\ra$ \lans{Additional output options}.
+
+\s In the new window that opens, select the \lanscb{TIFF (if BW)} checkbox in the the \ttt{Export graphics} box and click \lans{Apply}.
+
+\s Back in the main LANS window, select the \lanscb{B/W} checkbox next to the \lanstf{scale} of the mass or ratio image that you want to export as TIF, then select \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios} to export the mass or ratio images.
+
+\nb\bul The image data will be exported as a~16-bit grayscale TIF image, stored in the \ttt{tif} sub-folder. 
+
+\nb\bul The dynamic range of the grayscale values in the exported TIF image will correspond to the image \lanstf{scale} set in the main LANS window. For example, if a~\ttt{12C} ion count image is displayed in the scale \ttt{[min max] = [20 25000]}, the grayscale values in the image pixels varying between fully black (intensity 0) and fully white (intensity $2^{16}-1=65535$) will correspond linearly to the dynamic range of the ion counts between 20 and 25000. Similar linear relationship between the image scale and the grayscale values of the exported TIF holds for the ion count ratio images.
+
+\s Uncheck the \lanscb{TIFF (if BW)} checkbox if you no longer want to export the images as TIF. This will save some disk space.

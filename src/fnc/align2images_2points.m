@@ -27,7 +27,7 @@ else
 end
 
 if size(im1,3)>1
-    im1=rgb2gray(im1);
+    im1=rgb2gray_lans(im1);
 end
 
 if mag>1 % external image maps a smaller area than nanosims

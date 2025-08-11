@@ -2180,7 +2180,7 @@ ext_im=define_external_image(p);
 % channels as ext1, ext2 and ext3 "masses", but for now we keep it as a
 % gray-scale image only
 if size(ext_im,3)>1
-    ext_im = rgb2gray(ext_im);
+    ext_im = rgb2gray_lans(ext_im);
     fprintf(1,'WARNING: External image was converted from RGB to gray scale.\n');
 end
 if ~isempty(ext_im)

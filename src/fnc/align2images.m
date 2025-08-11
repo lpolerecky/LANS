@@ -162,10 +162,15 @@ end
 im2r = (im2-sc2(1))/diff(sc2);
 im2r(im2r<0)=0;
 im2r(im2r>1)=1;
-% convert it to RGB based on the current colormap
-cm = get_colormap(additional_settings.colormap);
-im2r=im2r*size(cm,1);
-im2rgb = ind2rgb(uint16(im2r),cm);
+if size(im2r,3)==1
+    % convert it to RGB based on the current colormap
+    cm = get_colormap(additional_settings.colormap);
+    im2r=im2r*size(cm,1);
+    im2rgb = ind2rgb(uint16(im2r),cm);
+else
+    % image is already rgb
+    im2rgb = im2r;
+end
 
 % now the external image, converted to grayscale
 if log_flag1
@@ -176,7 +181,7 @@ im1r = (im1_out-sc1(1))/diff(sc1);
 im1r(im1r<0)=0;
 im1r(im1r>1)=1;
 if size(im1r,3)>1
-    im1gray = rgb2gray(im1r);
+    im1gray = rgb2gray_lans(im1r);
 else
     im1gray = im1r;
 end
