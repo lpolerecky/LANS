@@ -57,6 +57,15 @@ if exist(fname,'file')
         if(b1a && b1b)
             eval(b2);
         end
+        % ensure that checkboxes "Export ASCII data" and "Export PDF
+        % graphics" are *always* checked by default, to avoid panic that
+        % may occur if they are unchecked ("nothing seems to work"). 
+        if nargin==2 && (ii==58 || ii==59)
+            b2=['set(',es1,',''value'',1);'];
+            if(b1a && b1b)
+                eval(b2);
+            end
+        end
     end
     
     if(isfield(h,'figureposition') && fpf)
@@ -231,7 +240,7 @@ if exist(fname,'file')
                     correction_settings.correction_apply = zeros(1,6);
                 end
                 if ~isfield(h.correction_settings,'correction_classes')
-                    correction_settings.correction_classes = ['xxxxxx'];
+                    correction_settings.correction_classes = 'xxxxxx';
                 end
                 if ~isfield(h.correction_settings,'correction_values')
                     correction_settings.correction_values = [0.0106 0.0037 1 1 1 1];
@@ -240,7 +249,7 @@ if exist(fname,'file')
                     correction_settings.calculate_rate = zeros(1,6);
                 end
                 if ~isfield(h.correction_settings,'medium_value')
-                    correction_settings.medium_value = {[1 1], [1 1], [1 1], [1 1], [1 1], [1 1]};;
+                    correction_settings.medium_value = {[1 1], [1 1], [1 1], [1 1], [1 1], [1 1]};
                 end
                 if ~isfield(h.correction_settings,'treatments')
                     correction_settings.treatments = [1 2];
@@ -317,7 +326,7 @@ q.shift_columns_rows = [0 0 0 0];
 
 function q = get_default_correction_settings
 q.correction_apply = zeros(1,6);
-q.correction_classes = ['xxxxxx'];
+q.correction_classes = 'xxxxxx';
 q.correction_values = [0.0106 0.0037 1 1 1 1];
 q.calculate_rate = zeros(1,6);
 q.medium_value = {[1 1], [1 1], [1 1], [1 1], [1 1], [1 1]};
