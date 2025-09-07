@@ -5,25 +5,31 @@
 During a~typical NanoSIMS measurement, at most 8~different ionic species are recorded: 7~different isotopes, and secondary electrons (normally denoted as \ttt{Esi}). This explains the visual design of LANS, which contains 8~fields for \lanstf{detected masses}. However, NanoSIMS instrument can operate in a~so-called peak-switching mode, which allows quasi-simultaneous detection of up to 15~different ionic species ($2\times 7$ different isotopes and \ttt{Esi}). This section explains how to use LANS to analyze datasets containing counts of more than 8~ionic species.
 \tcbe
 
-This feature was added to LANS based on a~request from Dr.~Gregory Stryhanyuk (UFZ Leipzig). In the example below, we use one of the datasets acquired in his lab using this approach: \ttt{2022-01-25-OPG\_1.im.zip}.
+This feature was added to LANS based on a~request from Dr.~Hryhoryi Stryhanyuk (UFZ Leipzig). In the example below, we use one of the datasets acquired in his lab to illustrate the approach: \ttt{2022-01-25-OPG\_1.im.zip}.
 
-\s Load the raw dataset.
+\s {Load the raw dataset.}
 
-\nb\bul This can be done in the usual way, as for any other dataset. Based on the structure of the data within the binary file, LANS will automatically recognize that it was acquired in a~peak-switching mode and rearrange the data accordingly:
+\nb{This is done in the usual way, as for any other dataset. Based on the structure of the data within the binary file, LANS will automatically recognize that it was acquired in a~peak-switching mode and rearrange the data accordingly.} 
+
+\nnb{%
+An example of the output generated during loading is shown here:
 \begin{center}
 \includegraphics[scale=0.34]{figs8/LANS-8plus-load}
 \end{center}
+}
 
-\s After loading, it is a~good idea to first find out which ions were actually detected. This is best done by selecting \lans{Input} $\ra$ \lans{Autoscale plane images}.
+\s {After loading, it is a~good idea to first find out which ions were actually detected. This is best done by selecting \lans{Input} $\ra$ \lans{Autoscale plane images}.}
 
-\nb\bul In this example, 12 different ions were detected: ${}^{16}\mathrm{O}{}^1\mathrm{H}$, ${}^{16}\mathrm{O}{}^2\mathrm{H}$, ${}^{12}\mathrm{C}_2$, ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$, ${}^{12}\mathrm{C}{}^{14}\mathrm{N}$, secondary electrons (\ttt{Esi}), ${}^{12}\mathrm{C}{}^{15}\mathrm{N}$, ${}^{32}\mathrm{S}$, ${}^{12}\mathrm{C}_2{}^{1}\mathrm{H}$, ${}^{12}\mathrm{C}_2{}^{2}\mathrm{H}$, ${}^{13}\mathrm{C}{}^{14}\mathrm{N}$, and ${}^{31}\mathrm{P}{}^{1}\mathrm{H}$, as follows from the output in the Matlab console:
+\nb{In this example, LANS indicated that data from 16 masses were detected (see output above). However, some of the masses were recorded repeatedly because not all detectors used peak-switching during ion detection. In fact, the number of \emph{different} ionic species detected in this example was~12: ${}^{16}\mathrm{O}{}^1\mathrm{H}$, ${}^{16}\mathrm{O}{}^2\mathrm{H}$, ${}^{12}\mathrm{C}_2$, ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$, ${}^{12}\mathrm{C}{}^{14}\mathrm{N}$, secondary electrons (\ttt{Esi}), ${}^{12}\mathrm{C}{}^{15}\mathrm{N}$, ${}^{32}\mathrm{S}$, ${}^{12}\mathrm{C}_2{}^{1}\mathrm{H}$, ${}^{12}\mathrm{C}_2{}^{2}\mathrm{H}$, ${}^{13}\mathrm{C}{}^{14}\mathrm{N}$, and ${}^{31}\mathrm{P}{}^{1}\mathrm{H}$, as follows from the output in the Matlab console:
 \begin{center}
 \includegraphics[scale=0.34]{figs8/LANS-8plus-autoscale}
-\end{center}
+\end{center}}
 
-\bul Due to the limit of a maximum of 8 fields in the LANS user iterface, all of these ionic species cannot included in the list of detected \lanstf{masses}. Nevertheless, they \emph{are} registered internally within the list of detected masses and can therefore be used in any of the \lanstf{expressions} (see below).
+\nnb{Due to the limited number of fields dedicated to detected \lanstf{masses} in the LANS user interface (maximum~8), all of these ionic species cannot be displayed in the list. Nevertheless, they \emph{are} registered internally within the list of detected masses and can therefore be used in any of the \lanstf{expressions} (see below).}
 
-\s Select \lans{Input} $\ra$ \lans{Display images for all masses} to view the raw ion counts, plane by plane.
+\s {Select \lans{Input} $\ra$ \lans{Display images for all masses} to view the raw ion counts, plane by plane.}
+
+\nb{Note that some masses only show non-zero counts in \emph{every second plane}. This is because the specific detectors used peak switching to alternately detect two ionic species at the same nominal mass. In this example, it concerns the following pairs (Fig.~\ref{fig:LANS-8plus-frames}): ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$ \& ${}^{12}\mathrm{C}_2{}^{1}\mathrm{H}$ at nominal mass~25, ${}^{12}\mathrm{C}{}^{14}\mathrm{N}$ \& ${}^{12}\mathrm{C}_2{}^{2}\mathrm{H}$ at nominal mass~26, ${}^{12}\mathrm{C}{}^{15}\mathrm{N}$ \& ${}^{13}\mathrm{C}{}^{14}\mathrm{N}$ at nominal mass~27, and ${}^{32}\mathrm{S}$ \& ${}^{31}\mathrm{P}{}^{1}\mathrm{H}$ at nominal mass~32.}
 
 \begin{figure}[!ht]
 \centering
@@ -33,8 +39,24 @@ A: \includegraphics[scale=0.6, valign=t]{figs8/m-001}
 B: \includegraphics[scale=0.6, valign=t]{figs8/m-002}
 \end{tabular}
 \caption{\label{fig:LANS-8plus-frames}%
-Add text.}
+Example of raw data acquired via peak-switching mode. Shown are ion counts in the first two planes, after automatic rearrangement by LANS. }
 \end{figure}
+
+\s {While viewing the detected ions in the previous step, identify suitable mass that can be used as a~\lanstf{Base mass for alignment}.}
+
+\nb{Clearly, this mass should have non-zero ion counts in \emph{every} plane to yield valid drift correction information.}
+
+\nnb{In this example, it cannot be \ttt{12C14N}. Instead, \ttt{Esi} is a good candidate, as it is detected in every plane and has sufficiently high counts and contrast in individual planes.}
+
+\s {Select \lans{Input} $\ra$ \lans{Accumulate plane images}.}
+
+\nb{Check \lanscb{Align images when accumulating} if you want to perform drift correction during accumulation of planes.}
+
+\s {Proceed as described in Section~\ref{sec:} to analyze ion counts, ion count ratios, or conduct other types of analysis (examples of output shown in Fig.~\ref{fig:LANS-8plus-ratios}). }
+
+\nnb{If you want to display (and export) ion count images for masses that are \emph{not} displayed in the list of 8~detected masses, type the name of the mass in the \lanstf{expression} field for the ratio, adjust the scale and select \lans{Output} $\ra$ \lans{Display ratios}. For example, you will need to proceed in this way to display images of ${}^{12}\mathrm{C}_2{}^{2}\mathrm{H}$ (\ttt{12C22H}), ${}^{32}\mathrm{S}$ (\ttt{32S}), or ${}^{31}\mathrm{P}{}^{1}\mathrm{H}$ (\ttt{31P1H}).}
+
+\nnb{You need to pay extra attention when defining \lanstf{expressions} for isotope ratios. For example, if the molecular ions of ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$ and ${}^{12}\mathrm{C}_2$ were detected in every plane, the correct expression for obtaining the atomic ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ isotope ratio would be \ttt{0.5*12C13C/12C2}. However, because in this example the molecular ions of ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$ were only detected in every second plane, while the molecular ions of ${}^{12}\mathrm{C}_2$ were detected in every plane, the correct expression is \ttt{12C13C/12C2}.}
 
 \def\scf{0.4}
 \begin{figure}[!ht]
@@ -55,5 +77,7 @@ D & E & F\\
 \includegraphics[scale=\scf, valign=t]{figs8/12C15N-12C14N-vs-12C22H-12C21H-vs-12C13C-12C2-rgb}
 \end{tabular}
 \caption{\label{fig:LANS-8plus-ratios}%
-Add text.}
+Examples of isotope ratio images derived from data collected via peak-switching mode. Panels (A--B) show ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ isotope ratios obtained from two different ion pairs. Panels (D--E) show ${}^{2}\mathrm{H}/{}^{1}\mathrm{H}$ isotope ratios obtained from two different ion pairs. Panel F shows an overlay between three isotope ratios: ${}^{15}\mathrm{N}/{}^{14}\mathrm{N}$ (red), ${}^{2}\mathrm{H}/{}^{1}\mathrm{H}$ (green), and ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ (blue).}
 \end{figure}
+
+\s {When finishing the analysis, don't forget to save the preferences by selecting \lans{Preferences} $\ra$ \lans{Store preferences}.}

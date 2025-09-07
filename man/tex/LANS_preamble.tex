@@ -35,7 +35,7 @@
 	coltext=black,
 	fontupper=\sf,
 	left=0mm, right=0mm, top=0mm, bottom=0mm, 
-	boxsep=0.25mm, 
+	boxsep=0mm, 
 	arc=0mm]{#1}}
 
 % lans checkbox box
@@ -48,7 +48,7 @@
 	coltext=black,
 	fontupper=\sf,
 	left=0mm, right=0mm, top=0mm, bottom=0mm, 
-	boxsep=0.25mm, 
+	boxsep=0mm, 
 	arc=0mm]{#1}}
 
 % lans textfield box
@@ -59,33 +59,96 @@
 	coltext=black,
 	fontupper=\sf,
 	left=0mm, right=0mm, top=0mm, bottom=0mm, 
-	boxsep=0.25mm, 
+	boxsep=0mm, 
 	arc=0mm]{#1}}
 
 % step box
+\tcbset{sbox/.style={
+	enhanced,
+       fonttitle=\footnotesize,
+       colframe=gold!70,
+       colbacktitle=gold!20,
+       coltitle=black,
+	colback=white,
+       left skip={0\linewidth},
+       boxed title style={
+		boxrule=0pt,
+		boxsep=0pt,
+		top=0.35\baselineskip,
+		bottom=0.3\baselineskip
+        }
+    }
+}
+
 \newcommand\stepbox[1]{%
-	\vskip0.2\baselineskip
-	\marginnote{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=gold!20,
-	colframe=gold!20,
-      	fontupper=\footnotesize,
-	left=1mm, right=1mm, top=1mm, bottom=1mm, 
-	boxsep=0mm, 
-	arc=0mm]{#1}}\noindent}
-\newcommand\s{\addtocounter{step}{1}	\stepbox{Step~\thestep}}
+\begin{tcolorbox}[sbox,
+	title={\mbox{}\hfill Step~\thestep},
+	attach boxed title to top left={xshift=-0.1\linewidth,yshift=-1.15\baselineskip},
+       minipage boxed title=.06\linewidth,
+	boxrule=0pt,
+	leftrule=0.5mm, %rightrule=2pt,
+	left*=0pt, right*=0pt, %top=1mm, bottom=1mm, 
+	boxsep=0\baselineskip,
+	arc=0mm, %rounded corners,	
+	grow to right by=0.5\baselineskip,%
+    	grow to left by=0.5\baselineskip]
+       #1
+\end{tcolorbox}}
+
+% step command
+\newcommand\s[1]{\addtocounter{step}{1}\stepbox{#1}}
 
 % note box
-\newcommand\nb{%
-       \vskip0.5\baselineskip
-	\marginnote{\tcbox[nobeforeafter,
-	tcbox raise base,
-	colback=purple!20,
-	colframe=purple!20,
-      	fontupper=\footnotesize,
-	left=1mm, right=1mm, top=1mm, bottom=1mm, 
-	boxsep=0mm, 
-	arc=0mm]{Notes}}\noindent}
+\tcbset{nbbox/.style={
+	enhanced,
+       fonttitle=\footnotesize,
+       colframe=purple!70,
+       colbacktitle=purple!20,
+       coltitle=black,
+	colback=white,
+       left skip={0\linewidth},
+       boxed title style={
+		boxrule=0pt,
+		boxsep=0pt,
+		top=0.35\baselineskip,
+		bottom=0.3\baselineskip
+        }
+    }
+}
+
+\newcommand\notebox[1]{%
+\begin{tcolorbox}[nbbox,
+	title={Notes},
+	attach boxed title to top left={xshift=-0.09\linewidth,yshift=-1.15\baselineskip},
+       minipage boxed title=.05\linewidth,
+	boxrule=0pt,
+	leftrule=0.5mm,
+	left*=0pt, right*=0pt, %top=1mm, bottom=1mm, 
+	boxsep=0\baselineskip,
+	arc=0mm, %rounded corners,	
+	grow to right by=0.5\baselineskip,%
+    	grow to left by=0.5\baselineskip]
+       #1
+\end{tcolorbox}}
+
+\newcommand\nonotebox[1]{%
+\begin{tcolorbox}[nbbox,
+	title={},
+	attach boxed title to top left={xshift=-0.11\linewidth,yshift=-1.1\baselineskip},
+       minipage boxed title=.07\linewidth,
+	boxrule=0pt,
+	leftrule=0.5mm,
+	left*=0pt, right*=0pt, %top=1mm, bottom=1mm, 
+	boxsep=0\baselineskip,
+	arc=0mm, %rounded corners,	
+	grow to right by=0.5\baselineskip,%
+    	grow to left by=0.5\baselineskip]
+       #1
+\end{tcolorbox}}
+
+% note command
+\newcommand\nb[1]{\notebox{#1}}
+\newcommand\nnb[1]{\nonotebox{#1}}
 
 % section box:
 \xpatchcmd{\section}{\normalfont\Large\bfseries}{\sectionbox}{}{\PatchFailed}
