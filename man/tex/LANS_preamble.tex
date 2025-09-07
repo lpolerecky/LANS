@@ -80,11 +80,11 @@
     }
 }
 
-\newcommand\stepbox[1]{%
+\newcommand\stepbox[2]{%
 \begin{tcolorbox}[sbox,
 	title={\mbox{}\hfill Step~\thestep},
-	attach boxed title to top left={xshift=-0.1\linewidth,yshift=-1.15\baselineskip},
-       minipage boxed title=.06\linewidth,
+	attach boxed title to top left={xshift=-0.11\linewidth,yshift=#1\baselineskip},
+       minipage boxed title=.07\linewidth,
 	boxrule=0pt,
 	leftrule=0.5mm, %rightrule=2pt,
 	left*=0pt, right*=0pt, %top=1mm, bottom=1mm, 
@@ -92,11 +92,12 @@
 	arc=0mm, %rounded corners,	
 	grow to right by=0.5\baselineskip,%
     	grow to left by=0.5\baselineskip]
-       #1
+       #2
 \end{tcolorbox}}
 
 % step command
-\newcommand\s[1]{\addtocounter{step}{1}\stepbox{#1}}
+\newcommand\s[1]{\addtocounter{step}{1}\stepbox{-1.3}{#1}}
+\newcommand\sbx[1]{\addtocounter{step}{1}\stepbox{-1.15}{#1}}
 
 % note box
 \tcbset{nbbox/.style={
@@ -109,32 +110,32 @@
        left skip={0\linewidth},
        boxed title style={
 		boxrule=0pt,
-		boxsep=0pt,
+		boxsep=0pt,		
 		top=0.35\baselineskip,
-		bottom=0.3\baselineskip
+		bottom=0.35\baselineskip
         }
     }
 }
 
-\newcommand\notebox[1]{%
+\newcommand\notebox[2]{%
 \begin{tcolorbox}[nbbox,
-	title={Notes},
-	attach boxed title to top left={xshift=-0.09\linewidth,yshift=-1.15\baselineskip},
-       minipage boxed title=.05\linewidth,
+	title={Note},
+	attach boxed title to top left={xshift=-0.082\linewidth,yshift=#1\baselineskip},
+       minipage boxed title=.042\linewidth,
 	boxrule=0pt,
 	leftrule=0.5mm, 
-	left*=0pt, right*=0pt, %top=1mm, bottom=1mm, 
+	left*=0pt, right*=0pt, %bottom=0mm, 
 	boxsep=0\baselineskip,
 	arc=0mm, %rounded corners,	
 	grow to right by=0.5\baselineskip,%
     	grow to left by=0.5\baselineskip]
-       #1
+       #2
 \end{tcolorbox}}
 
-\newcommand\nonotebox[1]{%
+\newcommand\nonotebox[2]{%
 \begin{tcolorbox}[nbbox,
 	title={},
-	attach boxed title to top left={xshift=-0.11\linewidth,yshift=-1.1\baselineskip},
+	attach boxed title to top left={xshift=-0.11\linewidth,yshift=#1\baselineskip},
        minipage boxed title=.07\linewidth,
 	boxrule=0pt,
 	leftrule=0.5mm,
@@ -143,12 +144,14 @@
 	arc=0mm, %rounded corners,	
 	grow to right by=0.5\baselineskip,%
     	grow to left by=0.5\baselineskip]
-       #1
+       #2
 \end{tcolorbox}}
 
 % note command
-\newcommand\nb[1]{\notebox{#1}}
-\newcommand\nnb[1]{\nonotebox{#1}}
+\newcommand\nb[1]{\notebox{-1.25}{#1}}
+\newcommand\nbx[1]{\notebox{-1.15}{#1}}
+\newcommand\nnb[1]{\nonotebox{-1.3}{#1}}
+%\newcommand\nnbx[1]{\nonotebox{-1.15}{#1}}
 
 % section box:
 \xpatchcmd{\section}{\normalfont\Large\bfseries}{\sectionbox}{}{\PatchFailed}
