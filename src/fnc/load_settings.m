@@ -60,7 +60,7 @@ if exist(fname,'file')
         % ensure that checkboxes "Export ASCII data" and "Export PDF
         % graphics" are *always* checked by default, to avoid panic that
         % may occur if they are unchecked ("nothing seems to work"). 
-        if nargin==2 && (ii==58 || ii==59)
+        if (ii==58 || ii==59)
             b2=['set(',es1,',''value'',1);'];
             if(b1a && b1b)
                 eval(b2);
