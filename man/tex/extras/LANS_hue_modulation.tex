@@ -2,7 +2,17 @@
 \setcounter{step}{0}
 
 \goldbox{}
+\begin{minipage}[c]{0.6\textwidth}
 Due to the statistical properties of the ion count data, ratio images may be noisy in areas where the ion counts of the denominator are low, possibly leading to distraction. Hue modulation intensity is designed to visually supress the noise and thus highlight the ratios in areas of interest. 
+\end{minipage}\hfill
+\begin{minipage}[c]{0.35\textwidth}
+%\begin{center}
+\includegraphics[width=2.3cm, valign=c]{figs6/12C15N-12C14N}
+$\rightarrow$
+\includegraphics[width=2.3cm, valign=c]{figs6/12C15N-12C14Nc}
+%\end{center}
+\end{minipage}
+
 \tcbe
 
 For example, if \ttt{12C14N} and \ttt{12C15N} ions are detected from cells deposited on a~polycarbonate filter, the ion counts will be high in areas corresponding to cells but very low in areas corresponding to the filter (Fig.~\ref{fig:hue}A--B). As a~result, the ratio image \ttt{12C15N/12C14N} will be noisy in areas on the filter, distracting the perception of the variation in the \ttt{15N/14N} ratio within cells (Fig.~\ref{fig:hue}C). 

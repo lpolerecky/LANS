@@ -3,6 +3,11 @@
 
 \goldbox{}
 NanoSIMS measurements are compatible with correlative imaging. That is, it is possible to first measure a~sample with another imaging technique, such as TEM (transmission electron microscopy), SEM (scanning electron microscopy), or FM (fluorescence microscopy), and then image the very same area on the sample with NanoSIMS. To aid this type of correlative imaging, LANS implements functions that allow you to align an external image with the NanoSIMS image and then import the aligned external image into LANS for the purpose of defining ROIs, creating overlays, or conducting other quantitative analyses. This section explains how to do these steps in LANS.
+\begin{center}
+\includegraphics[height=5cm, valign=c]{figs7/LANS-ext-align-points}
+$\rightarrow$
+\includegraphics[height=5cm, valign=c]{figs7/LANS-ext-result1}
+\end{center}
 \tcbe
 
 As an example, we will use two input files: \ttt{Ecoli-Azo-Gam42a.im.zip} contains the NanoSIMS data (secondary ions of \ttt{12C}, \ttt{13C}, \ttt{19F}, \ttt{12C14N}, \ttt{32S} and \ttt{Esi}, Fig.~\ref{fig:LANS-ext-raw}A), while \ttt{Ecoli-Azo-Gam42a-FISH.tif} contains the FM data (green channel is the fluorescence intensity from a~microbe-specific FISH probe, blue channel is the fluorescence intensity of the DAPI stain attached to DNA of all microbes, Fig.~\ref{fig:LANS-ext-raw}B). These data are available from the same location as the LANS program (folder \ttt{data/Ecoli-Azo}).
@@ -203,8 +208,12 @@ Examples of results combining ROI-specific values derived from the external and 
 \setcounter{step}{0}
 
 \goldbox{}
-In addition to rotation, stretching or other types of image distortion, it can happen that the external and NanoSIMS images have a~very different pixel resolution. For example, in the example below, the TEM image has roughly 10-fold higher resolution than the NanoSIMS image. If you want to use such a~high-resolution TEM image as a~template for defining ROIs, which can then be used to quantify ROI-specific NanoSIMS data such as ion counts or ratios, it is necessary to rescale the NanoSIMS images to match the resolution of the external image. This can be done by resampling the NanoSIMS images, as described in the following steps.
+In addition to rotation, stretching or other types of image distortion, it can happen that the external and NanoSIMS images have very different pixel resolutions. For example, an image of a~specific area on a~sample acquired by TEM can have roughly $3000\times 4000$ pixels, whereas the same area imaged by NanoSIMS can have only $256\times 256$ or $512\times 512$ pixels, which is roughly a~10-fold difference. If you want to use such a~high-resolution TEM image as a~template for defining ROIs, which can then be used to evaluate quantities derived from NanoSIMS data such as ROI-specific ion counts or isotope ratios, it is necessary to \bb{rescale} the NanoSIMS images to match the resolution of the external image. In LANS, this is done by \bb{resampling} the NanoSIMS images.
 \tcbe
 
-\nbx{Work in progress.}
-
+\noindent
+Resampling of nanoSIMS images in LANS was implemented in collaboration with St\'ephane Escrig, Anders Meibom and Bernard Schneider from EPFL Lausanne, Switzerland. The workflow involved is described in the supplement of the related open-access publication:
+\begin{quote}
+\textsf{Spataro et al.~(2023). Stable isotope labeling and ultra-high-resolution NanoSIMS imaging reveal alpha-synuclein-induced changes in neuronal metabolism in vivo. \emph{Acta Neuro\-pathol Commun}~\bb{11}:157. \url{https://doi.org/10.1186/s40478-023-01608-8}}
+\end{quote}
+The supplement is available from the publiher's website, and its copy can also be downloaded from a~folder containing this LANS manual.
