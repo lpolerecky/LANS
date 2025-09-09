@@ -67,8 +67,7 @@ Example of raw data acquired via peak-switching mode. Panels (A--B) show ion cou
 
 \nnb{Additionally, you need to pay extra attention when defining \lanstf{expressions} for isotope ratios. For example, if the molecular ions of ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$ and ${}^{12}\mathrm{C}_2$ were detected in every plane, the correct expression for obtaining the atomic ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ isotope ratio would be \ttt{0.5*12C13C/12C2}. However, because in this example the molecular ions of ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$ were only detected in every second plane, while the molecular ions of ${}^{12}\mathrm{C}_2$ were detected in every plane, the correct expression for the ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ isotope ratio is \ttt{12C13C/12C2}.}
 
-
-\def\scf{0.4}
+\def\scf{0.36}
 \begin{figure}[!ht]
 \centering
 \begin{tabular}{ccc}
@@ -90,11 +89,12 @@ D & E & F\\
 Examples of isotope ratio images derived from data collected via peak-switching mode, illustrating the power of this measurement approach for multi-isotope imaging mass spectrometry. Panels (A--B) show the ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ isotope ratio obtained from two different ion pairs: ${}^{12}\mathrm{C}{}^{13}\mathrm{C}$ \&\ ${}^{12}\mathrm{C}_2$ and ${}^{13}\mathrm{C}{}^{14}\mathrm{N}$ \&\ ${}^{12}\mathrm{C}{}^{14}\mathrm{N}$. Panel C shows the ${}^{15}\mathrm{N}/{}^{14}\mathrm{N}$ isotope ratio obtained from the ion pair ${}^{12}\mathrm{C}{}^{15}\mathrm{N}$ \&\ ${}^{12}\mathrm{C}{}^{14}\mathrm{N}$. Panels (D--E) show the ${}^{2}\mathrm{H}/{}^{1}\mathrm{H}$ isotope ratio obtained from two different ion pairs: ${}^{16}\mathrm{O}{}^{2}\mathrm{H}$ \&\ ${}^{16}\mathrm{O}{}^{1}\mathrm{H}$ and ${}^{12}\mathrm{C}_2{}^{2}\mathrm{H}$ \&\ ${}^{12}\mathrm{C}_2{}^{1}\mathrm{H}$. Panel F shows an RGB overlay between the three isotope ratios: ${}^{15}\mathrm{N}/{}^{14}\mathrm{N}$ (red), ${}^{2}\mathrm{H}/{}^{1}\mathrm{H}$ (green), and ${}^{13}\mathrm{C}/{}^{12}\mathrm{C}$ (blue).}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!hb]
 \centering
-\includegraphics[scale=0.45, valign=t]{figs8/LANS-8plus-masses-ratios}
+\includegraphics[scale=0.42, valign=t]{figs8/LANS-8plus-masses-ratios}
 \caption{\label{fig:LANS-8plus-extra-masses}%
 Processing of data acquired using peak-switching mode. Text fields on the left only contain the first 8~masses present in the dataset (marked by green). If you want to display the other masses in the dataset, you need to type their name in one of the \lanstf{expression} text fields on the right (marked by red), adjust the scale, and then select \lans{Output} $\ra$ \lans{Display ratios}. Similarly, you can use the names in \lanstf{expressions} to calculate ion count ratios (marked by blue).}
 \end{figure}
 
 \s {When finishing the analysis, don't forget to save the preferences by selecting \lans{Preferences} $\ra$ \lans{Store preferences}.}
+

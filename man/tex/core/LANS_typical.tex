@@ -1,6 +1,8 @@
 \section{A typical data processing session with LANS --- an overview}
 
+\purplebox{}
 This section provides a \emph{quick summary} of steps taken during a typical data processing session with LANS. Refer to Sections~\ref{sec:level1} and \ref{sec:level2} for more details, depending on the level of analysis. 
+\tcbe
 
 %%
 
@@ -12,25 +14,25 @@ This section provides a \emph{quick summary} of steps taken during a typical dat
 The following steps will bring you from a raw dataset to basic output such as images or ROI-specific values of ion counts and ion count ratios. More details are provided in Section~\ref{sec:level1}.
 \tcbe
 
-\s Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.
+\s{Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.}
 
-\s Select \lans{Input} $\ra$ \lans{Load RAW dataset} to load raw data from disk. The raw data is stored in an \ttt{im.zip} or \ttt{im} file depending on whether it has been compressed or not.
+\s{Select \lans{Input} $\ra$ \lans{Load RAW dataset} to load raw data from disk. The raw data is stored in an \ttt{im.zip} or \ttt{im} file depending on whether it has been compressed or not.}
 
-\s Select \lans{Input} $\ra$ \lans{Autoscale plane images} to automatically set the scale for all masses. 
+\s{Select \lans{Input} $\ra$ \lans{Autoscale plane images} to automatically set the scale for all masses. }
 
-\s Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view the raw data as images, one plane at a time, displayed with a scale specified in the previous step. 
+\s{Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view the raw data as images, one plane at a time, displayed with a scale specified in the previous step. }
 
-\s Define \lanstf{base mass for alignment} and then select \lans{Input} $\ra$ \lans{Display alignment mass} to check the data plane by plane, \lanscb{deselect planes} with artifacts or corrupt data, and \lans{define a region} for performing a drift-correction. 
+\s{Define \lanstf{base mass for alignment} and then select \lans{Input} $\ra$ \lans{Display alignment mass} to check the data plane by plane, \lanscb{deselect planes} with artifacts or corrupt data, and \lans{define a region} for performing a drift-correction. }
 
-\s Select \lans{Input} $\ra$ \lans{Accumulate plane images} to accumulate drift-corrected ion counts over selected planes.  
+\s{Select \lans{Input} $\ra$ \lans{Accumulate plane images} to accumulate drift-corrected ion counts over selected planes. }
 
-\s Select \lans{Input} $\ra$ \lans{Autoscale accumulated images} and then \lans{Input} $\ra$ \lans{Display accumulated images for all masses} to display the accumulated ion count images for all masses and export them in a PNG file.
+\s{Select \lans{Input} $\ra$ \lans{Autoscale accumulated images} and then \lans{Input} $\ra$ \lans{Display accumulated images} \lans{for all masses} to display the accumulated ion count images for all masses and export them in a PNG file.}
 
-\s Define \lanstf{expressions} for ion count ratios and the corresponding \lanstf{scales}. 
+\s{Define \lanstf{expressions} for ion count ratios and the corresponding \lanstf{scales}. }
 
-\s If you want to quantify ion counts and ion count ratios in regions of interest (ROIs), select \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool} to define the ROIs and store them on disk. Additionally, you can clasify the ROIs via \lans{ROIs} $\ra$ \lans{Classify} $\ra$ \lans{manually} or \lans{automatically}.
+\s{If you want to quantify ion counts and ion count ratios in regions of interest (ROIs), select \lans{ROIs} $\ra$ \lans{INTERACTIVE ROIs definition tool} to define the ROIs and store them on disk. Additionally, you can clasify the ROIs via \lans{ROIs} $\ra$ \lans{Classify} $\ra$ \lans{manually} or \lans{automatically}.}
 
-\s Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Output} $\ra$ \lans{Display ratios} to perform various types of data analysis and visualization, including:
+\s{Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Output} $\ra$ \lans{Display ratios} to perform various types of data analysis and visualization, including:
 
 \begin{itemize}
 \item[--] display \lanscb{images}, \lanscb{depth profiles in ROIs}, \lanscb{lateral profiles}, or \lanscb{histograms},
@@ -39,14 +41,15 @@ The following steps will bring you from a raw dataset to basic output such as im
 \item[--] \lanscb{compare ROIs} with respect to ion counts or ratios using simple statistical methods.
 \end{itemize}
 %
+}
 
-\bul Note that the appearance of the output can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options}, as described in more detail in Section~\ref{sec:appearance}.
+\nb{Note that the appearance of the output can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options}, as described in more detail in Section~\ref{sec:appearance}.}
 
-\s Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a~comprehensive PDF file. 
+\s{Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a~comprehensive PDF file.}
 
-\s Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session in a file (we recommend to use the file name \ttt{prefs.mat}). This is useful when you want to return to the analysis of the same file in the future, and essential if you want to later on merge all the results of your analyses of multiple datasets (``metafile processing''), as explained below. Therefore, it is highly recommended that you do this.
+\s{Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session in a file (we recommend to use the file name \ttt{prefs.mat}). This is useful when you want to return to the analysis of the same file in the future, and essential if you want to later on merge all the results of your analyses of multiple datasets (``metafile processing''), as explained below. Therefore, it is highly recommended that you do this.}
 
-\s Optionally, select \lans{Preferences} $\ra$ \lans{Create full backup of processed data} to back up the processed data in a compressed (\ttt{zip}) file. This is useful for sharing the results of your data processing and analysis with collaborators.
+\s{Optionally, select \lans{Preferences} $\ra$ \lans{Create full backup of processed data} to back up the processed data in a compressed (\ttt{zip}) file. This is useful for sharing the results of your data processing and analysis with collaborators.}
 
 %%
 
@@ -57,21 +60,21 @@ The following steps will bring you from a raw dataset to basic output such as im
 If you want to continue with the analysis of a dataset that you have analysed previously, you can save some time by following these steps:
 \tcbe
 
-\s Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.
+\s{Select \lans{Input} $\ra$ \lans{dead-time and QSA correction settings} to enable dead-time and QSA (quasi-simultaneous arrival) corrections.}
 
-\s Select \lans{Input} $\ra$ \lans{Load+accumulate+display RAW or PROCESSED dataset}. After you select the raw data and preferences files (\ttt{im.zip} or \ttt{im} file and \ttt{prefs.mat}, respectively), the data will be loaded, drift-corrected, accumulated and displayed automatically.
+\s{Select \lans{Input} $\ra$ \lans{Load+accumulate+display RAW or PROCESSED dataset}. After you select the raw data and preferences files (\ttt{im.zip} or \ttt{im} file and \ttt{prefs.mat}, respectively), the data will be loaded, drift-corrected, accumulated and displayed automatically.}
 
 %\addon{You will be prompted to select the raw data (\ttt{im.zip} or \ttt{im} file) as well as the preferences file (e.g., \ttt{prefs.mat}). }
 
 %\addon{After you do that, steps 2 (loading), 6 (drift-correction and accumulation) and 7 (display) described in Section \ref{sec:analysis_from_scratch} will be performed automatically.}
  
-\s Select \lans{ROIs} $\ra$ \lans{Load ROIs from disk} to load the previously defined ROIs from disk.
+\s{Select \lans{ROIs} $\ra$ \lans{Load ROIs from disk} to load the previously defined ROIs from disk.}
 
 %\addon{Choose the previously selected ROIs file, e.g., \ttt{cells.mat}. Modify ROIs definition or classification, if required.}
 
 %\item Continue with steps 13--15 described in Section~\ref{sec:analysis_from_scratch}.
 
-\bul After completing these steps, you can continue with further processing and analysis as described in the previous section (steps 8--13).
+\nbx{After completing these steps, you can continue with further processing and analysis as described in the previous section (steps 8--13).}
 
 %%
 
@@ -82,14 +85,13 @@ If you want to continue with the analysis of a dataset that you have analysed pr
 After the analysis of several single datasets, you are left with isotope ratio values and images scattered across \bb{multiple} files and folders. You can quickly \bb{merge} these multiple files into \bb{one} output file using the following steps. More details are provided in Section~\ref{sec:level2}.
 \tcbe
 
-\s Ensure that the raw and processed data are organized as described in Section~\ref{sec:data_organization} (see also Figures~\ref{fig2:data_organizationAB} and~\ref{fig2:data_organizationCD}).
+\s{Ensure that the raw and processed data are organized as described in Section~\ref{sec:data_organization} (see Fig.~\ref{fig2:data_organization}).}
 
-\s Select \lans{Process multiple} $\ra$ \lans{Generate metafile} to define a list of datasets that will be analyzed together.
+\s{Select \lans{Process multiple} $\ra$ \lans{Generate metafile} to define a list of datasets that will be analyzed together.}
 
 %\addon{Typically, the datasets selected in the list are part of a~project or correspond to a~particular set of treatments within a~project.}
 
-\s Select \lans{Process multiple} $\ra$ \lans{Process metafile} to perform the analysis of multiple datasets.
+\s{Select \lans{Process multiple} $\ra$ \lans{Process metafile} to perform the analysis of multiple datasets.}
 
 %
-\bul
-The output generated by metafile processing can be used for visualization and further analysis (e.g., statistical analysis) by LANS or other, third-party software.
+\nbx{The output generated by metafile processing can be used for visualization and further analysis (e.g., statistical analysis) by LANS or other, third-party software.}

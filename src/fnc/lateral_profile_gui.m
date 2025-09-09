@@ -53,6 +53,7 @@ function lateral_profile_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to lateral_profile_gui (see VARARGIN)
 
 global additional_settings;
+global GUI_FONTSIZE;
 
 if isfield(additional_settings,'defFontSize')
     defFontSize = additional_settings.defFontSize;
@@ -101,8 +102,10 @@ if jj>0
     imagesc(handles.images{1},handles.scales{1});
     title(handles.ratios{1});
     set(handles.popupmenu1,'value',1);
-    set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',defFontSize);
-    b=colorbar('FontSize',defFontSize);
+    %set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',defFontSize);
+    %b=colorbar('FontSize',defFontSize);
+    set(handles.axes1,'dataaspectratio',[1 1 1],'FontSize',GUI_FONTSIZE);
+    b=colorbar('FontSize',GUI_FONTSIZE);
     %colormap(clut);
     colormap(get_colormap(additional_settings.colormap));
     set(handles.edit2,'string', num2str(handles.scales{1}(1)));
@@ -408,7 +411,7 @@ if hObject == handles.pushbutton2  % display lateral profiles
                 
                 title(ratios{jj_range(ii)}, 'FontSize',additional_settings.defFontSize);
                 if njj<5
-                    ylabel('depth (block)', 'FontSize',additional_settings.defFontSize);
+                    ylabel('depth (bloc)', 'FontSize',additional_settings.defFontSize);
                 end
                 if ii<njj
                     set(sjj,'xticklabel',[]);
@@ -522,7 +525,7 @@ if hObject == handles.pushbutton2  % display lateral profiles
             if get(handles.checkbox1,'value')
                 image(pos, [1:size(meanv_norm,1)], permute(meanv_norm,[2 1 3]));
                 title(tit, 'FontSize',additional_settings.defFontSize);
-                ylabel('depth (block)', 'FontSize',additional_settings.defFontSize);
+                ylabel('depth (bloc)', 'FontSize',additional_settings.defFontSize);
                 xlabel('distance (micron)', 'FontSize',additional_settings.defFontSize);
             else
                 col = {'r.-','g.-','b.-','m.-','c.-','k.-','ro-','go-'};
@@ -657,7 +660,7 @@ if get(handles.checkbox2,'value')
             fprintf(fid,'\n');
             fprintf(fid,'%c w: %d (pix)\n','%',lw);
             if size(out,2)>2
-                fprintf(fid,'%c pos\tmean in blocks\tSD in blocks\n','%');
+                fprintf(fid,'%c pos\tmean in blocs\tSD in blocs\n','%');
             else
                 fprintf(fid,'%c pos\tmean\tSD\n','%');
             end

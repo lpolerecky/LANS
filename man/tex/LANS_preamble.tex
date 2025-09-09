@@ -82,9 +82,9 @@
 
 \newcommand\stepbox[2]{%
 \begin{tcolorbox}[sbox,
-	title={\mbox{}\hfill Step~\thestep},
-	attach boxed title to top left={xshift=-0.11\linewidth,yshift=#1\baselineskip},
-       minipage boxed title=.07\linewidth,
+	title={\mbox{}\hfill S\thestep},
+	attach boxed title to top left={xshift=-0.072\linewidth,yshift=#1\baselineskip},
+       minipage boxed title=.032\linewidth,
 	boxrule=0pt,
 	leftrule=0.5mm, %rightrule=2pt,
 	left*=0pt, right*=0pt, %top=1mm, bottom=1mm, 
@@ -173,7 +173,8 @@
     	grow to right by=0.5\baselineskip,%
     	grow to left by=0.5\baselineskip%
        ]{#1}
-	\end{tcolorbox} 
+	\end{tcolorbox} \vskip-3mm
+	\setcounter{figure}{0}
 } %
 
 % subsection box:
@@ -196,7 +197,7 @@
     	grow to right by=0.5\baselineskip,%
     	grow to left by=0.5\baselineskip%
        ]{#1}
-	\end{tcolorbox} 
+	\end{tcolorbox} \vskip-4.5mm
 } %
 
 % skyblue box
@@ -214,9 +215,9 @@
 	boxsep=1mm,
 	title=#1]}
 
-% gold box
+% light gold box
 \newcommand{\goldbox}[1]{%
-\begin{tcolorbox}[
+\begin{tcolorbox}[breakable,
 	colback=gold!10, 
 	coltext=black, coltitle=black,
 	colframe=gold!70,
@@ -229,6 +230,21 @@
 	boxsep=1mm,
 	title={#1}]}
 
+% light purple box
+\newcommand{\purplebox}[1]{%
+\begin{tcolorbox}[breakable,
+	colback=purple!10, 
+	coltext=black, coltitle=white,
+	colframe=purple!70,
+    	rounded corners,%
+   	left*=0pt,%
+    	right*=0pt,%
+	grow to right by=0.5\baselineskip,
+	grow to left by=0.5\baselineskip,
+	fonttitle=\bfseries,
+	boxsep=1mm,
+	title={#1}]}
+	
 % green box
 \newcommand{\greenbox}[1]{%
 \begin{tcolorbox}[

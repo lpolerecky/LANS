@@ -8,9 +8,9 @@ else
     
     ask_for_planes = strcmp(get(handles.ask_for_range,'checked'),'on');
     
-    new_block_size_input = inputdlg({'Enter block size. Planes in each block will be aligned and accumulated, and treated subsequently as single planes:',...
-        'Use the same block size for all subsequent files (1=yes, 0=no)'},...
-        'Block size', [1;1], {'1', '0'});
+    new_block_size_input = inputdlg({'Enter bloc size. Planes in each bloc will be aligned and accumulated, and treated subsequently as single planes:',...
+        'Use the same bloc size for all subsequent files (1=yes, 0=no)'},...
+        'Bloc size', [1;1], {'1', '0'});
     
     if isempty(new_block_size_input)
         block_size = 1;
@@ -61,9 +61,9 @@ else
         if ii>1 && ~use_same
             % ask for the block-size every time a new im file is to be
             % loaded
-            new_block_size_input = inputdlg({'Enter block size. Planes in each block will be aligned and accumulated, and treated subsequently as single planes:',...
-                'Use the same block size for all subsequent files (1=yes, 0=no)'},...
-                'Block size',[1;1],{num2str(block_size), num2str(use_same)});
+            new_block_size_input = inputdlg({'Enter bloc size. Planes in each bloc will be aligned and accumulated, and treated subsequently as single planes:',...
+                'Use the same bloc size for all subsequent files (1=yes, 0=no)'},...
+                'Bloc size',[1;1],{num2str(block_size), num2str(use_same)});
             if ~isempty(new_block_size_input)
                 block_size = str2num(new_block_size_input{1});
                 use_same   = str2num(new_block_size_input{2});
@@ -133,7 +133,7 @@ else
             end
         
             % accumulate images in blocks for all masses
-            fprintf(1,'Accumulating planes in blocks.\n');
+            fprintf(1,'Accumulating planes in blocs.\n');
 
             for kk=1:length(p.im)
                 block_im{kk} = zeros(size(p.im{kk},1),size(p.im{kk},2),Nb);
@@ -143,7 +143,7 @@ else
                     all_images{kk} = [1:length(images_blocks{jj})];
                     all_im{kk} = m{kk}(:,:,images_blocks{jj});
                 end          
-                fprintf(1,'Images %d:%d in block %d.\n',min(images_blocks{jj}),max(images_blocks{jj}),jj);
+                fprintf(1,'Images %d:%d in bloc %d.\n',min(images_blocks{jj}),max(images_blocks{jj}),jj);
                 [accu_im]=accumulate_images2(all_im, tforms_blocks{jj}, p.mass, all_images, opt4);
                 for kk=1:length(p.im)
                     block_im{kk}(:,:,jj) = accu_im{kk};

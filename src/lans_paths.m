@@ -85,7 +85,7 @@ elseif isunix
     PDF_VIEWER = 'LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu; xreader';
         
     % fontsize to be used in the LANS windows
-    GUI_FONTSIZE = 11;
+    GUI_FONTSIZE = 10;
     
 elseif ispc
     

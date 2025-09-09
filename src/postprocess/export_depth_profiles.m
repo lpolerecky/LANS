@@ -36,8 +36,8 @@ if ~isempty(foutname)
         want_to_be_asked = 1;
     end
     
-    block_size=inputdlg('Enter block size. Planes in each block will be aligned and accumulated, and treated subsequently as single planes:',...
-        'Block size',1,{'1'});
+    block_size=inputdlg('Enter bloc size. Planes in each bloc will be aligned and accumulated, and treated subsequently as single planes:',...
+        'Bloc size',1,{'1'});
     
     if isempty(block_size)
         block_size=1;
@@ -272,7 +272,7 @@ if ~isempty(foutname)
             images_all = images{1};
             Nb = ceil(length(images_all)/block_size);
             for ii=1:Nb
-                fprintf(1,'Accumulating planes in block %d ',ii);
+                fprintf(1,'Accumulating planes in bloc %d ',ii);
                 tmp_ind = [1:block_size]+(ii-1)*block_size;
                 tmp_ind = tmp_ind(tmp_ind<=length(images_all));
                 planes = images_all(tmp_ind);           
