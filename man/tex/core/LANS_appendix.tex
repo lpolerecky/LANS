@@ -6,6 +6,15 @@
 \renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
 \setcounter{figure}{0}
 
+\section{Debugging \LaTeX\ integration with LANS}
+
+are working under Microsoft Windows, you can fix this problem by compiling the \ttt{tex} file using the native \LaTeX\ environment (e.g., open the \ttt{tex} file in the default editor of your \LaTeX\ distribution and then compile it into a \ttt{pdf} output from there). When doing so, the missing \LaTeX\ packages should automatically be installed and the \ttt{tex} file should compile into a~correct \ttt{pdf} output. Once this is done, the automatic \LaTeX\ compilation from within Matlab will also work.
+
+If you are using Linux or MacOS, you need to do a~little bit of internet searching to figure out how to ensure that all the required \LaTeX\ packages are installed.
+
+
+%%%
+
 \section[Appendix]{Hierarchical data structure implemented in LANS}
 
 \begin{figure}[!hb]
