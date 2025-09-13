@@ -75,26 +75,25 @@ Updated LANS manual (2025) is available from this [Dropbox folder](https://www.d
 
 ## Update LANS
 
-    - Updating LANS to the newest version is easy: in the Matlab console, navigate to the folder of your current LANS version, and enter `lans_webupdate`.
+1. Updating LANS to the newest version is easy: in the Matlab console, navigate to the folder of your current LANS version, and enter `lans_webupdate`.
 
 ## Install LANS
 
 Refer to the **manual** for detailed instructions on how to install LANS on your computer. The key steps include:
 
-    - Install Matlab (recommended version: 2024b).
-    - Install LaTeX (visit [this website](https://www.latex-project.org/get/) for details).
-    - Install data compression software (recommended: **7-Zip** for Windows, **zip** and **unzip** for Linux and MacOS).
-    - Download LANS source code (see above).
-    - Unzip the file `LANS-latest-src.zip` to a folder on your computer. 
-    - Rename the `src` folder to a more reasoname name (e.g., `LANS-2025-07-27`).
+1. Install Matlab (recommended version: 2024b).
+2. Install LaTeX (visit [this website](https://www.latex-project.org/get/) for details).
+3. Install data compression software (recommended: [7-Zip](https://www.7-zip.org/download.html) for Windows, **zip** and **unzip** for Linux and MacOS).
+4. Download LANS source code (see above).
+5. Unzip the file `LANS-latest-src.zip` to a folder on your computer. 
+6. Rename the `src` folder to a more reasoname name (e.g., `LANS-2025-07-27`).
 
 ## Run LANS
 
 Refer to the **manual** for more detailed instructions. The basic steps include:
 
-    - Start Matlab and set the current folder to the folder with the LANS source code.
-    - Enter `lookatnanosims` in the Matlab console. This should open the main LANS 
-      graphical user interface, as shown below. You can start from there, as explained in the manual.
+1. Start Matlab and set the current folder to the folder with the LANS source code.
+2. Enter `lookatnanosims` in the Matlab console. This should open the main LANS window, as shown below. You can start from there, as explained in the manual.
 
 <p align="center">
   <img src="man/figures/lans-main-GUI.png">
