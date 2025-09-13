@@ -92,7 +92,8 @@ Before you run LANS for the first time, use the Matlab editor to read through th
 \tcbe
 
 \nnb{If you use LANS under Windows, examples of the commands you likely need to search for can be found within the \ttt{`if ispc'} chunk, and include:}
-\hskip0.5cm\begin{minipage}{\textwidth}\small
+\begin{center}
+\begin{minipage}{\textwidth}\footnotesize
 \begin{verbatim}
 UNZIP_COMMAND = '"c:\Program Files\7-Zip\7z.exe" e';
 ZIP_COMMAND = '"c:\Program Files\7-Zip\7z.exe" a';
@@ -102,6 +103,7 @@ CELLSFILE = 'ROIs';
 IM_FILE_EXT = '.im.zip';
 \end{verbatim}
 \end{minipage}
+\end{center}
 \nnb{Be very careful with the syntax if you need to modify any of the commands.}
 
 \nbx{If you browse through the LANS installation files, you will notice that the \ttt{*.fig} files, which define the graphical user interface (GUI), appear in two sub-folders: \ttt{figs} and \ttt{figs\_win}. This is required because GUI defined on Unix-like (Linux and MacOS) and Windows platforms do not look the same. This is an issue due to --- apparently --- limited cross-platform compatibility of Matlab visual objects. However, this issue is not important for you as an end-user of LANS. You only need to be aware of it. Should you wish to modify any of the \ttt{*.fig} files, you will need to modify those that correspond to your operating system.}
@@ -118,9 +120,8 @@ IM_FILE_EXT = '.im.zip';
 \vskip1.5mm
 \hskip0.5cm\ttt{export LD\_PRELOAD=/lib/x86\_64-linux-gnu/libstdc++.so.6}
 
-\hskip0.5cm\ttt{/usr/bin/matlab -softwareopengl}
-\vskip1.5mm
-You may need to adapt the paths to reflect your own system.}
+\hskip0.5cm\ttt{/usr/bin/matlab -softwareopengl}}
+\nnb{You may need to adapt the paths to reflect your own system.}
 
 \sbx{In Matlab, set the current folder to the folder where you installed LANS.}
 
@@ -142,7 +143,7 @@ where \ttt{path\_to\_the\_program} is the \emph{absolute path} to the folder whe
 \ttt{lookatnanosims}}
 
 %%% place holder for LANS main gui
-\begin{figure}[!t]
+\begin{figure}[!tp]
 \centering
 \includegraphics[scale=0.51]{figs1/LANS-maingui}
 \caption{\label{fig1:mainLANSgui}%

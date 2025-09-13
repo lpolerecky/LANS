@@ -17,7 +17,7 @@ As an example, we will use the dataset \ttt{2018-01-11-GAP2017\_3.im.zip}, which
 \tcbe
 
 \vskip5mm
-\nb{At the very beginning, it is useful to note the following: When working with LANS, you will likely create \bb{many} graphs and images. Because each graph or image is displayed in a~separate window, your screen may quickly become cluttered with too many windows.  You can select \lans{Output} $\ra$ \lans{Close all figures} in the main LANS window, or press~\ttt{Ctrl+g}, any time during the processing session, to quickly close all these LANS-generated figures \bb{at once}.}
+\nb{At the very beginning, it is useful to note the following: When working with LANS, you will likely create \bb{many} graphs and images. Because each graph or image is displayed in a~separate window, your screen may quickly become cluttered with too many windows.  You can select \lans{Output} $\ra$ \lans{Close all figures} in the main LANS window, or \textcolor{red}{press~\ttt{Ctrl+g}}, any time during the processing session, to quickly close all these LANS-generated figures \bb{at once}.}
 
 %\addtolength{\parskip}{2mm}
 
@@ -32,9 +32,9 @@ As an example, we will use the dataset \ttt{2018-01-11-GAP2017\_3.im.zip}, which
 
 \nb{Note that you can specify the parameters for up to \bb{16} masses. This can be relevant if the dataset was acquired using a peak-switching mode.}
 
-\begin{figure}[!h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[scale=0.4]{figs1/LANS-dt-qsa-settings}
+\includegraphics[scale=0.45]{figs1/LANS-dt-qsa-settings}
 \caption{\label{fig:dtqsa}%
 LANS window where you can adjust settings for dead-time and QSA corrections.}
 \end{figure}
@@ -76,10 +76,10 @@ LANS window where you can adjust how rows and columns in the input raw image dat
 
 \nnb{By default, all masses are selected, but you may want to change it.}
 
-\s{Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view secondary ion counts detected in individual planes for \bb{all} masses (Fig.~\ref{fig:displayplanes}).}
+\s{Select \lans{Input} $\ra$ \lans{Display plane images for all masses} to view secondary ion counts detected in individual planes for \bb{all} masses.}
 
 \purplebox{}
-This shows the actual data in its \bb{rawest} form, i.e., \bb{ion counts per pixel per plane.}
+This view shows the actual data in its \bb{rawest} form, i.e., \bb{ion counts per pixel per plane.}
 \tcbe
 
 \begin{figure}[!ht]
@@ -89,7 +89,7 @@ This shows the actual data in its \bb{rawest} form, i.e., \bb{ion counts per pix
 LANS window for viewing the raw image data for all detected masses, plane by plane.}
 \end{figure}
 
-\sbx{Use arrows to browse through the planes forward and backward.}
+\sbx{In the new window that opens (Fig.~\ref{fig:displayplanes}), use arrows to browse through the planes forward and backward.}
 
 \s{Click on \lans{Export as PNG} if you want to export all masses in a particular plane as a PNG file. If you additionally check \lanscb{Export all}, you can export all planes, each into a separate PNG file.}
 
@@ -99,7 +99,7 @@ LANS window for viewing the raw image data for all detected masses, plane by pla
 
 %%
 
-\newpage
+%\newpage
 
 \subsection{Drift-correction and accumulation of planes}
 \setcounter{step}{0}
@@ -135,13 +135,13 @@ LANS window where you can (1) specify planes that should be excluded during accu
 
 \nb{It is recommended to define this area as a~minimum rectangular region in the image that contains pronounced spatial heterogeneities (such as a cell or a group of cells).}
 
-\s{Close the window when you have defined the area.}
+\sbx{Close the window when you have defined the area.}
 
 \nb{After you close the window, the x and y ranges of the alignment region will be written in the respective fields of \lanstf{Special region for alignment} in the main LANS window (Fig.~\ref{fig:alignoptions}). Also, the range of selected planes will be written in the \lanstf{planes} list. You can edit these fields if you know the correct values, but be careful not to make any syntax errors. }
 
 \s{Back in the main LANS window, check \lanscb{Align images when accumulating} if you want to apply automated drift correction during the accumulation of planes. If not, which is rarely the case, leave this checkbox unchecked.}
 
-\s{Select \lans{Input} $\ra$ \lans{Accumulate plane images} to start the accumulation of drift-corrected images. }
+\sbx{Select \lans{Input} $\ra$ \lans{Accumulate plane images} to start the accumulation of drift-corrected images. }
 
 \nb{You will be asked whether to employ a \lans{New} or \lans{Old} algorithm. In most cases, you will choose the \lans{New} one. However, the old one is preferred if the drift-correction is based on images with very low ion counts (i.e., very pixelated images).}
 
@@ -158,9 +158,11 @@ LANS window showing the results after calculating the drift-correction (central 
 
 \nnb{If you \lans{accept} it, the information will be stored in the file \ttt{xyalign.mat} and all planes for all masses will be accumulated based on this information. Also, this information will automatically be used in the future if you load the raw dataset using \lans{Input} $\ra$ \lans{Load+accumulate+display RAW} \lans{or PROCESSED dataset}.}
 
-\nnb{If you \lans{reject} it, you can reiterate the previous steps (1--4) until you arrive at a dataset with drift-corrected and accumulated planes.}
+\nnb{If you \lans{reject} it, you can reiterate the previous steps (S1--S4) until you arrive at a dataset with drift-corrected and accumulated planes.}
 
 \nb{Note that you \bb{do} need to accumulate the planes, because most of the subsequent data processing steps only work for the ion counts accumulated over all (selected) planes.}
+
+\nnb{If you are unable to align the planes in a~satisfying manner, the best you can do is to accumulate them without the drift-correction. This is done by unchecking \lanscb{Align images when accumulating} before plane accumulation.}
 
 \nb{If you realize, anytime at a later point during your data processing, that you are not satisfied with the drift-correction, you need to first delete the \ttt{xyalign.mat} file (via \lans{Preferences} $\ra$ \lans{Remove xyalign.mat from disk}), then \lans{Load RAW dataset}, and then repeat the previous steps (S1--S10) to drift-correct and accumulate the planes again.}
 
@@ -185,24 +187,24 @@ LANS window showing the results after calculating the drift-correction (central 
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{figs3/LANS-display-accu-planes}
+\includegraphics[width=0.99\textwidth]{figs3/LANS-display-accu-planes}
 \caption{\label{fig:display-accu-planes}%
 Display of ion counts after drift-correction and accumulation of selected planes. The scale is shown for each individual mass, formatted as \ttt{[min max]}. Basic information about the data, e.g., real and pixel size, date of acquisition, dwell time, is also shown (at the bottom).}
 \end{figure}
 
-\s{Check \lanscb{Display images} in the \ttt{Output options} box and then select \lans{Output} $\ra$ \lans{Display masses} to display the images in a~nicer way and separately for each mass (Fig.~\ref{fig:display-masses}). }
-
-\begin{figure}[!ht]
+\begin{figure}[!hb]
 \centering
-\includegraphics[width=\textwidth]{figs3/LANS-display-masses}
+\includegraphics[width=0.99\textwidth]{figs3/LANS-display-masses}
 \caption{\label{fig:display-masses}%
 Screenshot of a~LANS session showing ion count images after drift-correction and accumulation. Each mass is displayed in a~separate window, some in the linear scale, some in the logarithmic scale. Note the \bb{arrangement} of the main LANS window in the top-left part of the screen and of the Matlab console at the bottom of the screen, which allows monitoring of messages reported by LANS at all times.}
 \end{figure}
 
+\s{Check \lanscb{Display images} in the \ttt{Output options} box and then select \lans{Output} $\ra$ \lans{Display masses} to display the images in a~nicer way and separately for each mass (Fig.~\ref{fig:display-masses}). }
+
 \nb{In this step, the image appearance, including the location of the colorbar, size and location of the scale bar, etc., can be tweaked via \lans{Preferences} $\ra$ \lans{Additional output options} (see Section~\ref{sec:appearance}). }
 
 \purplebox{Remember}
-When displaying the images, ensure that \lanscb{Export PDF graphics} in the \ttt{Output options} box is checked. This will allow you to \bb{export} the images in a~PDF format (they will be stored in the \ttt{pdf} sub-folder of the current data folder). If this checkbox is not checked, no output will be generated, and you may be left wondering: why doesn't it work?!
+When displaying the images, ensure that \lanscb{Export PDF graphics} in the \ttt{Output options} box of the main LANS window is checked. This will allow you to \bb{export} the images in a~PDF format (they will be stored in the \ttt{pdf} sub-folder of the current data folder). If this checkbox is not checked, no output will be generated, and you may be left wondering: why doesn't it work?!
 \tcbe
 
 %%
@@ -272,6 +274,7 @@ Example of an RGB overlay of ion count and ion count ratio images.}
 %%
 
 \subsection{Define ROIs}
+\label{sec:defineROIs}
 \setcounter{step}{0}
 
 \goldbox{}
@@ -353,13 +356,13 @@ Definition of regions of interest (ROIs) in LANS. The left window provides tools
 
 \nb{If the ROIs have been classified, you can display ROIs from a~specific class by typing the corresponding class identification letter, rather than the ROI identification number, in the same dialog.}
 
-\s{Explore the \lans{Action} menu to test various ways to \lans{define}, \lans{split}, \lans{merge}, or \lans{remove} ROIs.}
+\sbx{Explore the \lans{Action} menu to test various ways to \lans{define}, \lans{split}, \lans{merge}, or \lans{remove} ROIs.}
 
-\s{Use the \lans{Zoom} menu to zoom in the ROI definition image or zoom out.}
+\sbx{Use the \lans{Zoom} menu to zoom in the ROI definition image or zoom out.}
 
 \nb{This brings about another Matlab-related peculiarity: Once you select \lans{Zoom} $\ra$ \lans{Zoom ENABLE} (\ttt{Ctrl+z}), you \bb{enter} a~`zoom' mode. In this mode, you can use the mouse to specify the zoomed-in area. Subsequently, you must \bb{quit} the `zoom' mode by selecting \lans{Zoom} $\ra$ \lans{Zoom DISABLE} (or pressing \ttt{Ctrl+z} again). Only then can you proceed with other actions.}
 
-\s{Select \lans{Save ROIs} from the menu, or press \ttt{Ctrl+s}, to save the currently defined ROIs. }
+\sbx{Select \lans{Save ROIs} from the menu, or press \ttt{Ctrl+s}, to save the currently defined ROIs. }
 
 \nb{You can choose the default name (e.g., \ttt{ROIs.mat}) or a different name (e.g., \ttt{cells.mat}).}
 
@@ -373,6 +376,7 @@ Note that there is \bb{no undo} function implemented in LANS (yet). Thus, it is 
 
 \subsubsection{ROI definition via interactive thresholding}
 \setcounter{step}{0}
+\label{sec:defineROIsInteractive}
 
 \goldbox{}
 Before continuing with ROI classification, we describe an example of how to define ROIs via interactive thresholding. In general, once you get used to it and learn the tricks, this approach allows you to define ROIs more efficiently and reproducibly than by drawing them manually. However, the approach is only applicable if the signal used for recognizing the ROI \bb{stands out} relative to the surrounding background.
@@ -449,6 +453,7 @@ ROI definition via interactive thresholding using the original and inverted temp
 %%
 
 \subsection{Classify ROIs}
+\label{sec:classifyROIs}
 
 \goldbox{}
 It is often useful to \bb{classify} the defined ROIs. It is recommended to classify the ROIs \bb{after} the ROI definition has been fully completed and quality checked. This is because ROI definition, when performed with a~linked ROI classification file, is still not completely bug-free and may lead to a~mismatch between defined and classified ROIs. A~known instance when this occurs is if multiple existing ROIs are split by one line, or if one line is used to split one ROI into more than two ROIs. If you do not perform such `exotic' maneuvers, the risk of the mismatch is low.
@@ -502,7 +507,7 @@ LANS window where you can classify ROIs manually.}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figs3/LANS-scatter-plots}
+\includegraphics[width=0.98\textwidth]{figs3/LANS-scatter-plots}
 \caption{\label{fig:scatter-plots}%
 Examples of 2D scatter plots generated by LANS. They can show ROI-averaged values (blue) or pixel-by-pixel values (orange).}
 \end{figure}
@@ -560,18 +565,18 @@ NanoSIMS measurements are conducted by sputtering away the sample material in mu
 
 \s{Select \lans{Output} $\ra$ \lans{Display masses} or \lans{Display ratios}.}
 
+\begin{figure}[!hb]
+\centering
+\includegraphics[scale=0.39]{figs3/LANS-depth-profiles}
+\caption{\label{fig:depth-profiles}%
+Using LANS to display depth profiles of ion counts and ion count ratios in ROIs.}
+\end{figure}
+
 \s{Observe the output in the Matlab console, which informs you about significant trends with depth of the particular mass or ratio in ROIs.}
 
 \nb{In the process, the depth profiles are exported in data files with an extension \ttt{dap} (located in the \ttt{dat} sub-folder of the dataset folder).}
 
 \s{In the new window that opens, select ROI identifiers for which you want to display the depth profiles. Then, select the mass or ratio in the list to display the depth profiles in the selected ROIs (Fig.~\ref{fig:depth-profiles}).}
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[scale=0.4]{figs3/LANS-depth-profiles}
-\caption{\label{fig:depth-profiles}%
-Using LANS to display depth profiles of ion counts and ion count ratios in ROIs.}
-\end{figure}
 
 \s{Select \lans{Export depth profile} to export the graph with depth profiles in the currently selected ROIs.}
 
@@ -587,36 +592,36 @@ If you want to reprocess a~particular dataset in the future and start the proces
 
 \s{Select \lans{Output} $\ra$ \lans{Generate LaTeX + PDF output} to export results of your analysis in a~PDF document (example shown in Fig.~\ref{fig:outputG}). }
 
-\nb{Before you do this, select checkboxes in the \ttt{Output options} box to specify which kind of results you want to have included in the graphical output, such as  \lanscb{images}, \lanscb{scatter plots}, \lanscb{RGB overlays}, \lanscb{histograms}, \lanscb{depth profiles}, etc.}
-
-\nb{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the full path to a~PDF viewer in the \ttt{PDF\_VIEWER} variable (this variable is defined in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to see the results quickly, without the need for browsing through the different folders on your computer.}
-
 \begin{figure}[!ht]
 \centering
-\begin{tabular}{ccc}
-\includegraphics[width=0.31\textwidth, valign=t]{figs3/outputG1}
+\begin{tabular}{c@{\hskip0mm}c@{\hskip0mm}c}
+\includegraphics[width=0.32\textwidth, valign=t]{figs3/outputG1}
 &
-\includegraphics[width=0.31\textwidth, valign=t]{figs3/outputG2}
+\includegraphics[width=0.32\textwidth, valign=t]{figs3/outputG2}
 &
-\includegraphics[width=0.31\textwidth, valign=t]{figs3/outputG3}
+\includegraphics[width=0.32\textwidth, valign=t]{figs3/outputG3}
 \end{tabular}
 \caption{\label{fig:outputG}%
 Example of the first three pages in the graphical output generated at the end of processing of an individual dataset with LANS.}
 \end{figure}
 
-\s{Select \lans{Preferences} $\ra$ \lans{Store preferences} to save the settings of the current data processing session in a file (it is recommended to use the file name \ttt{prefs.mat}). }
+\nb{Before you do this, select checkboxes in the \ttt{Output options} box to specify which kind of results you want to have included in the graphical output, such as  \lanscb{images}, \lanscb{scatter plots}, \lanscb{RGB overlays}, \lanscb{histograms}, \lanscb{depth profiles}, etc.}
 
-\nb{This is useful when you want to return to the analysis of the same file in the future, but also if you want to later combine results of your analyses of multiple datasets via ``metafile processing'', as described in Section~\ref{sec:level2}. Therefore, it is highly recommended that you do this for every processed dataset.}
+\nb{If you check \lanscb{View PDF after export} (available via \lans{Preferences} $\ra$ \lans{Additional output options}) and correctly set the full path to a~PDF viewer in the \ttt{PDF\_VIEWER} variable (this variable is defined in the \ttt{lans\_paths.m} file), the PDF output will automatically be displayed after it has been generated. This can be convenient if you want to see the results quickly, without the need for browsing through the different folders on your computer.}
+
+\s{Select \lans{Preferences} $\ra$ \lans{Store preferences} to \textcolor{red}{save the settings} of the current data processing session in a file (it is recommended to use the file name \ttt{prefs.mat}). }
+
+\nb{This is useful when you want to return to the analysis of the same file in the future, and essential if you want to later combine results of your analyses, or perform automatic analyses of multiple datasets via ``metafile processing'', as described in Section~\ref{sec:level2}. Therefore, it is highly recommended that you \textcolor{red}{do this} for every processed dataset.}
 
 \nnb{More specifically, the preferences file will contain all information for the currently processed dataset that you see in the main LANS window, including the names of detected masses, planes selected for alignment, formulas for ion count ratios, scales for mass and ratio images, output options, etc.}
 
-\s{Select \lans{Preferences} $\ra$ \lans{Backup (full) folder with processed data}.}
+\sbx{Select \lans{Preferences} $\ra$ \lans{Backup (full) folder with processed data}.}
 
 \nbx{This will compress the \emph{entire} content of the processed data folder in a~\ttt{zip} file.}
 
 \nnb{Additionally, a~copy of the PDF output file will be created and renamed to match the name of the processed data.}
 
-\s{Alternatively, select \lans{Preferences} $\ra$ \lans{Backup (minimal) folder with processed data}.}
+\sbx{Alternatively, select \lans{Preferences} $\ra$ \lans{Backup (minimal) folder with processed data}.}
 
 \nb{This will only compress the \emph{minimal} information in the processed data folder, based on which the rest of the processed data can easily and reproducibly be generated by repeating the processing steps in LANS. }
 

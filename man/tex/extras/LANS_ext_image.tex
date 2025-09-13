@@ -1,4 +1,3 @@
-\newpage
 \subsection{Integrating an external image into the NanoSIMS dataset}
 \setcounter{step}{0}
 
@@ -20,11 +19,11 @@ As an example, we will use two input files: \ttt{Ecoli-Azo-Gam42a.im.zip} contai
 Although the NanoSIMS and external images were obtained from the same area, it is very \emph{unlikely} that they look exactly the same: typically, they are distorted relative to each other by translation, rotation and heterogeneous stretching. Thus, in the first step, the external and NanoSIMS images need to be \bb{aligned}.
 \tcbe
 
-\sbx{In the main LANS window, process the NanoSIMS dataset \ttt{Ecoli-Azo-Gam42a.im.zip} until you arrive at accumulated and scaled ion count images, as shown in Fig.~\ref{fig:LANS-ext-raw}A (see Section~\ref{sec:} for the relevant details).}
+\sbx{In the main LANS window, process the NanoSIMS dataset \ttt{Ecoli-Azo-Gam42a.im.zip} until you arrive at accumulated and scaled ion count images, as shown in Fig.~\ref{fig:LANS-ext-raw}A (see Section~\ref{sec:level1} for the relevant details).}
 
 \begin{figure}[!ht]
 \centering
-\begin{tabular}{cc}
+\begin{tabular}{c@{\hskip0mm}c}
 A: \includegraphics[scale=0.665, valign=t]{figs7/Ecoli-Azo-Gam42a}
 &
 \raisebox{-1.6mm}{%
@@ -38,23 +37,23 @@ C: \raisebox{-1.75mm}{\includegraphics[scale=0.2, valign=t]{figs7/Ecoli-Azo-Gam4
 Example of (A--B) NanoSIMS and (C) fluorescence images before their integration in LANS. Panel~A shows the accumulated images of all detected ions, panel~B shows an RGB overlay of the log-transformed counts of \ttt{12C14N}, \ttt{32S} and \ttt{19F} ions. }
 \end{figure}
 
-\s{Export the ion count images or RGB overlays using \lans{Output} $\ra$ \lans{Display masses}.}
+\sbx{Export the ion count images or RGB overlays using \lans{Output} $\ra$ \lans{Display masses}.}
 
-\nbx{The choice depends on what you think is the best NanoSIMS image, or an RGB overlay of NanoSIMS images, based on which you will be able to align the external image.}
+\nnb{The choice depends on what you think is the best NanoSIMS image, or an RGB overlay of NanoSIMS images, based on which you will be able to align the external image.}
 
 \nnb{If you plan to use one of the ion count images for aligning the external image, then the relevant image data will be exported in the Matlab format (as \ttt{*.mat} files), stored in the \ttt{mat} sub-folder.}
 
 \nnb{In this example, choose the RGB overlay of log-transformed counts of \ttt{12C14N} (red), \ttt{32S} (green) and \ttt{19F} (blue) ions (Fig.~\ref{fig:LANS-ext-raw}B). This overlay is exported not only in PDF but also as a~\ttt{TIF} file called \ttt{log(12C14N)-vs-log(32S)-vs-log(19F)-rgb.tif}, stored in the \ttt{tif} sub-folder.}
 
-\s{Select \lans{External} $\ra$ \lans{Align external and nanosims images}.}
+\sbx{Select \lans{External} $\ra$ \lans{Align external and nanosims images}.}
 
 \s{In the new window that opens, select \lans{File} $\ra$ \lans{Load external image}. Navigate to the file of the external image and select it.}
 
-\nbx{In this example, select the file \ttt{Ecoli-Azo-Gam42a-FISH.tif}, which looks as shown in Fig.~\ref{fig:LANS-ext-raw}C.}
+\nnb{In this example, select the file \ttt{Ecoli-Azo-Gam42a-FISH.tif}, which looks as shown in Fig.~\ref{fig:LANS-ext-raw}C.}
 
-\s{In the same window, select \lans{File} $\ra$ \lans{Load nanosims image}. Navigate to the file you chose in step~2.}
+\s{In the same window, select \lans{File} $\ra$ \lans{Load nanosims image}. Navigate to the file you chose in step~S2.}
 
-\nbx{In this example, select the file \ttt{log(12C14N)-vs-log(32S)-vs-log(19F)-rgb.tif}.}
+\nnb{In this example, select the file \ttt{log(12C14N)-vs-log(32S)-vs-log(19F)-rgb.tif}.}
 
 \s{Select \lans{Action} $\ra$ \lans{Add point} (\ttt{Ctrl+a}), then click within the \bb{external} image (\bb{left} panel) on a~point for which you will be able to find a~corresponding point in the NanoSIMS image (right panel).}
 
@@ -62,9 +61,9 @@ Example of (A--B) NanoSIMS and (C) fluorescence images before their integration 
 
 \s{Again, select \lans{Action} $\ra$ \lans{Add point} (\ttt{Ctrl+a}), but this time click within the \bb{NanoSIMS} image (\bb{right} panel) on a~point that correponds to the point on the external image defined in the previous step. }
 
-\nbx{Again, use arrow keys to fine-tune the point's position and press \ttt{Enter} to confirm it.}
+\nnb{Again, use arrow keys to fine-tune the point's position and press \ttt{Enter} to confirm it.}
 
-\sbx{Repeat steps 6 and 7 several times to define additional points in the external image and the corresponding points in the NanoSIMS image, one pair of points at a~time.}
+\sbx{Repeat steps S6 and S7 several times to define additional points in the external image and the corresponding points in the NanoSIMS image, one pair of points at a~time.}
 
 \nbx{The more point pairs you define, the better the alignment will be. You will need at least 4~point pairs for a~reasonably good alignment. }
 
@@ -77,21 +76,21 @@ Example of (A--B) NanoSIMS and (C) fluorescence images before their integration 
 Example of point pairs defined in the external (left panel) and NanoSIMS (right panel) images. Points with the same identification number correspond to each other. These points are defined manually by the user based on distinct features in the images, such as cells in this example.}
 \end{figure}
 
-\nnb{Note that each added point will have a~unique identification number. You will be able to see which points correspond to each other in the external and NanoSIMS images based on these identification numbers.}
+\nb{Note that each added point will have a~unique identification number. You will be able to see which points correspond to each other in the external and NanoSIMS images based on these identification numbers.}
 
 \nnb{If you need to change the color of the point or an identifier, you can do this by selecting \lans{Action} $\ra$ \lans{Change point's color}.}
 
 \s{If you need to modify a~point's location, select \lans{Action} $\ra$ \lans{Modify point}, then click on the point you want to modify and press \ttt{Enter} to confirm the selection. Subsequently, use arrow keys to modify the point's location, and finally press \ttt{Enter} to confirm thew new location.}
 
-\nbx{Observe messages in the Matlab console for more details about what exactly you need to do.}
+\nnb{Observe messages in the Matlab console for more details about what exactly you need to do.}
 
 \s{If you need to remove a~pair of corresponding points, select \lans{Action} $\ra$ \lans{Remove pair of points}, then click on one of the points in the pair and press \ttt{Enter} to confirm the removal.}
 
-\s{After defining a reasonably high number of point pairs (typically 5--10 should be sufficient), select \lans{File} $\ra$ \lans{Save point list} to save the points' coordinates in a~matlab file. }
+\s{After defining a reasonably high number of point pairs (typically 5--10 pairs should be sufficient), select \lans{File} $\ra$ \lans{Save point list} to save the points' coordinates in a~matlab file. }
  
-\nb{You can load these coordinates later via \lans{File} $\ra$ \lans{Load point list}. Subsequently, you can add more points, modify points, or remove points, as described in steps 6--10.}
+\nnb{You can load these coordinates later via \lans{File} $\ra$ \lans{Load point list}. Subsequently, you can add more points, modify points, or remove points, as described in steps S6--S10.}
 
-\s{If the selected NanoSIMS image does not contain all features based on which you can align the external image, you can load a~\bb{different} NanoSIMS image at any time (see step~5). When doing so, you may need to select \lans{Action} $\ra$ \lans{Update points} to redraw the currently defined points in the image.}
+\s{If the selected NanoSIMS image does not contain all features based on which you can align the external image, you can load a~\bb{different} NanoSIMS image at any time (see step~S5). When doing so, you may need to select \lans{Action} $\ra$ \lans{Update points} to redraw the currently defined points in the image.}
 
 \s{Select \lans{Action} $\ra$ \lans{Alignment based on N$>$4 points} to \bb{perform the image alignment} based on the defined point pairs.}
 
@@ -111,9 +110,9 @@ A & B & C \\
 Results of the image alignment are shown as an overlay. Panels (A--C) show the overlays at different levels of transparency of the external and nanoSIMS image layers. These levels can be changed through the \lans{Transparency} menu. Note the match between the point pairs defined in the external ($\times$) and nanoSIMS ($+$) images. Although the external image was originally an RGB image in this example, the image is converted to a~grayscale in the overlay.}
 \end{figure}
 
-\s{If you are satisfied with the result, select \lans{Action} $\ra$ \lans{Export aligned external image} to \bb{store the aligned external image} for later use. If not, repeat steps~6--13.}
+\s{If you are satisfied with the result, select \lans{Action} $\ra$ \lans{Export aligned external image} to \bb{store the aligned external image} for later use. If not, repeat steps~S6--S13.}
 
-\nbx{Specify an appropriate name (e.g., \ttt{ext\_aligned}) and location of the file. You can store it in a~Matlab (\ttt{*.mat}) or TIF (\ttt{*.tif}) format. It is a~good idea to store them in both formats and in the folder with all the other processed data.}
+\nb{When storing the aligned external image, specify an appropriate name (e.g., \ttt{ext\_aligned}) and location of the file. You can store it in a~Matlab (\ttt{*.mat}) or TIF (\ttt{*.tif}) format. It is a~good idea to store them in both formats and in the folder with all the other processed data.}
 
 %%%
 
@@ -141,18 +140,18 @@ After importing the aligned external image into LANS, the image can be used, eff
 
 \s{Type \ttt{ext} into one of the ratio \lanstf{expression} text fields, specify the \lanstf{scale} (e.g., you can start with \ttt{[0 1]}), and press \ttt{Enter} to display the scaled external image.}
 
-\nbx{This will reassure you that the external image is really usable as part of the NanoSIMS dataset.}
+\nnb{This will reassure you that the external image is really usable as part of the NanoSIMS dataset.}
 
-\s{To use the external image for defining ROIs, type \ttt{ext} in the \lanstf{ROI definition template} and proceed as described in Section~\ref{sec:} to define ROIs.}
+\s{To use the external image for defining ROIs, type \ttt{ext} in the \lanstf{ROI definition template} and proceed as described in Section~\ref{sec:defineROIs} to define ROIs.}
 
-\nb{This is an example where \lans{Interactive thresholding} will really speed up the  ROI definition.}
+\nnb{This is an example where \lans{Interactive thresholding} (Section~\ref{sec:defineROIsInteractive}) will really speed up the  ROI definition.}
 
 \nnb{After using the green channel of the external image as a~template, the ROIs may look as shown in Fig.~\ref{fig:LANS-ext-ROIs}A.}
 
 \def\scf{0.22}
 \begin{figure}[!ht]
 \centering
-\begin{tabular}{ccc}
+\begin{tabular}{c@{\hskip0mm}c@{\hskip0mm}c}
 A & B & C \\
 \includegraphics[scale=\scf]{figs7/LANS-ext-ROIs1}
 &
@@ -165,24 +164,24 @@ ROI definition using an aligned external image. (A) First set of ROIs defined ba
 \end{figure}
 
 \goldbox{}
-This step is specific to this particular example, but it gives you an idea about the \emph{iterative} process of using an external image during NanoSIMS data processing. 
+The following step is specific to this particular example, but it gives you an idea about the \emph{iterative} process of using an external image during NanoSIMS data processing. 
 \tcbe
 
 \sbx{Based on the original external image, it is clear that not all cells are visible in the green channel. To define all cells in the image, the blue channel needs to be used instead. Thus, import the external image again as described in the previous section, but this time choose channel \lanstf{b} (DAPI flurescence) instead of \lanstf{g}. Then proceed with step~2 to continue ROI definition.}
 
 \nbx{After using the blue channel of the external image as a~template, the revised ROIs may look as shown in Fig.~\ref{fig:LANS-ext-ROIs}B.}
 
-\sbx{Classify the ROIs using steps described in Section~\ref{sec:}.}
+\sbx{Classify the ROIs using steps described in Section~\ref{sec:classifyROIs}.}
 
-\nb{You can base this classification on the aligned external image, where you clearly see (in most cases) the differences between cells only stained with DAPI (blue) and cells stained with both DAPI and the FISH probe (cyan). You can use, for instance, \ttt{b} and \ttt{c} as the class names for the respective cells.}
+\nnb{You can base this classification on the aligned external image, where you clearly see (in most cases) the differences between cells only stained with DAPI (blue) and cells stained with both DAPI and the FISH probe (cyan). You can use, for instance, \ttt{b} and \ttt{c} as the class names for the respective cells.}
 
-\s{Type \ttt{ext/pixel} into one of the ratio \lanstf{expression} text fields and specify the \lanstf{scale}.}
+\sbx{Type \ttt{ext/pixel} into one of the ratio \lanstf{expression} text fields and specify the \lanstf{scale}.}
 
-\nbx{This is necessary if you want to properly normalize the ROI-specific values for the external image data.}
+\nnb{This is necessary if you want to properly normalize the ROI-specific values for the external image data.}
 
-\sbx{Create overlays between the external image and one of the NanoSIMS images, or scatter plots between the ROI-specific values in the external and NanoSIMS images, using steps described in Section~\ref{sec:}.}
+\sbx{Create overlays between the external image and one of the NanoSIMS images, or scatter plots between the ROI-specific values in the external and NanoSIMS images, using steps described in Section~\ref{sec:level1}.}
 
-\nbx{Examples of the results may look as shown in Fig.~\ref{fig:LANS-ext-overlays}.}
+\nnb{Examples of the results may look as shown in Fig.~\ref{fig:LANS-ext-overlays}.}
 
 \def\scf{0.42}
 \begin{figure}[!ht]
@@ -212,13 +211,15 @@ Examples of results combining ROI-specific values derived from the external and 
 In addition to rotation, stretching or other types of image distortion, it can happen that the external and NanoSIMS images have very different pixel resolutions. For example, a~specific area on a~sample imaged by TEM can have roughly $3000\times 4000$ pixels, whereas the same area imaged by NanoSIMS can have only $256\times 256$ or $512\times 512$ pixel (i.e., roughly a~10-fold difference). If you want to use a~high-resolution external image as a~template for defining ROIs, and then use those ROIs to evaluate quantities such as ROI-specific ion counts or isotope ratios, the preferred approach is to first \bb{resample} the NanoSIMS images to match the resolution of the external image and then work with the resampled NanoSIMS data and the original external image following the steps described earlier in this section.
 \tcbe
 
-The workflow involving resampling of nanoSIMS images in LANS was implemented in collaboration with St\'ephane Escrig, Anders Meibom and Bernard Schneider from EPFL Lausanne, Switzerland. The steps are described in the supplement of the related open-access publication:
-%\vskip1mm
+The workflow involving resampling of nanoSIMS images in LANS was implemented in collaboration with St\'ephane Escrig, Anders Meibom and Bernard Schneider from EPFL Lausanne, Switzerland, as documented in the following open-access publication:
+\skybluebox{}
+\vskip0.5mm
 \begin{center}
 \begin{minipage}{0.93\textwidth}
 \textsl{\small Spataro et al.~(2023). Stable isotope labeling and ultra-high-resolution NanoSIMS imaging reveal alpha-synuclein-induced changes in neuronal metabolism in vivo. \emph{Acta Neuro\-pathol Commun}~\bb{11}:157. \url{https://doi.org/10.1186/s40478-023-01608-8}}
 \end{minipage}
 \end{center}
-%\vskip1mm
+\tcbe
 
-A~copy of the supplement, as well as the related example data, can be downloaded from the same location as the LANS program (folder \ttt{test\_data/NS+TEM}). The datasets include the raw NanoSIMS data (\ttt{Spataro-3.im.zip}) and the corresponding TEM image (\ttt{Spataro-3\_TEM.tif}). 
+\noindent 
+You are encouraged to read the supplement of the publication to learn in detail how to resample nanoSIMS images in LANS and then use a~high-resolution external image as a~template for ROI definition for such a~resampled nanoSIMS dataset. A~copy of the supplement, as well as the related example data, can be downloaded from the same location as the LANS program (folder \ttt{test\_data/NS+TEM}). The datasets include the raw NanoSIMS data (\ttt{Spataro-3.im.zip}) and the corresponding TEM image (\ttt{Spataro-3\_TEM.tif}). 

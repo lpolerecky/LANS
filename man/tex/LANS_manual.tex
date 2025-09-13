@@ -50,11 +50,11 @@
 \textbf{Look@NanoSIMS}, or shortly \textbf{LANS}, is a program for processing and analysis of ion count image data produced by the NanoSIMS instrument. The original development of the program started back in 2008, but its active development continues until today based on input and requests from users (yes, it's more like a~long-term hobby). Although the program may be considered an `old school' in a number of aspects, it has matured well over the years. Once you get used to it, become aware of all of its features and figure out all the tricks, it allows you to analyze NanoSIMS data very thoroughly and efficiently. This document describes how to get started with the program and carry out such analyses from basic to advanced levels. 
 \tcbe
 
-\vskip4mm
+\vskip2mm
 
 \skybluebox{Citation}
 Please use the following citation if you use Look@NanoSIMS:
-\vskip0.5mm
+%\vskip0.05mm
 \begin{center}
 \begin{minipage}{0.93\textwidth}
 \textsl{\small Polerecky et al.~(2012). Look@NanoSIMS --- a tool for the analysis of nanoSIMS data in environmental microbiology. \textit{Environmental Microbiology} 14 (4): 1009--1023. \url{ https://doi.org/10.1111/j.1462-2920.2011.02681.x}}
@@ -62,20 +62,20 @@ Please use the following citation if you use Look@NanoSIMS:
 \end{center}
 \tcbe
 
-\vskip4mm
+\vskip2mm
 
 \goldbox{Contact}
 If you have questions or want to provide feedback, you can contact the author via e-mail: 
-\vskip2mm
+\vskip0.5mm
 \hspace{0.5cm} \ttt{L . P o l e r e c k y @ u u . n l}
 
 \vskip1mm\noindent You can also arrange a~video-conference meeting via Teams or Zoom if your questions are more difficult or you would like to collaborate on implementing a~new feature in Look@NanoSIMS.
 \tcbe
 
-\vskip4mm
+\vskip2mm
 
-\greenbox{Notation}
-Throughout this document, we will use text in coloured boxes when refering to a specific \lans{menu item} or \lans{action button}, \lanscb{checkbox} or \lanstf{text field} in the program's graphical user interface.
+\greenbox{Color-coded notation}
+Throughout this document, we will use coloured boxes when refering to a \lans{menu item}, \lans{action button}, \lanscb{checkbox} or \lanstf{text field} in the program's graphical user interface. We will use a~gold box to mark \lansstep{steps} and a~purple box or line on the left margin to highlight \lansnote{notes}.
 \tcbe
 
 \newpage
@@ -85,16 +85,15 @@ Throughout this document, we will use text in coloured boxes when refering to a 
 \newpage
 
 %%% Specify sections that should be included
-
 \input{core/LANS_install}
-\input{core/LANS_fileorg}
-\input{core/LANS_typical}
-\input{extras/LANS_lesscommon}
-\input{core/LANS_appearance}
-\input{core/LANS_singledataset}
-\iffalse
-\input{core/LANS_metafileproc}
+\clearpage\input{core/LANS_fileorg}
+\clearpage\input{core/LANS_typical}
+\clearpage\input{extras/LANS_lesscommon}
+\clearpage\input{core/LANS_appearance}
+\clearpage\input{core/LANS_singledataset}
+\clearpage\input{core/LANS_metafileproc}
 
+\clearpage
 \section{Less commonly used functions in LANS}
 \label{sec:level3}
 
@@ -103,16 +102,13 @@ This section describes functions of Look@NanoSIMS that are useful under special 
 \tcbe
 
 \input{extras/LANS_hue_modulation} % done
-\input{extras/LANS_ext_image}	% done, nanosims data resampling refers to the supplement of Spataro et al. 2023
-\input{extras/LANS_depth_var} % done
-\input{extras/LANS_load8plus} % done
-\input{extras/LANS_export_png} % done
+\clearpage\input{extras/LANS_ext_image}	% done, nanosims data resampling refers to the supplement of Spataro et al. 2023
+\clearpage\input{extras/LANS_depth_var} % done
+\clearpage\input{extras/LANS_load8plus} % done
+\clearpage\input{extras/LANS_export_png} % done
 \input{extras/LANS_export_tif} % done
 
-\fi
-
 % appendix
-
-\input{core/LANS_appendix} % done
+\clearpage\input{core/LANS_appendix} % done
 
 \end{document}
