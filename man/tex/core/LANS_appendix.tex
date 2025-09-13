@@ -4,11 +4,12 @@
 \renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
 \setcounter{figure}{0}
 
-\section{Apendix}
+\section{Appendix}
 
 \subsection{Debugging \LaTeX\ integration with LANS}
 \label{appendix:A}
 
+\vskip2mm
 LANS generates graphical output (images and graphs) in an EPS format and then uses the program \ttt{epstopdf} to convert it to PDF. Furthermore, LANS uses the program \ttt{pdflatex} and several LaTeX packages to generate a~tagged PDF document containing a~graphical summary of the processed data. These programs and necessary packages are typically installed as part of the LaTeX distribution. Some packages may, however, be missing and need to be installed `by hand'. Use the following steps to test whether the conversion from EPS to PDF and compilation of the PDF output work on your computer.
 
 \vskip2.5mm
@@ -16,11 +17,11 @@ LANS generates graphical output (images and graphs) in an EPS format and then us
 
 \subsubsection{Testing of EPS to PDF conversion}
 
-\s{Search whether the executable \ttt{epstopdf} is installed (present) locally on your computer.}
+\sbx{Search whether the executable \ttt{epstopdf} is installed (present) locally on your computer.}
 
 \nnb{If it is not, do some internet searching to figure out how to install it. If it is installed, proceed with the following step to test it.}
 
-\s{Open a~terminal (if you are using Linux of MacOS) or a command prompt (\ttt{cmd}, if you are using Windows), navigate to the folder \ttt{eps} (a~sub-folder of the folder where you unzipped the \ttt{test\_latex.zip} file), and enter the following command:
+\sbx{Open a~terminal (if you are using Linux of MacOS) or a command prompt (\ttt{cmd}, if you are using Windows), navigate to the folder \ttt{eps} (a~sub-folder of the folder where you unzipped the \ttt{test\_latex.zip} file), and enter the following command:
 \vskip2.5mm
 \quad \ttt{epstopdf 12C.eps}}
 
@@ -28,9 +29,9 @@ LANS generates graphical output (images and graphs) in an EPS format and then us
 
 \subsubsection{Testing of \TeX\ to PDF conversion}
 
-\s{Open the \ttt{test\_outputG.tex} file in an editor that is part of the \LaTeX\ distribution (e.g., \ttt{TeXworks} or \ttt{texworks}). The file is located in the folder created by unzipping the \ttt{test\_latex.zip} file.}
+\sbx{Open the \ttt{test\_outputG.tex} file in an editor that is part of the \LaTeX\ distribution (e.g., \ttt{TeXworks} or \ttt{texworks}). The file is located in the folder created by unzipping the \ttt{test\_latex.zip} file.}
 
-\s{Compile it using \ttt{pdfLaTeX}. If you use \ttt{TeXworks}, this is best done by clicking on the green arrow in the top-left corner of the program window, next to \ttt{pdfLaTeX}.}
+\sbx{Compile it using \ttt{pdfLaTeX}. If you use \ttt{TeXworks}, this is best done by clicking on the green arrow in the top-left corner of the program window, next to \ttt{pdfLaTeX}.}
 
 \nnb{If you succeed in generating the file \ttt{test\_outputG.pdf} in this way, then the \TeX\ to PDF conversion should also work in Matlab when using LANS.}
 
@@ -38,4 +39,4 @@ LANS generates graphical output (images and graphs) in an EPS format and then us
 
 \nnb{Note that you will need to go through the process of installation of missing \LaTeX\ packages only once.}
 
-\s{Contact \ttt{L . P o l e r e c k y @ u u . n l} if you experience problems or seem unable to make this work.}
+\sbx{Contact \ttt{L . P o l e r e c k y @ u u . n l} if you experience problems or seem unable to make this work.}
