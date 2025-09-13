@@ -22,26 +22,16 @@
 % LP commands
 \newcommand{\ttt}[1]{\textsf{#1}}
 \newcommand\ra{\rightarrow}
-\newcommand\figref[0]{\textbf{Figure}}
 \newcounter{step}
 \setcounter{step}{0}
-\newcommand\bul{\noindent$\bullet${ }}
 \newcommand\bb[1]{\textbf{#1}}
 
-% load more definitions and latex options
+% more definitions and latex options (mostly tcolorboxes)
 \input{LANS_preamble}
-
-% Title, author, date
-\title{\LARGE \bf Look@NanoSIMS}
-\author{{\large\bf by Lubos Polerecky}\\[6mm]
-{\small Department of Earth Sciences, Utrecht University, Utrecht, The Netherlands (2013--today)} \\%[1mm]
-{\small Max-Planck Institute for Marine Microbiology, Bremen, Germany (2002--2013)}\\[3mm]}
-\date{User Manual, version 28-06-2025}
-
-
 
 \begin{document}
 
+% title page
 \thispagestyle{empty}
 \phantomsection\pdfbookmark{Look@NanoSIMS - title page}{firstpage}
 \begin{center}
@@ -52,22 +42,13 @@
 {Max-Planck Institute for Marine Microbiology, Bremen, Germany (2002--2013)}\\[12mm]
 \end{center}
 
-%\maketitle
-%\reversemarginpar 
-
-%\thispagestyle{empty}
-%\phantomsection
-%\pdfbookmark{Title page}{titlepage}
-
 \purplebox{Summary\rule[-6pt]{0pt}{18pt}}
-%\section*{Summary}
 \textbf{Look@NanoSIMS}, or shortly \textbf{LANS}, is a program for processing and analysis of ion count image data produced by the NanoSIMS instrument. The original development of the program started back in 2008, but its active development continues until today based on input and requests from users (yes, it's more like a~long-term hobby). Although the program may be considered an `old school' in a number of aspects, it has matured well over the years. Once you get used to it, become aware of all of its features and figure out all the tricks, it allows you to analyze NanoSIMS data very thoroughly and efficiently. This document describes how to get started with the program and carry out such analyses from basic to advanced levels. 
 \tcbe
 
 \vskip3mm
 \skybluebox{Citation}
 Please use the following citation if you use Look@NanoSIMS:
-%\vskip0.05mm
 \begin{center}
 \begin{minipage}{0.93\textwidth}
 \textsl{\small Polerecky et al.~(2012). Look@NanoSIMS --- a tool for the analysis of nanoSIMS data in environmental microbiology. \textit{Environmental Microbiology} 14 (4): 1009--1023. \url{ https://doi.org/10.1111/j.1462-2920.2011.02681.x}}
