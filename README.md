@@ -63,19 +63,19 @@ Contact detail: `l (dot) polerecky (at) uu (dot) nl`
     - image alignment done within LANS
     - resampling of NanoSIMS images to match the resolution of the external image
 
-## User manual
+## User manual and test data
 
-Updated LANS manual (2025) is available from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0) (sub-folder `manual`).
+1. Updated LANS manual (2025) is available from this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0) (sub-folder `manual`).
+2. Test data is available from the same Dropbox folder (sub-folder `test_data`).
 
 ## Download LANS
 
 1. For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the `program` folder and then download the file `LANS-latest-src.zip`.
-
 2. If you are familiar with `git`, you can pull the source code of LANS from this github repository; the complete source code is in the [src](src) folder.
 
 ## Update LANS
 
-1. Updating LANS to the newest version is easy: in the Matlab console, navigate to the folder of your current LANS version, and enter `lans_webupdate`.
+Updating LANS to the newest version is easy: in the Matlab console, navigate to the folder of your current LANS version, and enter: `lans_webupdate`.
 
 ## Install LANS
 
