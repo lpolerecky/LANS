@@ -69,12 +69,12 @@ Updated LANS manual (2025) is available from this [Dropbox folder](https://www.d
 
 ## Download LANS
 
-  - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the `program` folder and then download the file `LANS-latest-src.zip`.
-  - If you are familiar with `git`, you can pull the source code of LANS from this github repository; the complete source code is in the [src](src) folder.
+    - For convenience, the compressed file containing the latest version of LANS is stored in this [Dropbox folder](https://www.dropbox.com/sh/gyss2uvv5ggu2vl/AABViAmt9WHryEP_xZBrCG_La?dl=0). Click on the `program` folder and then download the file `LANS-latest-src.zip`.
+    - If you are familiar with `git`, you can pull the source code of LANS from this github repository; the complete source code is in the [src](src) folder.
 
 ## Update LANS
 
-  - Updating LANS to the newest version is easy: in the Matlab console, navigate to the folder of your current LANS version, and enter `lans_webupdate`.
+    - Updating LANS to the newest version is easy: in the Matlab console, navigate to the folder of your current LANS version, and enter `lans_webupdate`.
 
 ## Install LANS
 
