@@ -480,7 +480,8 @@ if opt1(3) || opt1(6) || eaf || opt1(5) || opt1(9) || opt1(13) || opt1(12) || op
             % reorganize data into tables, as required by statistics_gui
             % debugged on 06-03-2023 by LP
             Nrow = size(all_x{1},1);
-            cs = cell_sizes(:,p.images{1})'; lw = lwratios(:,p.images{1})';
+            cs = cell_sizes(:,planes(:,1))'; 
+            lw = lwratios(:,planes(:,1))';
             sizefactor=2/sqrt(pi)*p.scale/size(p.Maskimg,2);
             t1 = table(ones(Nrow,1), ...
                 repmat(mfile,Nrow,1), ...
