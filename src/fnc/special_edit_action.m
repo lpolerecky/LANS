@@ -5,7 +5,7 @@ p = load_masses_parameters(h);
 
 global additional_settings;
 
-[opt1,opt3,opt4]=load_options(h,0);
+[opt1,opt3,~]=load_options(h,0);
 
 scale = str2num(get(hObject,'string'));
 
@@ -43,7 +43,7 @@ if f<=length(p.special)
             p.Maskimg = load_cells_from_disk(h,0,[CELLSFILE MAT_EXT]);
         end
 
-        [a,b,c,d,aconf] = calculate_R_images(p, opt4, 0, opt1(16), sic_mass);
+        [a,~,~,~,aconf] = calculate_R_images(p, opt4, 0, opt1(16), sic_mass);
 
         if iscell(a)
             a=a{f};
@@ -68,9 +68,11 @@ if f<=length(p.special)
         opt1(6)=1; 
         opt1(15)=1; 
         opt1(4)=plot_log;
-        plotImageCells(10+f,a,p.Maskimg,p.fdir,tit2,...
-            [my_get(h.edit62,'string'),'-'],scale,...
-            opt1,opt3(f), 0, p.scale, tit1, [], p.images{1},p.planes,aconf);    
+        if ~isempty(a)
+            plotImageCells(10+f,a,p.Maskimg,p.fdir,tit2,...
+                [my_get(h.edit62,'string'),'-'],scale,...
+                opt1,opt3(f), 0, p.scale, tit1, [], p.images{1},p.planes,aconf);    
+        end
 
     end
 

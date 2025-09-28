@@ -15,7 +15,7 @@ if isfield(additional_settings,'defFontSize')
     defFontSize = additional_settings.defFontSize;
 else 
     defFontSize=10;
-end;
+end
 
 % hack for correcting background 
 if 0    
@@ -23,14 +23,14 @@ if 0
     bkg = mean(bkg(:));
     bkg_cor=0.0005;
     IM=IM-bkg+bkg_cor;
-end;
+end
 
 % find out color of the cell outline
 if(nargin>5)
     oc=outline_color;
 else
     oc='w';
-end;
+end
 
 % define default options, if they are not defined
 if(nargin>7)
@@ -39,7 +39,7 @@ if(nargin>7)
 else
     o1=[1 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0];
     o3=0;
-end;
+end
 
 %% find scaling of the image
 sf=1;
@@ -55,29 +55,29 @@ if nargin>6
                     a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),0,[]);
                     mi(ii,1)=a(1);
                     ma(ii,1)=a(2);
-                end;
-            end;        
+                end
+            end     
         else    % if autoscale requested
             for ii=1:size(IM,3)
                 a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),0,[]);
                 mi(ii,1)=a(1);
                 ma(ii,1)=a(2);
-            end;
-        end;        
+            end
+        end   
     else        
         if ~isempty(imscale)
             for ii=1:size(IM,3)
                 mi(ii,1)=imscale(ii,1);
                 ma(ii,1)=imscale(ii,2);
-            end;
+            end
         else
             for ii=1:size(IM,3)
                 a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),1,[]);
                 mi(ii,1)=a(1);
                 ma(ii,1)=a(2);
-            end;
-        end;            
-    end;    
+            end
+        end       
+    end
 else    
     if min(IM(:))==max(IM(:))
         mi=0; ma=1;
@@ -86,10 +86,10 @@ else
             a = find_image_scale(IM(:,:,ii),0,additional_settings.autoscale_quantiles,o1(4),0,[]);
             mi(ii,1)=a(1);
             ma(ii,1)=a(2);
-        end;
-    end;
+        end
+    end
     
-end;
+end
 
 fac = ones(length(ma),1);
 for ii=1:length(ma)
@@ -97,45 +97,45 @@ for ii=1:length(ma)
     if mi(ii)==ma(ii)
         % in case image is flat
         ma(ii)=mi(ii)+1;
-    end;
+    end
 
     % for small range, values will be multiplied by 1000
-    if (ma(ii)-mi(ii))<=1e3 | (ma(ii)-mi(ii))>=1e4
+    if (ma(ii)-mi(ii))<=1e3 || (ma(ii)-mi(ii))>=1e4
         fac(ii)=10^ceil(-log10(ma(ii)-mi(ii)));
     else
         fac(ii) = 1;
-    end;
+    end
     if ~additional_settings.apply_1e3_factor
         fac(ii) = 1.000;
-    end;
+    end
     
-end;
+end
 
 % define default export_flag, if not defined
 if(nargin>9)
   ef=export_flag;
 else
   ef=1;
-end;
+end
 
 % default scale, if not known
 if(nargin>10)
     xyscale=scale;
 else
     xyscale=50;
-end;
+end
 
 if nargin>15
     conf = imconf;
 else
     conf = ones(size(IM,1),size(IM,2));
-end;
+end
 
 % if "zero values outside cells" checked
 if( ~isempty(CELLS) & o1(2) )
     ind=find(CELLS==0);
     IM(ind)=zeros(size(ind));
-end;
+end
 
 %% open figure where the image will be displayed
 % set the default figure position to the middle of the screen if the figure
@@ -152,7 +152,7 @@ else
     FigPos(1)=1/2*(ScreenSize(3)-FigPos(3));
     FigPos(2)=2/3*(ScreenSize(4)-FigPos(4));
     fpos=FigPos;
-end;
+end
 
 IM_orig=IM;
 mass_orig=mass_;
@@ -252,7 +252,7 @@ if o1(6) && prod(mi<ma)
     end
 
     % set axis and colorbar position nicely
-    if(size(IM,3)==1)
+    if(~isempty(IM) & size(IM,3)==1)
         global CELLSFILE
                         
         if additional_settings.color_bar_pos==2
@@ -413,7 +413,7 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
         hbins = 10;
     else
         hbins = 40;
-    end;
+    end
     
     fncells=cellfile;
     
@@ -458,8 +458,8 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
                 leg{ii}=char(cidu(ii));
                 s=sprintf('%s: %.2e (SD=%.2e)',leg{ii},mean(dind),std(dind));
                 leg{ii}=s;
-            end;
-        end;
+            end
+        end
 
                 
         % add also the histogram for all pixels whose values are in the
@@ -471,7 +471,7 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
             leg{ii+1}='all pixels';        
             [h(:,ii+1)]=histc(d(ind),xout);
             plot(xout,h(:,ii+1),'k-','LineWidth',2);                    
-        end;
+        end
         legend(leg)
         legend('boxoff');
         
@@ -494,9 +494,9 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
             %disp(s);
             fprintf(1,'%s: [mean, std, q0.05, q0.95] =\t%.3e\t%.3e\t%.3e\t%.3e\n',...
                     leg{1},mean(dind),std(dind),quantile(dind,[0.05 0.95]));                
-        end;
+        end
         
-    end;
+    end
     
     % make the figures look nicer   
     set(gca,'FontSize',defFontSize);
@@ -505,7 +505,7 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
     set(gca,'xlim',[mi ma]);
     if opt1(15)
         add_title(title_,additional_settings.title_length, defFontSize);
-    end;
+    end
     
     % export the histograms data as ascii
     if o1(10)
@@ -514,24 +514,24 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
         if(~isdir(newdir))
             mkdir(newdir);
             fprintf(1,'Directory %s did not exist, so it was created.\n',newdir);
-        end;
+        end
         a=convert_string_for_texoutput(mass_);
         fout=[newdir,a,'-h.dat'];
         fid=fopen(fout,'w');
         fprintf(fid,'# %s\t',mass_);
         for ii=1:length(leg)
             fprintf(fid,'%s\t',leg{ii});
-        end;
+        end
         fprintf(fid,'\n');
         fmt='%5.3e';
         for ii=1:size(h,2)
             fmt=[fmt,'\t%d'];
-        end;
+        end
         fmt=[fmt,'\n'];
         fprintf(fid,fmt,histograms');
         fclose(fid);
         fprintf(1,'Histogram data saved to %s\n',fout);
-    end;
+    end
         
     % export graph as pdf
     if o1(11)
@@ -539,7 +539,7 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
         if(~isdir(newdir))
             mkdir(newdir);
             fprintf(1,'Directory %s did not exist, so it was created.\n',newdir);
-        end;       
+        end      
         a=convert_string_for_texoutput(mass_);
         % first print as eps, then convert to pdf
         fout=[newdir,a,'-h.eps'];
@@ -559,7 +559,7 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
 end
 
 % export the data as BW Tiff image as well, if B&W option was selected
-if (o1(6) & o3 & additional_settings.export_tif) & ef
+if (o1(6) && o3 && additional_settings.export_tif) && ef
     
     Nbits = 16;
     % make a Nbits-bit dataset
@@ -572,7 +572,7 @@ if (o1(6) & o3 & additional_settings.export_tif) & ef
     % create output tif directory, if it doesn't exist yet
     fdir = fixdir(fdir);
     newdir=[fdir,'tif',delimiter];    
-    if(~isdir(newdir))
+    if(~isfolder(newdir))
         mkdir(newdir);
         fprintf(1,'Directory %s did not exist, so it was created.\n',newdir);        
     end
@@ -590,15 +590,15 @@ if (o1(6) & o3 & additional_settings.export_tif) & ef
 end
 
 % export in matlab format for future post-processing
-if ef & o1(6)
+if ef && o1(6)
 
     % create output mat/ directory, if it doesn't exist yet
     fdir = fixdir(fdir);
     matdir=[fdir,'mat',delimiter];
-    if(ef & ~isdir(matdir))
+    if(ef && ~isfolder(matdir))
         mkdir(matdir);
         fprintf(1,'Directory %s did not exist, so it was created.\n',matdir);
-    end;
+    end
 
     % generate the output filename and export
     a=convert_string_for_texoutput(mass_orig);
@@ -632,4 +632,4 @@ end
 
 if o1(6)
     figure(f);
-end;
+end
