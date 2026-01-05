@@ -81,12 +81,12 @@ Updating LANS to the newest version is easy: in the Matlab console, navigate to 
 
 Refer to the **manual** for detailed instructions on how to install LANS on your computer. The key steps include:
 
-1. Install Matlab (recommended version: 2024b).
+1. Install Matlab from [Mathworks](https://www.mathworks.com) (recommended version: **2024b**).
 2. Install LaTeX (visit [this website](https://www.latex-project.org/get/) for details).
 3. Install data compression software (recommended: [7-Zip](https://www.7-zip.org/download.html) for Windows, **zip** and **unzip** for Linux and MacOS).
-4. Download LANS source code (see above).
-5. Unzip the file `LANS-latest-src.zip` to a folder on your computer. 
-6. Rename the `src` folder to a more reasoname name (e.g., `LANS-2025-07-27`).
+4. Download the LANS source code (see above).
+5. Unzip the downloaded `LANS-latest-src.zip` file to a folder on your computer. 
+6. Rename the `src` folder to a more reasonable name (e.g., `LANS-2025-07-27`).
 
 ## Run LANS
 
