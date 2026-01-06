@@ -639,8 +639,8 @@ if opt1(9)
                 %a=0;
                 if ~isempty(f2)
                     % remember data in the scatter plot for the 'Fit data' function
-                    global XY_DATA_SCATTER_PLOT;
-                    XY_DATA_SCATTER_PLOT = [special_x(:), dx(:), special_y(:), dy(:)];  
+                    global XY_DATA_SCATTER_PLOT1;
+                    XY_DATA_SCATTER_PLOT1 = [special_x(:), dx(:), special_y(:), dy(:)];  
                     % define the button to call the 'Fit data' function
                     fb = findobj('tag','fit_button');
                     if isempty(fb)
