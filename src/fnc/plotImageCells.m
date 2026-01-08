@@ -134,7 +134,11 @@ end
 % if "zero values outside cells" checked
 if( ~isempty(CELLS) & o1(2) )
     ind=find(CELLS==0);
-    IM(ind)=zeros(size(ind));
+    if additional_settings.modulate_hue_with_white
+        IM(ind)=1*ones(size(ind));
+    else
+        IM(ind)=0*ones(size(ind));
+    end
 end
 
 %% open figure where the image will be displayed
