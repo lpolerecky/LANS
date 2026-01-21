@@ -26,18 +26,39 @@ else
     
     % add data points together with estimates of the density and quantiles
     %gu = unique(g);
-    xks=linspace(quantile(x,0.001), quantile(x,0.995),100);
+    xks=linspace(quantile(x,0.001), quantile(x,0.999),100);
+    bgc = 0.4; % "Bulgarian" constant :)
     for i=1:length(gn)
         if strcmp(compare,'treat') | strcmp(compare,'ROI')
             ii=find(g==str2num(gn{i}));
         else
             ii=find(g==gn{i});
         end
+
+        % estimate density distribution and add it to the plot
         xi=x(ii);
-        f=ksdensity(xi,xks);        
-        plot(xks,0.9*f/max(f)+(i),'b-');
+        f=ksdensity(xi,xks);     
+        f = f/max(f);
+        plot(xks,[bgc*f+(i); -bgc*f+(i)],'-','Color',0.7*[1 1 1],'LineWidth',1);
+        
         if i==1, hold on; end
-        plot(xi,i*ones(size(xi)),'+','MarkerEdgeColor',[0 0.5 0])
+
+        % add data points with an offset
+        xsorted = sort(xi);
+        if length(xi)>20
+            % for better visualization, add random offset modulated by the
+            % estimated density distribution to the data points 
+            rng(1);
+            yoffset = (randi(200,size(xi))-100)/100;
+            foffset = interp1(xks', f', xsorted, 'linear',0);
+            yoffset = bgc * yoffset .* foffset;
+        else
+            % add no offset if number of data points is low (<=20)
+            yoffset = zeros(size(xi));
+        end        
+        plot(xsorted, i + yoffset,'+','MarkerEdgeColor',[0.2 0.85 0.2])
+
+        % add quantiles
         q1=quantile(xi,[0.25 0.5 0.75]);
         for j=1:length(q1)
             ij=find( abs(xks-q1(j))==min(abs(xks-q1(j))) );
@@ -46,17 +67,16 @@ else
             else
                 lj='k--';
             end
-            plot(q1(j)*[1 1],[i 0.9*f(ij)/max(f)+i],lj);
+            %plot(q1(j)*[1 1],[i bgc*f(ij)+i; i -bgc*f(ij)+i],lj, 'LineWidth',1.5);
+            plot(q1(j)*[1 1], bgc*f(ij)*[-1 1] + i, lj, 'LineWidth',1.5);
         end        
     end    
     
     % add also the mean values
-    %plot(mm,[1:length(mm)],'rs','MarkerFaceColor','r','MarkerSize',10);
-    plot(mm,[1:length(mm)],'rs','MarkerSize',12, 'LineWidth',2);
-    %hold on
-
+    plot(mm,[1:length(mm)],'rs', 'MarkerSize',12, 'LineWidth',2.5);
+    
     % set tick labels properly
-    ylim([0.8 length(gn)+1.1])
+    ylim([0.5 length(gn)+0.5])
     set(ax,'ytick',[1:length(gn)],'yticklabel',(gn))
     
     xlabel(r,'Fontsize',defFontSize)

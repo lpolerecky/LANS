@@ -83,6 +83,8 @@ else
     VCELLS = CELLS;
     indc=[];
     old2new = [];
+    t2 = t1;
+    t3 = t1;
 end
 
 t4=clock;
