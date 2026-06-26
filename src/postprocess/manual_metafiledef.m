@@ -555,8 +555,10 @@ if(exist(metafile)==2)
     specialy2=[];
     specialx3=[];
     specialy3=[];
+    %nlines = 1;
     while 1
-        tline = fgetl(fid);
+        %fprintf(1,'Line %d\n', nlines);
+        tline = fgetl(fid);        
         if ~ischar(tline) | isempty(tline),   break,   end
         if strcmp(tline(1),'#') 
             if jj==0
@@ -576,8 +578,12 @@ if(exist(metafile)==2)
         if(~strcmp(a(1),'#'))
             ind=[0 findstr(a,char(9)) length(a)+1];
             jj=jj+1;
+            %if nlines==20
+            %    halt = 0;
+            %end
             for ii=1:(length(ind)-1)
-                s = a(ind(ii)+1:ind(ii+1)-1);
+                s = a(ind(ii)+1:ind(ii+1)-1); 
+                %fprintf(1,'i=%d\n', ii);
                 switch ii
                     case 2, all_datasets{jj} = s;
                     case 3, all_treatments(jj,1) = str2num(s);
@@ -591,6 +597,7 @@ if(exist(metafile)==2)
                 end;
             end;
         end;
+        %nlines = nlines + 1;
     end;
     fclose(fid);
     fprintf(1,'Data loaded from %s\n',metafile);

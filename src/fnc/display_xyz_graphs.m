@@ -328,9 +328,17 @@ if opt1(9)
                                 xc = [xc; x(indc)];
                                 yc = [yc; y(indc)];
                                 if ~isempty(xnom) && ~isempty(xdenom) && ~isempty(ynom) && ~isempty(ydenom)
-                                    xc_nom = [xc_nom; xnom(indc)];
+                                    xc_nom   = [xc_nom; xnom(indc)];
+                                    % if plane is in the denominator,
+                                    % this is needed to fix an error
+                                    if isscalar(xdenom)
+                                        xdenom = xdenom*ones(size(xnom));
+                                    end
+                                    if isscalar(ydenom)
+                                        ydenom = ydenom*ones(size(ynom));
+                                    end
                                     xc_denom = [xc_denom; xdenom(indc)];
-                                    yc_nom = [yc_nom; ynom(indc)];
+                                    yc_nom   = [yc_nom; ynom(indc)];
                                     yc_denom = [yc_denom; ydenom(indc)];
                                 else
                                     if i==1
@@ -384,6 +392,14 @@ if opt1(9)
                     % all pixels in ROIs
                     vc=setdiff(unique(p.Maskimg),0);
                     numObjects=length(vc);
+                    % if plane is in the denominator,
+                    % this is needed to fix an error
+                    if isscalar(xdenom)
+                        xdenom = xdenom*ones(size(xnom));
+                    end
+                    if isscalar(ydenom)
+                        ydenom = ydenom*ones(size(ynom));
+                    end
                     if(numObjects>0)
                         ind=find(p.Maskimg>0);
                         xall=x(ind);
