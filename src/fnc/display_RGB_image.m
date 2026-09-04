@@ -154,10 +154,10 @@ if ~isempty(rgb7) || ~isempty(rgb8)
                 xyfile=[xyfile,'.eps'];
                 xyfile=[p.fdir,'eps',delimiter,xyfile];
                 epsdir = fileparts(xyfile);
-                if(~isfolder(epsdir))
-                    mkdir(epsdir);
-                    fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
-                end
+                %if(~isfolder(epsdir))
+                %    mkdir(epsdir);
+                %    fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
+                %end
                 print_figure(mf,xyfile,additional_settings.print_factors(1));
                 outfname = mepstopdf(xyfile,'epstopdf');
                 outfname = regexprep(outfname,'\','/');

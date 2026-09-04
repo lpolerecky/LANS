@@ -1,10 +1,10 @@
 function print_figure(f,fname,print_factor)
 
-[a, ~, ~]=fileparts(fname);
-if ~isfolder(a)
-    mkdir(a);
-    fprintf(1,'Output folder created: %s\n',a);
-end
+%[a, ~, ~]=fileparts(fname);
+%if ~isfolder(a)
+%    mkdir(a);
+%    fprintf(1,'Output folder created: %s\n',a);
+%end
 
 if length(print_factor)<2
     fpos=get(f,'Position');
@@ -14,11 +14,25 @@ end
 %set(f,'PaperPosition',[0.25 2.5 print_factor*5]);
 set(f,'PaperPosition',[0 0 print_factor*5]);
 
-if matversion>=2015
-    print(f,fname,'-depsc');
-else
-    print(f,fname,'-depsc2','-loose');
+% changed on 02-Sep-2026 to avoid issues with epstopdf and library version
+% conflicts
+%if matversion>=2015
+%    print(f,fname,'-depsc');
+%else
+%    print(f,fname,'-depsc2','-loose');
+%end
+% replace eps by pdf, in two steps just in case the folder or file name
+% contains 'eps'
+fname = strrep(fname, [delimiter 'eps' delimiter], [delimiter 'pdf' delimiter]);
+fname = strrep(fname, '.eps', '.pdf');
+% create output folder, if it does not exist yet
+fdir = fileparts(fname);
+if ~isfolder(fdir)
+    mkdir(fdir)
+    fprintf(1,'Directory %s did not exist, so it was created.\n', fdir);
 end
+% export figure as pdf, including the correct bounding box
+exportgraphics(figure(f), fname, 'ContentType', 'vector');
 
 % some new ideas, not working too well
 %     set(f, 'paperunits', 'centimeters');

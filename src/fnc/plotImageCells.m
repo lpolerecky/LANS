@@ -540,10 +540,10 @@ if o1(3) & ~isempty(CELLS) & isempty(findstr(mass_,CELLSFILE))
     % export graph as pdf
     if o1(11)
         newdir=[fdir,'eps',delimiter];
-        if(~isdir(newdir))
-            mkdir(newdir);
-            fprintf(1,'Directory %s did not exist, so it was created.\n',newdir);
-        end      
+        %if(~isdir(newdir))
+        %    mkdir(newdir);
+        %    fprintf(1,'Directory %s did not exist, so it was created.\n',newdir);
+        %end      
         a=convert_string_for_texoutput(mass_);
         % first print as eps, then convert to pdf
         fout=[newdir,a,'-h.eps'];

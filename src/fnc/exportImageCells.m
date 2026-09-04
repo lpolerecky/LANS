@@ -15,11 +15,11 @@ if(~isempty(ext))
     % generate the output filename and export
     a=convert_string_for_texoutput(mass_);
     
-    figdir=[title_,ext];
-    if(~isdir(figdir))
-        mkdir(figdir);
-        fprintf(1,'Directory %s did not exist, so it was created.\n',figdir);
-    end;
+    %figdir=[title_,ext];
+    %if(~isdir(figdir))
+    %    mkdir(figdir);
+    %    fprintf(1,'Directory %s did not exist, so it was created.\n',figdir);
+    %end;
     
     % print as eps or png
     out = [title_,ext,delimiter,a,'.',ext];
@@ -27,9 +27,9 @@ if(~isempty(ext))
     if(strcmp(ext,'eps'))
         print_figure(f,out,print_factor);
         outname = mepstopdf(out,'epstopdf');
-    end;
+    end
     
     t2=now;
     %fprintf(1,'Printing of the figure took %.3fs\n',(t2-t1)*24*3600);
     
-end;
+end

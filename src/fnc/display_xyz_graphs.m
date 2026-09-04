@@ -214,10 +214,10 @@ if opt1(9)
                     xyfile0=convert_string_for_texoutput(xyfile0);
                     xyfile=[xyfile0,'-pix.eps'];
                     fdir = [p.fdir,'eps'];
-                    if ~isdir(fdir)
-                        mkdir(fdir);
-                        fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-                    end;
+                    %if ~isdir(fdir)
+                    %    mkdir(fdir);
+                    %    fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
+                    %end;
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
                     print_figure(figure(38),xyfile,additional_settings.print_factors(2));
                     mepstopdf(xyfile,'epstopdf');
@@ -292,10 +292,10 @@ if opt1(9)
                     xyfile=convert_string_for_texoutput(xyfile0);
                     xyfile=[xyfile,'.eps'];                    
                     fdir = [p.fdir,'eps'];
-                    if ~isdir(fdir)
-                        mkdir(fdir);
-                        fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-                    end
+                    %if ~isdir(fdir)
+                    %    mkdir(fdir);
+                    %    fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
+                    %end
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
                     print_figure(figure(39),xyfile,additional_settings.print_factors(2));
                     mepstopdf(xyfile,'epstopdf');
@@ -516,10 +516,10 @@ if opt1(9)
                     xyfile=convert_string_for_texoutput(xyfile0);
                     xyfile=[xyfile,'-pix.eps'];
                     fdir = [p.fdir,'eps'];
-                    if ~isdir(fdir)
-                        mkdir(fdir);
-                        fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-                    end;
+                    %if ~isdir(fdir)
+                    %    mkdir(fdir);
+                    %    fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
+                    %end;
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
                     print_figure(figure(38),xyfile,additional_settings.print_factors(2));
                     mepstopdf(xyfile,'epstopdf');
@@ -634,10 +634,10 @@ if opt1(9)
                     xyfile=convert_string_for_texoutput(xyfile0);
                     xyfile=[xyfile,'.eps'];                    
                     fdir = [p.fdir,'eps'];
-                    if ~isdir(fdir)
-                        mkdir(fdir);
-                        fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-                    end
+                    %if ~isdir(fdir)
+                    %    mkdir(fdir);
+                    %    fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
+                    %end
                     xyfile=[p.fdir,'eps',delimiter,xyfile];
                     % make the button invisible during printing
                     fb = findobj('tag','fit_button');

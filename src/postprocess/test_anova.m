@@ -190,10 +190,10 @@ else
                 [filepath filename ext]=fileparts(a);
                 filepath = fileparts(filepath);          
                 filepath = [filepath delimiter 'eps'];
-                if ~isdir(filepath)
-                    mkdir(filepath)
-                    fprintf(1,'Directory %s did not exist, so it was created.\n',filepath);
-                end;
+                %if ~isdir(filepath)
+                %    mkdir(filepath)
+                %    fprintf(1,'Directory %s did not exist, so it was created.\n',filepath);
+                %end;
                 a = [filepath delimiter filename '.eps'];
 
                 % set all objects except axes1 as invisible before printing

@@ -281,10 +281,10 @@ a=convert_string_for_texoutput(handles.data.ratio{ri});
 fdir = handles.data.fdir;
 fname = [fdir,'eps',delimiter,a,'-z.eps'];
 outdir = [fdir, 'eps', delimiter];
-if ~isdir(outdir)
-    mkdir(outdir);
-    fprintf(1,'Directory %s did not exist, so it was created.\n',outdir);
-end;
+%if ~isdir(outdir)
+%    mkdir(outdir);
+%    fprintf(1,'Directory %s did not exist, so it was created.\n',outdir);
+%end;
 global additional_settings;
 print_figure(handles.figure1, fname, additional_settings.print_factors(3));
 %fprintf(1,'Depth profiles of %s saved as %s\n',handles.data.ratio{ri},fname);

@@ -248,10 +248,10 @@ outf=convert_string_for_texoutput(outf);
 
 fdir = [handles.fdir,'eps'];
 fname1 = [fdir delimiter outf '.eps'];
-if ~isdir(fdir)
-    mkdir(fdir);
-    fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
-end;
+%if ~isdir(fdir)
+%    mkdir(fdir);
+%    fprintf(1,'Directory %s did not exist, so it was created.\n',fdir);
+%end;
 
 fdir = [handles.fdir,'tif'];
 fname2 = [fdir delimiter outf '.tif'];

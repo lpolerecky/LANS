@@ -690,10 +690,10 @@ if get(handles.checkbox2,'value') %&& jj==max(jj_range)
         fname = [fname 'd'];
     end
     fname = [fname '.eps'];
-    if ~isfolder([handles.fdir 'eps'])
-        mkdir([handles.fdir 'eps']);
-        fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
-    end
+    %if ~isfolder([handles.fdir 'eps'])
+    %    mkdir([handles.fdir 'eps']);
+    %    fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
+    %end
     [FileName,PathName] = uiputfile('*.eps',['Export lateral profile as'],fname);
     if length(PathName)~=1 % if cancel was not pressed
         a = [PathName FileName];
@@ -712,10 +712,10 @@ if get(handles.checkbox4,'value')
     a1 = a{jj};
     a=convert_string_for_texoutput(a1);
     fname = [handles.fdir, 'eps', delimiter, a,'-ilp.eps'];
-    if ~isfolder([handles.fdir 'eps'])
-        mkdir([handles.fdir 'eps']);
-        fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
-    end
+    %if ~isfolder([handles.fdir 'eps'])
+    %    mkdir([handles.fdir 'eps']);
+    %    fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
+    %end
     [FileName,PathName] = uiputfile('*.eps',['Export image with the lateral profile as'],fname);
     if length(PathName)~=1 % if cancel was not pressed
         a = [PathName FileName];

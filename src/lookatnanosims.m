@@ -228,7 +228,13 @@ LANS_version = '2025-06-25'; % LANS GUI for win updated:
                              % minimal & full back up of processed data implemented
 
 % these versions require mininmally Matlab 2024b
-LANS_version = '2025-07-27'; % LANS GUI for lnx updated (for Matlab 2024b)
+LANS_version = '2026-06-26'; % LANS GUI for lnx updated (for Matlab 2024b)
+
+LANS_version = '2026-09-02'; % issues with epstopdf resolved. Essentially,
+% epstopdf is not used any more, since the figures are exported to pdf
+% directly in matlab using the exportgraphics function. This required some
+% small editing in two critical files (print_figure.m and mepstopdf.m), and
+% removal of code in multiple files used for creatiing the eps folder.
 
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
@@ -246,7 +252,7 @@ if be_verbous
     fprintf(1,'Written by Lubos Polerecky <lpolerec (at) mpi-bremen.de>\n')
     fprintf(1,'(2008-2012) Max-Planck Institute for Marine Microbiology, Bremen\n')
     fprintf(1,'Updates by Lubos Polerecky <l.polerecky (at) uu.nl>\n')
-    fprintf(1,'(2013-2025) Utrecht University\n')
+    fprintf(1,'(2013-2026) Utrecht University\n')
     fprintf(1,'More info: http://github.com/lpolerecky/LANS\n')
     fprintf(1,'================================================================\n')
     fprintf(1,'Enjoy your work!\n')

@@ -285,10 +285,10 @@ a=convert_string_for_texoutput(handles.data.ratio{ri});
 fdir = handles.data.fdir;
 fname = [fdir,'eps',delimiter,a,'-z.eps'];
 outdir = [fdir, 'eps', delimiter];
-if ~isdir(outdir)
-    mkdir(outdir);
-    fprintf(1,'Directory %s did not exist, so it was created.\n',outdir);
-end;
+%if ~isdir(outdir)
+%    mkdir(outdir);
+%    fprintf(1,'Directory %s did not exist, so it was created.\n',outdir);
+%end;
 % older: 
 % print_figure(handles.figure1,fname,handles.data.print_factor);
 % changed on 16-01-2024 to match depth_profiles_ratios_gui.m

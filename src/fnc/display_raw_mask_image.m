@@ -250,10 +250,10 @@ if isfield(handles,'p')
             [opt1,opt3,opt4]=load_options(handles,1);
             if opt1(11)==1 & strcmp(mass,'ext')==1
                 fn = [fdir 'eps' delimiter];
-                if ~isdir(fn)
-                    mkdir(fn);
-                    fprintf(1,'Directory %s did not exist, so it was created.\n',fn);
-                end;
+                %if ~isdir(fn)
+                %    mkdir(fn);
+                %    fprintf(1,'Directory %s did not exist, so it was created.\n',fn);
+                %end;
                 fn = [fn mass '.eps'];
                 print_figure(fignum,fn,additional_settings.print_factors(1));
                 %fprintf(1,'Figure exported as %s\n',fn);

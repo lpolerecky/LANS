@@ -61,12 +61,12 @@ else
     if plot2d               
         
         epsdir = [pathstr delimiter name delimiter 'eps'];
-        if ~isfolder(epsdir)
-            mkdir(epsdir);
-            if verbose>1
-                fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
-            end
-        end
+        %if ~isfolder(epsdir)
+        %    mkdir(epsdir);
+        %    if verbose>1
+        %        fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
+        %    end
+        %end
 
         fprintf(1,'Plotting 2D graph: ');
         
@@ -155,12 +155,12 @@ else
     if plot3d                        
         
         epsdir = [pathstr delimiter name delimiter 'eps'];
-        if ~isfolder(epsdir)
-            mkdir(epsdir);
-            if verbose>1
-                fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
-            end
-        end
+        %if ~isfolder(epsdir)
+        %    mkdir(epsdir);
+        %    if verbose>1
+        %        fprintf(1,'Directory %s did not exist, so it was created.\n',epsdir);
+        %    end
+        %end
               
         fprintf(1,'Plotting 3D graph: ');
         
