@@ -1,4 +1,4 @@
-function [im,pp,p]=read_im_file(ff,ask_for_planes)
+function [im,pp,p] = read_im_file(ff,ask_for_planes)
 
 % Read the binary im file produced by the NanoSIMS 50L machine, and output
 % the raw images as well as the additional parameters characterizing the
@@ -244,10 +244,6 @@ for ii=1:Nptrue
         % read the image data in the specified bin_format (see above)
         [d12,count]=fread(fid,N,bin_format);
 
-%         if ii==8
-%             a=1;
-%         end;
-
         if count>0
 
             % get the higher and lower bytes and calculate the final image
@@ -338,8 +334,8 @@ if length(mass_name)>length(unique(mass_name))
     % this happens when peak switching is used to measure more than 8
     % masses per scan
     [im, mass_name, nb_mass, Nptrue] = rearrange_raw_image_data(im, mass_name);
-    pm=1:nb_mass;
-    pp=[1:Nptrue];
+    pm = 1:nb_mass;
+    pp = 1:Nptrue;
 end
     
 %fprintf(1,'Done.\n%d planes (%d-%d) stored.\n',kk,pp(1),pp(end));
@@ -360,4 +356,4 @@ p.dwell_time = round(anal_duration/cycle_number/width/height*1000/dwell_time_fac
 fprintf(1,'Dwell time estimated from analysis duration, image size and cycle number: %d ms\n',p.dwell_time);
 
 % left here for debugging
-a=0;
+%a=0;

@@ -19,8 +19,10 @@ function p=read_cameca_image(fname, ask_for_planes, load_accumulated, hndls)
 % (see the end of read_im_file.m for details).
 %
 % (c) L. Polerecky, 25.11.2009, MPI Bremen
-% updated: L. Polerecky, 22.08.2012, MPI Bremen
-% updated for loading zipped image files: L. Polerecky, 04.03.2017, Utrecht
+% updates:
+% fixes: LP, 22.08.2012, MPI Bremen
+% loading of zipped im files: LP, 04.03.2017, Utrecht
+% loading of IMP files produced by Cameca IMS 1280: LP, 05-10-2026, Utrecht
 
 if nargin>3
     handles = hndls;
@@ -31,7 +33,7 @@ end
 im=[]; planes = []; p = [];
 imfile_existed=0;
 
-orig_fname = fname;
+%orig_fname = fname;
 [pathstr, name, ext] = fileparts(fname);
 
 if load_accumulated ~= 2
@@ -58,10 +60,12 @@ if load_accumulated ~= 2
         % unzip the zipped im file
         global UNZIP_COMMAND;    
         fprintf(1,'\nUnzipping %s ... ',[name, ext]);    
-        s = ['!' UNZIP_COMMAND ' ' name ext];
+        %s = ['!' UNZIP_COMMAND ' ' name ext];
+        s = [UNZIP_COMMAND ' ' name ext];
         cdir=pwd;
         cd(pathstr);
-        eval(s);
+        %eval(s);
+        system(s);
         cd(cdir);
         fprintf(1,'done.\n');
 
@@ -71,8 +75,14 @@ if load_accumulated ~= 2
     end
     
     % read the IM file, filling also its properties in the p structure
-    if exist(fname,'file')==2           
-        [im, planes, p]=read_im_file(fname,ask_for_planes);
+    if exist(fname,'file')==2   
+        [~, ~, ext2] = fileparts(fname);
+        switch ext2
+            case '.imp'
+                [im, planes, p]=read_imp_file(fname);
+            case '.im'
+                [im, planes, p]=read_im_file(fname,ask_for_planes);
+        end
         log_user_info(fname);        
         p.im = im;
         p.planes = planes;

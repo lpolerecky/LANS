@@ -4,7 +4,7 @@
 global be_verbous
 be_verbous = 1; 
 
-if exist('start_lans_quietly')
+if exist('start_lans_quietly', 'var')
     be_verbous = ~start_lans_quietly;    
 end
 

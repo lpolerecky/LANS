@@ -156,7 +156,7 @@ else
     else
         pl = length(p.images{1});
     end
-    s=sprintf([ff , 'x', ff2, 'um %dx%dpix %d planes (%s@%s; %d ms)'],...
+    s=sprintf([ff , 'x', ff2, 'um %dx%dpix %d planes (%s@%s; %g ms)'],...
         ss,ss2,p.width,p.height,pl,p.date,p.time,p.dwell_time);
     
     if w~=p.width | h~=p.height

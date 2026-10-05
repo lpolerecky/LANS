@@ -1,7 +1,10 @@
-function [imfile dname] = choose_im_file(handles, multiple)
+function [imfile, dname] = choose_im_file(handles, multiple)
 % return cells of strings with the cameca image filename (imfile) and the
 % corresponding output directory (dname)
 % return empty if the filename or pathname contains forbidden characters
+%
+% updates:
+% LP, 05-10-2026: loading of IMP files possible
 
 % default output values
 imfile = [];
@@ -9,32 +12,51 @@ dname = [];
 
 % find the last working directory
 workdir=get(handles.edit1,'String');
-if(isdir(workdir))
+if isfolder(workdir)
     newdir=workdir;
 else
     newdir='';
-end;
+end
 workdir=fixdir(workdir);
 
 global IM_FILE_EXT;
-file_types = {'*.im', 'Cameca IM file (*.im)'; ...
-        '*.im.zip','Compressed Cameca IM file (*.im.zip)'; ...
-        '*.mat','LANS-processed data (*.mat)'};
-if contains(IM_FILE_EXT,'zip')
-    ft = cell(2,2);
-    ft{1,1} = file_types{2,1};
-    ft{1,2} = file_types{2,2};
-    ft{2,1} = file_types{1,1};
-    ft{2,2} = file_types{1,2};    
-else
-    ft = file_types;
+file_types = {'*.im', 'Cameca 50L IM file (*.im)'; ...
+        '*.im.zip','Compressed Cameca 50L IM file (*.im.zip)'; ...
+        '*.mat','LANS-processed data (*.mat)'; ...
+        '*.imp','Cameca IMS 1280 file (*.imp)'};
+
+% adjust the list of extensions such that the last selected one will be on
+% top
+switch IM_FILE_EXT 
+    case '.im.zip'
+        ft = cell(4,2);
+        ft{1,1} = file_types{2,1};
+        ft{1,2} = file_types{2,2};
+        ft{2,1} = file_types{1,1};
+        ft{2,2} = file_types{1,2};
+        ft{3,1} = file_types{3,1};
+        ft{3,2} = file_types{3,2};
+        ft{4,1} = file_types{4,1};
+        ft{4,2} = file_types{4,2};        
+    case '.imp'
+        ft = cell(4,2);
+        ft{1,1} = file_types{4,1};
+        ft{1,2} = file_types{4,2};
+        ft{2,1} = file_types{2,1};
+        ft{2,2} = file_types{2,2};
+        ft{3,1} = file_types{3,1};
+        ft{3,2} = file_types{3,2};
+        ft{4,1} = file_types{1,1};
+        ft{4,2} = file_types{1,2};
+    otherwise        
+        ft = file_types;
 end
 
 % select file(s)
 
 if multiple==0
     [FileName,newdir,newext] = uigetfile(ft, ...
-        'Select *.IM or *.IM.zip file', workdir, ...
+        'Select *.IM, *.IM.zip or *.IMP file', workdir, ...
         'MultiSelect', 'off');
 elseif multiple==1
     [FileName,newdir,newext] = uigetfile(ft, ...
@@ -44,8 +66,8 @@ elseif multiple==2 % this is used when loading the accumulated data, without the
     [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS preferences file (*.mat)'}, ...
         'Select LANS preferences file', workdir, ...
         'MultiSelect', 'off');
-    [newdir fname]=fileparts(newdir(1:end-1));
-    [newdir]= [newdir filesep];
+    [newdir, fname]=fileparts(newdir(1:end-1));
+    newdir = [newdir filesep];
     FileName = [fname filesep FileName];
 elseif multiple==3 % this is used when loading the complete processed dataset, i.e., all planes
     [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS processed file (*.mat)'}, ...
@@ -62,12 +84,15 @@ if ~iscell(FileName)
             newext = 2;
         elseif contains(FileName,'mat')
             newext = 3;
+        elseif contains(FileName,'imp')
+            newext = 4;
         else
             newext = 1;
         end
         
         set(handles.edit1,'String',newdir);
-        set(handles.text2,'String',newext); 
+        set(handles.text2,'String',newext);
+
         fn = approve_imfile([newdir FileName]);
 
         if ~isempty(fn) 
@@ -85,12 +110,17 @@ else
     
     set(handles.edit1,'String',newdir);
     bad_flag = 0;
-    for ii=1:length(FileName)
+    lFN = length(FileName);
+    tmp1 = cell(lFN,1);
+    tmp2 = cell(lFN,2);
+    for ii=1:lFN
         
         if contains(FileName{ii},'zip')
             newext = 2;
         elseif contains(FileName,'mat')
             newext = 3;
+        elseif contains(FileName,'imp')
+            newext = 4;
         else
             newext = 1;
         end
@@ -111,10 +141,13 @@ else
     end
     
 end
+
 if newext==2
     IM_FILE_EXT = '.im.zip';
 elseif newext==3
     IM_FILE_EXT = '.mat';
+elseif newext==4
+    IM_FILE_EXT = '.imp';
 else
     IM_FILE_EXT = '.im';
 end
@@ -130,7 +163,7 @@ if flag>0
     fout=[];
 else
     fout=imfile;
-end;
+end
 
 function dout = get_outdirectory(imfile, newext)
 if isempty(imfile)
@@ -138,11 +171,11 @@ if isempty(imfile)
 else
     % remove .zip if present
     if newext==2
-       ind = findstr(imfile,'.zip');
+       ind = strfind(imfile,'.zip');
        ind = max(ind);
        imfile = imfile(1:ind-1);
-    end;
+    end
     % determine output directory
-    [pathstr, name, ext] = fileparts(imfile);
+    [pathstr, name, ~] = fileparts(imfile);
     dout = [pathstr delimiter name];   
-end;
+end

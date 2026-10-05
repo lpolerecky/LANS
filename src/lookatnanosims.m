@@ -236,6 +236,9 @@ LANS_version = '2026-09-02'; % issues with epstopdf resolved. Essentially,
 % small editing in two critical files (print_figure.m and mepstopdf.m), and
 % removal of code in multiple files used for creatiing the eps folder.
 
+LANS_version = '2026-10-05'; % loading of IMP files produced by 
+% Cameca IMS 1280 now implemented
+
 % name of the external image file (empty by default)
 EXTERNAL_IMAGEFILE = '';
 
