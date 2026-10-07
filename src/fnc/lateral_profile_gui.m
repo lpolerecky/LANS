@@ -676,34 +676,34 @@ if get(handles.checkbox2,'value')
     end
 end
 
-% export the graph as EPS
+% export the graph as PDF
 if get(handles.checkbox2,'value') %&& jj==max(jj_range)
     if get(handles.checkbox3,'value')==0
         a = get(handles.popupmenu1,'string');
         a1 = a{jj};
         a=convert_string_for_texoutput(a1);
-        fname = [handles.fdir, 'eps', delimiter, a,'-lp'];
+        fname = [handles.fdir, 'pdf', delimiter, a,'-lp'];
     else
-        fname = [handles.fdir, 'eps', delimiter, 'all-lp'];
+        fname = [handles.fdir, 'pdf', delimiter, 'all-lp'];
     end
     if get(handles.checkbox1,'value')
         fname = [fname 'd'];
     end
-    fname = [fname '.eps'];
-    %if ~isfolder([handles.fdir 'eps'])
-    %    mkdir([handles.fdir 'eps']);
-    %    fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
-    %end
-    [FileName,PathName] = uiputfile('*.eps',['Export lateral profile as'],fname);
+    fname = [fname '.pdf'];
+    if ~isfolder([handles.fdir 'pdf'])
+        mkdir([handles.fdir 'pdf']);
+        fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'pdf']);
+    end
+    [FileName,PathName] = uiputfile('*.pdf','Export lateral profile as',fname);
     if length(PathName)~=1 % if cancel was not pressed
         a = [PathName FileName];
         print_figure(f60,a,additional_settings.print_factors(4));
-        mepstopdf(a,'epstopdf');
+        %mepstopdf(a,'epstopdf');
         %fprintf(1,'Profile exported to %s\n',a);
     end
 end
 
-% export the image with the profile line as EPS
+% export the image with the profile line as PDF
 if get(handles.checkbox4,'value')
     % redraw the image and the profile in the gui
     %set(handles.popupmenu1,'value',jj);
@@ -711,24 +711,24 @@ if get(handles.checkbox4,'value')
     a = get(handles.popupmenu1,'string');
     a1 = a{jj};
     a=convert_string_for_texoutput(a1);
-    fname = [handles.fdir, 'eps', delimiter, a,'-ilp.eps'];
-    %if ~isfolder([handles.fdir 'eps'])
-    %    mkdir([handles.fdir 'eps']);
-    %    fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'eps']);
-    %end
-    [FileName,PathName] = uiputfile('*.eps',['Export image with the lateral profile as'],fname);
+    fname = [handles.fdir, 'pdf', delimiter, a,'-ilp.pdf'];
+    if ~isfolder([handles.fdir 'pdf'])
+        mkdir([handles.fdir 'pdf']);
+        fprintf(1,'Directory %s did not exist, so it was created.\n',[handles.fdir 'pdf']);
+    end
+    [FileName,PathName] = uiputfile('*.pdf','Export image with the lateral profile as',fname);
     if length(PathName)~=1 % if cancel was not pressed
         a = [PathName FileName];
         % pretty print the image together with the profile
         [~, f]=plotImageCells(10+jj,handles.images{jj},[],handles.fdir,handles.ratios{jj},...
-                ['w-'],handles.scales{jj},...
+                'w-',handles.scales{jj},...
                 [0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0],0,0, handles.scale, handles.fdir, [], [],[]);
         hold on;
         [cx, cy, ~] = improfile(handles.images{jj}, xy(:,1), xy(:,2), 'bicubic');
         plot(cx,cy,'w:','LineWidth',2);
         % print it to eps and pdf
         print_figure(f,a,additional_settings.print_factors(1));
-        mepstopdf(a,'epstopdf');
+        %mepstopdf(a,'epstopdf');
         delete(f);
         %fprintf(1,'Profile exported to %s\n',a);
     end   

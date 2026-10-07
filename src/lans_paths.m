@@ -57,7 +57,7 @@ if ismac
     PDF_VIEWER = 'open';
     
     % fontsize to be used in the LANS windows
-    GUI_FONTSIZE = 10;
+    GUI_FONTSIZE = 11;
 
 elseif isunix
     

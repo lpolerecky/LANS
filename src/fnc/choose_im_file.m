@@ -19,60 +19,74 @@ else
 end
 workdir=fixdir(workdir);
 
-global IM_FILE_EXT;
 file_types = {'*.im', 'Cameca 50L IM file (*.im)'; ...
         '*.im.zip','Compressed Cameca 50L IM file (*.im.zip)'; ...
-        '*.mat','LANS-processed data (*.mat)'; ...
-        '*.imp','Cameca IMS 1280 file (*.imp)'};
-
-% adjust the list of extensions such that the last selected one will be on
-% top
-switch IM_FILE_EXT 
-    case '.im.zip'
-        ft = cell(4,2);
-        ft{1,1} = file_types{2,1};
-        ft{1,2} = file_types{2,2};
-        ft{2,1} = file_types{1,1};
-        ft{2,2} = file_types{1,2};
-        ft{3,1} = file_types{3,1};
-        ft{3,2} = file_types{3,2};
-        ft{4,1} = file_types{4,1};
-        ft{4,2} = file_types{4,2};        
-    case '.imp'
-        ft = cell(4,2);
-        ft{1,1} = file_types{4,1};
-        ft{1,2} = file_types{4,2};
-        ft{2,1} = file_types{2,1};
-        ft{2,2} = file_types{2,2};
-        ft{3,1} = file_types{3,1};
-        ft{3,2} = file_types{3,2};
-        ft{4,1} = file_types{1,1};
-        ft{4,2} = file_types{1,2};
-    otherwise        
-        ft = file_types;
-end
+        '*.imp','Cameca IMS 1280 file (*.imp)'; ...
+        '*.mat','LANS-processed data (*.mat)'}; 
 
 % select file(s)
+if ismac
 
-if multiple==0
+    % because of the bug in Matlab2024 on MacOS, selection of the file
+    % extension does not work; thus, the following (see code after "else")
+    % handy feature will not be supported on MacOS
+    if ismember(multiple, [0, 2, 3])
+        onoff = 'off';
+        str1 = 'Select input file (*.im, *.im.zip, *.imp, *.mat)';
+        ft = '*.im;*.im.zip;*.imp;*.mat';
+    else
+        onoff = 'on';
+        str1 = 'Select multiple input files (*.im, *.im.zip, *.imp) (CMD + select)';
+        ft = '*.im;*.im.zip;*.imp';
+    end
+    fprintf(1,'%s\n', str1);
     [FileName,newdir,newext] = uigetfile(ft, ...
-        'Select *.IM, *.IM.zip or *.IMP file', workdir, ...
-        'MultiSelect', 'off');
-elseif multiple==1
-    [FileName,newdir,newext] = uigetfile(ft, ...
-        'Select *.IM or *.IM.zip file (+Ctrl for multiple)', workdir, ...
-        'MultiSelect', 'on');
-elseif multiple==2 % this is used when loading the accumulated data, without the need to have the original im data 
-    [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS preferences file (*.mat)'}, ...
-        'Select LANS preferences file', workdir, ...
-        'MultiSelect', 'off');
-    [newdir, fname]=fileparts(newdir(1:end-1));
-    newdir = [newdir filesep];
-    FileName = [fname filesep FileName];
-elseif multiple==3 % this is used when loading the complete processed dataset, i.e., all planes
-    [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS processed file (*.mat)'}, ...
-        'Select LANS-generated data file', workdir, ...
-        'MultiSelect', 'off');    
+        str1, workdir, 'MultiSelect', onoff);
+
+else
+
+    % adjust the list of extensions such that the last selected one (stored
+    % in IM_FILE_EXT) will be on top, unless the default *.im is selected
+    ft = file_types;
+    global IM_FILE_EXT;
+    switch IM_FILE_EXT 
+        case '.im.zip'
+            ft([1,2],:) = ft([2,1],:);
+        case '.imp'
+            ft([1,3],:) = ft([3,1],:);
+        case '.mat'
+            ft([1,4],:) = ft([4,1],:);
+    end
+
+    if multiple==0
+        str1 = 'Select *.IM, *.IM.zip or *.IMP file';
+        fprintf(1,'%s\n', str1);
+        [FileName,newdir,newext] = uigetfile(ft, ...
+            str1, workdir, ...
+            'MultiSelect', 'off');
+    elseif multiple==1
+        str1 = 'Select *.IM or *.IM.zip file (+Ctrl for multiple)';
+        fprintf(1,'%s\n', str1);
+        [FileName,newdir,newext] = uigetfile(ft, ...
+            str1, workdir, ...
+            'MultiSelect', 'on');
+    elseif multiple==2 % this is used when loading the accumulated data, without the need to have the original im data 
+        str1 = 'Select LANS preferences file';
+        fprintf(1,'%s\n', str1);
+        [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS preferences file (*.mat)'}, ...
+            str1, workdir, ...
+            'MultiSelect', 'off');
+        [newdir, fname] = fileparts(newdir(1:end-1));
+        newdir = [newdir filesep];
+        FileName = [fname filesep FileName];
+    elseif multiple==3 % this is used when loading the complete processed dataset, i.e., all planes
+        str1 = 'Select LANS-generated data file';
+        fprintf(1,'%s\n', str1);
+        [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS processed file (*.mat)'}, ...
+            str1, workdir, ...
+            'MultiSelect', 'off');    
+    end
+
 end
 
 % parse the selected filenames
@@ -117,9 +131,9 @@ else
         
         if contains(FileName{ii},'zip')
             newext = 2;
-        elseif contains(FileName,'mat')
-            newext = 3;
         elseif contains(FileName,'imp')
+            newext = 3;
+        elseif contains(FileName,'mat')
             newext = 4;
         else
             newext = 1;
@@ -142,14 +156,11 @@ else
     
 end
 
-if newext==2
-    IM_FILE_EXT = '.im.zip';
-elseif newext==3
-    IM_FILE_EXT = '.mat';
-elseif newext==4
-    IM_FILE_EXT = '.imp';
-else
-    IM_FILE_EXT = '.im';
+switch newext
+    case 2, IM_FILE_EXT = '.im.zip';
+    case 3, IM_FILE_EXT = '.mat';
+    case 4, IM_FILE_EXT = '.imp';
+    otherwise, IM_FILE_EXT = '.im';
 end
 
 function fout = approve_imfile(imfile)
