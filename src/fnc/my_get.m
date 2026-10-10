@@ -4,7 +4,7 @@ function s=my_get(h,p)
 s='';
 if(ishandle(h))
     s = get(h,p);
-end;
+end
 if(isfield(h,p))
     s=eval(['h.',p]);
-end;
+end

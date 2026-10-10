@@ -1905,7 +1905,9 @@ if p.find_alignments && ~p.planes_aligned
         else
             xyplanes=p.images{1};
         end
-        f40=figure(40); subplot(1,1,1);
+        f40=figure(40); 
+        set(f40, 'ToolBar', 'none'); 
+        subplot(1,1,1);
         plot(xyplanes, p.xyalign(xyplanes,1:2), 'x-');
         xlabel('plane');
         title('Alignment coordinates')

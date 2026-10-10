@@ -1,4 +1,10 @@
-function print_figure(f,fname,print_factor)
+function print_figure(f, fname, print_factor, image_flag)
+
+if nargin>3
+    iflag = image_flag;
+else
+    iflag = 0;
+end
 
 %[a, ~, ~]=fileparts(fname);
 %if ~isfolder(a)
@@ -61,18 +67,38 @@ if ~isfolder(fdir)
     mkdir(fdir)
     fprintf(1,'Directory %s did not exist, so it was created.\n', fdir);
 end
-% export figure as pdf, including the correct bounding box
-exportgraphics(figure(f), fname, 'ContentType', 'vector');
 
-% some new ideas, not working too well
-%     set(f, 'paperunits', 'centimeters');
-%     set(f, 'PaperPosition', [0 0 12*print_factor]);
-%     set(f, 'papersize', 12*print_factor);
-%     fname = strrep(fname, [filesep 'eps'], [filesep 'pdf']);
-%     fname = strrep(fname, '.eps', '.pdf');
-%     print(f, '-dpdf', fname);
+matlab_release_year = str2double(regexp(version('-release'), '\d+', 'match', 'once'));
 
-%% fprintf(1,'Graphics exported to %s\n',fname);
+%% Export figure as a vector graphics pdf, including the correct bounding box
+
+% In older Matlab versions, exportgraphics seems to work fine. But for
+% Matlab2026b and MacOS, the exported image is often distorted. No idea
+% why. I tried some fixes suggested by Gemini, but it was not going in the
+% right direction. For now, I settle on exporting the figure as an image
+% with a resolution of 300.
+
+if iflag && ismac && matlab_release_year>2024    
+    exportgraphics(figure(f), fname, 'ContentType', 'image', 'Resolution', 300);
+else
+    % again, some fixes for MacOS
+    if ismac
+        fig1 = figure(f);
+        fig1c = get(fig1,'Color');
+        if sum(fig1c)<3
+            set(fig1, 'Color', [1 1 1]);
+        end
+    end
+    % this is the original idea that works well except for situations
+    % handles by the line above
+    exportgraphics(figure(f), fname, 'ContentType', 'vector');
+    % again, some fixes for MacOS
+    if ismac
+        set(fig1, 'Color', fig1c);
+    end
+end
+
+fprintf(1,'Graphics exported to %s\n',fname);
 
 % print also as PNG
 global additional_settings;

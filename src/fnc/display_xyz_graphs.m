@@ -227,7 +227,7 @@ if opt1(9)
             % plot the x-y-z graph for all ROIs
             if(opt1(8))
                 %my_figure(39);
-                figure(39);
+                my_figure(39);
                 ax=subplot(1,1,1);
                 hold off;
                 if(isempty(cidu))
@@ -560,7 +560,7 @@ if opt1(9)
             % plot the x-y graph for all ROIs
             if(opt1(8))                
                 %f2=my_figure(39);
-                f2=figure(39);
+                f2=my_figure(39);
                 ax=subplot(1,1,1);
                 hold off;
                 if(isempty(cidu))

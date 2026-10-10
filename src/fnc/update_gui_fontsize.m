@@ -10,8 +10,11 @@ if isfield(h,'scribeOverlay') && isa(h.scribeOverlay(1),'matlab.graphics.shape.i
     h = rmfield(h, 'scribeOverlay');
 end
 
-f = fieldnames(h);
 display_message(sprintf('Changing fontsize of all uicontrols in the GUI to %d ... ',GUI_FONTSIZE));
+
+% this was the "old" way, a more efficient approach is below
+if 0
+f = fieldnames(h);
 for i=1:length(f)
     fld = f{i};
     s = ['hnd = h.' fld ';'];
@@ -29,4 +32,13 @@ for i=1:length(f)
         end
     end
 end
+end
+
+% this is the improved version (from 2026)
+allUIObjects = findobj(h.figure1, '-property', 'FontSize');
+for k = 1:numel(allUIObjects)
+    allUIObjects(k).FontSize = GUI_FONTSIZE;
+end
+
 display_message('Done.\n');
+display_message('Note: you can adjust GUI_FONTSIZE in lans_paths.m to optimize it for your computer.\n')
