@@ -424,9 +424,9 @@ if hObject == handles.pushbutton2  % display lateral profiles
             colormap(get_colormap(additional_settings.colormap));
         else
             if get(handles.checkbox7,'value')
-                f60=figure;
+                f60=my_figure;
             else
-                f60=figure(60+jj); 
+                f60=my_figure(60+jj); 
             end
             njj=length(jj_range);
             for ii=1:njj
