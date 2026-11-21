@@ -42,10 +42,6 @@ else
         end
     end
 
-
-    % changed on 02-Sep-2026 to avoid issues with epstopdf and library version
-    % conflicts
-
     % If the filename contains eps, as may be the case if the older
     % approach of exporting figures is used (via eps -> epstopdf -> pdf),
     % replace eps by pdf. Do this in two steps, just in case the folder or
@@ -62,66 +58,56 @@ else
 
     %% Export figure as a vector graphics pdf, including the correct bounding box
     
-    % In older Matlab versions, exportgraphics seems to work fine. But for
-    % Matlab2026b and MacOS, the exported image is often distorted. No idea
-    % why. I tried some fixes suggested by Gemini, but it was not going in the
-    % right direction. For now, I settle on exporting the figure as an image
-    % with a resolution of 300. The resulting file is much larger, and it
-    % does not have the correct bounding box, but I don't have time to
-    % figure out a better way.
-    
-    if iflag && ismac && matlab_release_year>2024    
-        exportgraphics(figure(f), fname, 'ContentType', 'image', 'Resolution', 300);
+    % The compress_pdf flag was originally introduced for a different
+    % purpose. However, from 21-11-2026, it is used to fix the issues with
+    % the exported PDF, which is related to a bug in libreoffice, as
+    % explained below.
+
+    if ~additional_settings.compress_pdf
+
+        % This is the original idea that works well except for
+        % situations handled by the lines below.
+        exportgraphics(figure(f), fname, 'ContentType', 'vector');
+
     else
 
-        % again, some fixes for MacOS
-        if ismac || matlab_release_year>2024 
-            fig1 = figure(f);
-            fig1c = get(fig1,'Color');
-            if sum(fig1c)<3
-                set(fig1, 'Color', [1 1 1]);
-            end
+        % The PDF exported using exportgraphics will cause issues if one
+        % wants to include it in a presentation made by libreoffice.
+        % Namely, the pdf file will be showed correctly in the presentation
+        % itself, but if the presentation is exported into pdf, the
+        % image/graph will not be included. This is, apparently, a bug in
+        % libreoffice. To overcome this issue, gemini recommended to export
+        % the file using 'print' and then use 'pdfcrop' to do the final
+        % cropping. 'pdfcrop' can be installed in linux-mint using: 
+        % sudo apt install texlive-extra-util 
+        % On a MacOS, 'pdfcrop' is probably installed when latex is
+        % installed. It probably also needs to have ghostscript installed.
+
+        % create a temporary file name
+        [a,~,c]=fileparts(fname);
+        tmpfile = [a filesep 'temp' c];
+
+        % here is the printing line
+        print(figure(f), tmpfile, '-dpdf', '-vector');
+
+        % prepare for pdf cropping
+        if ismac
+            global LATEXDIR;
+            global GSDIR;
+            cmd = sprintf('export PATH=$PATH:%s:%s; %s', LATEXDIR, GSDIR, 'pdfcrop');
+        elseif isunix
+            cmd = 'LD_LIBRARY_PATH=""; pdfcrop';
+        elseif ispc
+            cmd = 'pdfcrop';
         end
 
-        % The compress_pdf flag was originally introduced for a different
-        % purpose. However, from 21-11-2026, it is used to fix the issues
-        % with the exported PDF, which is related to a bug in libreoffice,
-        % as explained below.
+        % construct the final system call and execute it
+        cmd = [cmd, ' ', tmpfile, ' ', fname];
+        system(cmd);
 
-        if ~additional_settings.compress_pdf
-
-            % this is the original idea that works well except for
-            % situations handled by the lines below
-            exportgraphics(figure(f), fname, 'ContentType', 'vector');
-
-        else
-
-            % The PDF exported using exportgraphics will cause issues if
-            % you want to include it in a presentation made by libreoffice.
-            % Namely, the pdf file will be showed correctly in the
-            % presentation itself, but if the presentation is exported into
-            % pdf, the image/graph will not be included. This is,
-            % apparently, a bug in libreoffice. To overcome this issue,
-            % gemini recommended to export the file using print and then
-            % use pdfcrop to do the final cropping. pdfcrop can be
-            % installed in linux-mint using: 
-            % sudo apt install texlive-extra-util 
-            % It probably also needs to have ghostscript installed.
-
-            [a,~,c]=fileparts(fname);
-            tmpfile = [a filesep 'temp' c];
-            print(figure(f), tmpfile, '-dpdf', '-vector');
-            cmd = ['LD_LIBRARY_PATH="" pdfcrop ', tmpfile, ' ', fname];
-            system(cmd);
-            delete(tmpfile);
-            
-        end
-
-        % again, some fixes for MacOS
-        if ismac || matlab_release_year>2024 
-            set(fig1, 'Color', fig1c);
-        end
-
+        % delete the tmp file
+        delete(tmpfile);
+        
     end
     
 end
@@ -143,7 +129,7 @@ end
 
 if ~old_approach
     % bring the original fontsize back
-    for i = 1:length(all_text_objects)
+    for i = length(all_text_objects):-1:1
         if all_text_objects(i).Visible == 'on'        
             all_text_objects(i).FontSize = oldFontSize(i);
         end

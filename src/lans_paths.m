@@ -39,7 +39,7 @@ if ismac
     
     % make sure that the PATH to pdflatex binary is correct
     LATEXDIR = '/Library/TeX/texbin/';
-    %GSDIR    = '/usr/local/bin/';
+    GSDIR    = '/usr/local/bin/';
     
     % no need to make any changes here if the paths defined above are
     % correct
