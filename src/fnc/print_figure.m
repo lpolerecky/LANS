@@ -6,19 +6,19 @@ else
     iflag = 0;
 end
 
-%[a, ~, ~]=fileparts(fname);
-%if ~isfolder(a)
-%    mkdir(a);
-%    fprintf(1,'Output folder created: %s\n',a);
-%end
+global additional_settings;
+
+%set(f, 'Color', 'none');  % Removes the full-canvas background rectangle
+%set(f, 'InvertHardcopy', 'off');
 
 matlab_release_year = str2double(regexp(version('-release'), '\d+', 'match', 'once'));
 
-% this approach does not work if the function exportgraphics is used for 
-% printing the vector graphics 
 old_approach = 0;
 
 if old_approach
+
+    % this approach does not work if the function exportgraphics is used for 
+    % printing the vector graphics 
 
     if length(print_factor)<2
         fpos=get(f,'Position');
@@ -34,8 +34,6 @@ else
     all_text_objects = findobj(f, '-property', 'FontSize');
     oldFontSize = zeros(1,length(all_text_objects));
     
-    global additional_settings;
-
     % Loop through them and multiply their current font size
     for i = 1:length(all_text_objects)
         oldFontSize(i) = all_text_objects(i).FontSize;
@@ -68,7 +66,9 @@ else
     % Matlab2026b and MacOS, the exported image is often distorted. No idea
     % why. I tried some fixes suggested by Gemini, but it was not going in the
     % right direction. For now, I settle on exporting the figure as an image
-    % with a resolution of 300.
+    % with a resolution of 300. The resulting file is much larger, and it
+    % does not have the correct bounding box, but I don't have time to
+    % figure out a better way.
     
     if iflag && ismac && matlab_release_year>2024    
         exportgraphics(figure(f), fname, 'ContentType', 'image', 'Resolution', 300);
@@ -83,14 +83,45 @@ else
             end
         end
 
-        % this is the original idea that works well except for situations
-        % handles by the line above
-        exportgraphics(figure(f), fname, 'ContentType', 'vector');
+        % The compress_pdf flag was originally introduced for a different
+        % purpose. However, from 21-11-2026, it is used to fix the issues
+        % with the exported PDF, which is related to a bug in libreoffice,
+        % as explained below.
+
+        if ~additional_settings.compress_pdf
+
+            % this is the original idea that works well except for
+            % situations handled by the lines below
+            exportgraphics(figure(f), fname, 'ContentType', 'vector');
+
+        else
+
+            % The PDF exported using exportgraphics will cause issues if
+            % you want to include it in a presentation made by libreoffice.
+            % Namely, the pdf file will be showed correctly in the
+            % presentation itself, but if the presentation is exported into
+            % pdf, the image/graph will not be included. This is,
+            % apparently, a bug in libreoffice. To overcome this issue,
+            % gemini recommended to export the file using print and then
+            % use pdfcrop to do the final cropping. pdfcrop can be
+            % installed in linux-mint using: 
+            % sudo apt install texlive-extra-util 
+            % It probably also needs to have ghostscript installed.
+
+            [a,~,c]=fileparts(fname);
+            tmpfile = [a filesep 'temp' c];
+            print(figure(f), tmpfile, '-dpdf', '-vector');
+            cmd = ['LD_LIBRARY_PATH="" pdfcrop ', tmpfile, ' ', fname];
+            system(cmd);
+            delete(tmpfile);
+            
+        end
 
         % again, some fixes for MacOS
         if ismac || matlab_release_year>2024 
             set(fig1, 'Color', fig1c);
         end
+
     end
     
 end
@@ -98,7 +129,6 @@ end
 fprintf(1,'Graphics exported to %s\n',fname);
 
 % print also as PNG
-global additional_settings;
 if additional_settings.export_png
     [pathstr, name, ~] = fileparts(fname);
     [pathstr] = fileparts(pathstr);

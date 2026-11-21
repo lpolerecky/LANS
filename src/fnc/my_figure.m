@@ -31,5 +31,7 @@ else
     % activate the figure and place it in the middle of screen
     f=figure(f);
     %set(f,'Renderer','painters');
+    % additionally, remove all the "fancy" staff around, such as toolbar or
+    % menubar.
     set(f,'Position',fpos,'ToolBar','figure','MenuBar','None');
 end
