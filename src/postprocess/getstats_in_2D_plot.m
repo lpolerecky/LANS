@@ -114,6 +114,7 @@ f200p(3)=900;
 f200p(4)=500;
 %f200p=[20 50 900 600];
 f200.Position = f200p;
+set(f200,'ToolBar','figure','MenuBar','None')
 
 % fit of the selected data-points by linear models
 ax1=subplot(2,3,1);

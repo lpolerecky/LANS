@@ -318,8 +318,8 @@ function [f2, pdffile, cls_sel, tmnt_sel]=plot_data_2dall(fig, xyz, dxyz, roi_pr
 
 global additional_settings;
 
-%f2=my_figure(fig);
-f2=figure(fig);
+f2=my_figure(fig);
+%f2=figure(fig);
 ax=subplot(1,1,1);
 % make sure ax is linked to f2
 %set(ax,'Parent',f2);
