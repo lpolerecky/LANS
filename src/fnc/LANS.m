@@ -2158,8 +2158,18 @@ if ~isfile(def_file)
 end
 
 fprintf(1,'Select the Preferences file (default %s)\n',def_file);
-[FileName,newdir,~] = uigetfile('*.mat', 'Select the Preferences file', def_file);
-if(FileName~=0)
+
+if ismac
+
+    [FileName,newdir] = uigetfile_macos('*.mat', 'Select the Preferences file', def_file);
+
+else
+    
+    [FileName,newdir,~] = uigetfile('*.mat', 'Select the Preferences file', def_file);
+
+end
+
+if FileName~=0
     imfile = [newdir, FileName];
     h = load_settings(handles,imfile,0);
 end

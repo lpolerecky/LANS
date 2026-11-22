@@ -450,17 +450,21 @@ base_dir=fixdir(base_dir);
 %dname = uigetdir(base_dir,'Select dataset directory');
 fprintf(1,'Select processed IM file(s). Hold Ctrl for selecting multiple files.\n');
 
+file_types = { ...
+    '*.im',     '*.im (50L IM file)'; ...
+    '*.im.zip', '*.im.zip (Compressed 50L IM file)'; ...
+    '*.imp',    '*.imp (IMS 1280 file)'; ...
+    '*.mat',    '*.mat (LANS-processed data)'};
+
 if ~ismac
-    [FileName,PathName,~] = uigetfile({'*.im', 'Cameca IM file'; ...
-        '*.im.zip','Compressed Cameca IM file (*.im.zip)'; ...
-        '*.mat','LANS-generated file (*.mat)'}, ...
-        'Select processed *.IM, *.IM.zip or *.mat file(s) (+Ctrl for multiple)', base_dir, ...
+    [FileName,PathName,~] = uigetfile(file_types, ...
+        'Select processed *.IM, *.IM.zip, *.IMP or *.mat file(s) (+Ctrl for multiple)', base_dir, ...
         'MultiSelect', 'on');
 else
-    str1 = 'Select processed *.IM, *.IM.zip, *.imp or *.mat file(s) (+CMD for multiple)';
+    str1 = 'Select processed *.IM, *.IM.zip, *.IMP or *.mat file(s)';
     fprintf(1,'%s\n', str1);
-    [FileName,PathName,~] = uigetfile({'*.im;*.im.zip;*.imp;*.mat', ...
-        'Cameca IM file'}, str1, base_dir, 'MultiSelect', 'on');
+    [FileName,PathName,~] = uigetfile_macos(file_types, ...
+        str1, base_dir, 'MultiSelect', 'on');
 end
 
 if iscell(FileName)
@@ -544,7 +548,16 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 base_dir = handles.base_dir;
 base_dir=fixdir(base_dir);
 
-[FileName,newdir,newext] = uigetfile('*.txt','Select metafile ', base_dir);
+if macos
+    
+    [FileName,newdir,newext] = uigetfile_macos('*.txt','Select metafile ', base_dir);
+
+else
+    
+    [FileName,newdir,newext] = uigetfile('*.txt','Select metafile ', base_dir);
+
+end
+
 if(FileName~=0)
     metafile = [newdir, FileName];
     base_dir=newdir;

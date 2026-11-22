@@ -4,7 +4,7 @@ if(nargin>1)
     inter=interactive;
 else
     inter=0;
-end;
+end
 
 Maskimg = [];
 cellname = [];
@@ -31,7 +31,18 @@ if isfield(handles,'p')
         fprintf(1,'\n*** Select ROIs file (default %s)\n',def_file);
         fprintf(1,'If the file does not exit, or if you do not want to select it, click ''Cancel'' or press ''Esc''.\n');
         
-        [FileName,newdir,newext] = uigetfile(['*' MAT_EXT], ['Select ROIs file (e.g. ' CELLSFILE MAT_EXT ')'], def_file);
+        if ismac
+
+            [FileName,newdir,newext] = uigetfile_macos(['*' MAT_EXT], ...
+                ['Select ROIs file (e.g. ' CELLSFILE MAT_EXT ')'], def_file);
+
+        else
+            
+            [FileName,newdir,newext] = uigetfile(['*' MAT_EXT], ...
+                ['Select ROIs file (e.g. ' CELLSFILE MAT_EXT ')'], def_file);
+
+        end
+
         if(FileName~=0)
             mf = [newdir, FileName];
             cellname = FileName;
@@ -40,14 +51,14 @@ if isfield(handles,'p')
                 CELLSFILE=cellname(1:(jind-1));
             else
                 CELLSFILE=cellname;
-            end;
+            end
         else
             %cellname = [];
             mf=[];
-        end;
+        end
     else
         mf=[p.fdir,cellname];
-    end;
+    end
 
     if(exist(mf)==2)
         disp(['ROIs loaded from ',mf]);
@@ -60,8 +71,8 @@ if isfield(handles,'p')
             Maskimg = zeros(size(tmp,1),size(tmp,2));
         else
             Maskimg = zeros(size(handles.p.accu_im{1},1),size(handles.p.accu_im{1},2));
-        end;
-    end;
+        end
+    end
     
     % display loaded cells
     global additional_settings;
@@ -76,4 +87,4 @@ else
     
     fprintf(1,'*** Error: Nothing loaded, nothing done.\n');
     
-end;
+end

@@ -104,6 +104,7 @@ clear LANS_version LATEXBIN;
 % define global variable names
 global LANS_version;
 global LATEXDIR;
+global GSDIR;
 global MAT_EXT;
 global UNZIP_COMMAND;
 global ZIP_COMMAND;

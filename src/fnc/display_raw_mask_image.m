@@ -4,12 +4,12 @@ if(nargin>1)
     flag_ = flag;
 else
     flag_ = 1;
-end;
+end
 
 if nargin<3
     global CELLSFILE MAT_EXT;
     cellname=[CELLSFILE MAT_EXT];
-end;
+end
 
 % default output
 maskmass = [];
@@ -36,18 +36,18 @@ if isfield(handles,'p')
 
             % fill the Maskimg field from the disk, if it was previously saved,
             % or with zeros if it wasn't.
-            if exist(fname) == 2
+            if exist(fname, 'file') == 2
                 fprintf(1,'File %s found on the disk, and used as cells image.\n',fname);
                 a=load(fname);
                 Maskimg = a.Maskimg;
             else
                 Maskimg = zeros(size(p.accu_im{1},1),size(p.accu_im{1},2));
-            end;
+            end
             
         else
             Maskimg = load_cells_from_disk(handles,0,cellname);
             %Maskimg = p.Maskimg;
-        end;
+        end
 
         p.Maskimg = Maskimg;
         
@@ -75,7 +75,7 @@ if isfield(handles,'p')
                     if(mi==0)
                         mi=1e-3*ma;
                         fprintf(1,'*** Warning: minimum scale was 0, but was set to %.3e due to logarithm scaling of the image.\n',mi);
-                    end;
+                    end
                     logIM=log10(mi)*ones(size(maskmass));
                     ind=find(maskmass>0);
                     logIM(ind)=log10(maskmass(ind));
@@ -84,22 +84,39 @@ if isfield(handles,'p')
                     ps=[mi ma];
                     maskmass=logIM;    
                     mass = ['log(',mass,')'];
-                end;
+                end
                 
                 bw=opt3(k);
                 fprintf(1,'Setting %s as a template for ROI definition.\n',mass);
                 
-            elseif ~isempty(strfind(lower(Mask),'ext'))
+            elseif contains(lower(Mask),'ext')
                     
                 % external image will be used as template
                 % it can be a B&W image, or an RGB image, in which case
                 % ps will be a 3x2 matrix
                 
-                mass=Mask; 
-                [FileName,PathName,FilterIndex] = uigetfile({'*.tif';'*.bmp';'*.png';'*.jpg';'*.*'},...
-                    'Select external image (B&W or RGB).',fdir);
+                mass=Mask;
+
+                if ismac
+
+                    file_types = {'*.tif', '*.tif'; ...
+                        '*.bmp', '*.bmp'; ...
+                        '*.png', '*.png'; ...
+                        '*.jpg', '*.jpg'; ...
+                        '*.*',   '*.*'};
+
+                    [FileName,PathName,FilterIndex] = uigetfile_macos(file_types, ...
+                        'Select external image (B&W or RGB).',fdir);
+
+                else
+                    
+                    [FileName,PathName,FilterIndex] = uigetfile({'*.tif';'*.bmp';'*.png';'*.jpg';'*.*'},...
+                        'Select external image (B&W or RGB).',fdir);
+                end
+
+
                 fname=[fixdir(PathName),FileName];
-                if FileName~=0 && exist(fname)==2                
+                if FileName~=0 && exist(fname, 'file')==2                
                     maskmass=double(imread(fname));
                     maskmass=maskmass/max(maskmass(:));
                     ps=[zeros(size(maskmass,3),1) ones(size(maskmass,3),1)];
@@ -111,9 +128,9 @@ if isfield(handles,'p')
                     ps=[0 1];
                     bw=0;
                     disp('*** Error: No image found. Setting template to zero.');
-                end;
+                end
                     
-            elseif strcmp(lower(Mask),'rgb') | strcmp(lower(Mask),'rgb1')
+            elseif strcmpi(Mask,'rgb') | strcmpi(Mask,'rgb1')
                 
                 % an RGB image constructed from the _mass_ images will be
                 % used as a template
@@ -130,7 +147,7 @@ if isfield(handles,'p')
                 ps = [0 1; 0 1; 0 1];
                 bw = 0;
                 
-            elseif strcmp(lower(Mask),'rgb2')
+            elseif strcmpi(Mask,'rgb2')
                 
                 % an RGB image constructed from the _mass_ images will be
                 % used as a template
@@ -154,7 +171,7 @@ if isfield(handles,'p')
                 % no supported template recognized 
                 fprintf(1,'*** Error: No supported template identified. Setting to zero.\n');
 
-            end;
+            end
             
         else
             
@@ -180,7 +197,7 @@ if isfield(handles,'p')
                     if(mi==0)
                         mi=1e-3*ma;
                         fprintf(1,'*** Warning: minimum scale was 0, but was set to %.3e due to logarithm scaling of the image.\n',mi);
-                    end;
+                    end
                     logIM=log10(mi)*ones(size(maskmass));
                     ind=find(maskmass>0);
                     logIM(ind)=log10(maskmass(ind));
@@ -189,7 +206,7 @@ if isfield(handles,'p')
                     ps=[mi ma];
                     maskmass=logIM; 
                     mass = ['log(',mass,')'];
-                end;
+                end
 
                 bw = opt3(k);
                 
@@ -201,9 +218,9 @@ if isfield(handles,'p')
                 fprintf(1,'*** Error: Ratio defined as template not recognized in the list of ratios.\n');
                 fprintf(1,'Setting template to zero.\n');
             
-            end;
+            end
             
-        end;
+        end
 
         if 1 & ~isempty(maskmass) & sum(p.mask_kernel)>2 & ~isempty(rgb_true)
             
@@ -212,7 +229,7 @@ if isfield(handles,'p')
             
             for ii=1:size(maskmass,3)
                 maskmass(:,:,ii) = smooth_2D_image(maskmass(:,:,ii),p.mask_kernel(1),p.mask_kernel(2));
-            end;
+            end
             
             for ii=1:size(rgb_true,3)
                 rt = squeeze(rgb_true(:,:,ii));
@@ -220,7 +237,7 @@ if isfield(handles,'p')
                 ind = find(isnan(rtw) & ~isnan(rt));
                 rtw(ind) = rt(ind);
                 rgb_true(:,:,ii) = rtw;
-            end;
+            end
             
             % after smoothing the values can sometimes go out of allowed
             % range, which can be a problem for displaying it if the
@@ -229,15 +246,15 @@ if isfield(handles,'p')
                 ind=find(maskmass>1);
                 if ~isempty(ind)
                     maskmass(ind)=ones(size(ind));
-                end;
+                end
                 ind=find(maskmass<0);
                 if ~isempty(ind)
                     maskmass(ind)=zeros(size(ind));
-                end;
-            end;
+                end
+            end
             fprintf(1,'Done.\n*** Set smoothing kernel to [1 1] if you do not want the template image to be smoothed.\n');
             
-        end;
+        end
 
         if flag_ & ~isempty(maskmass)
             [opt1,opt3,opt4]=load_options(handles,1);
@@ -275,12 +292,12 @@ if isfield(handles,'p')
                         p2.accu_im{2}=squeeze(maskmass(:,:,2));
                     else
                         p2.accu_im{2}=squeeze(maskmass(:,:,1));
-                    end;
+                    end
                     if size(maskmass,3)>2
                         p2.accu_im{3}=squeeze(maskmass(:,:,3));
                     else
                         p2.accu_im{3}=squeeze(maskmass(:,:,1));
-                    end;
+                    end
                     [R2,Ra2,Raim2,o2] = calculate_R_images(p2, [1 1 1 0 0 0 0 0], 0,0,[],[5 1]);
                     % because after this step, o2{:}(:,4) contains the
                     % accumulated signal in ROIs, divide it by ROI size to
@@ -295,17 +312,17 @@ if isfield(handles,'p')
                         export_ascii_data_for_ROIS(o2{3}, fdir, 'ext_b', '.dac', 'f');
                     else
                         fprintf(1,'*** WARNING: no ROIs defined, no values exported.\n');
-                    end;
-                end;
-            end;
-        end;
+                    end
+                end
+            end
+        end
 
     else
         fprintf(1,'*** Error: Align and accumulate planes before proceeding.\n');
-    end;
+    end
 
 else
     
     fprintf(1,'*** Error: Nothing loaded, nothing done.\n');
     
-end;
+end

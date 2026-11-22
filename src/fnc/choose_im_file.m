@@ -19,13 +19,14 @@ else
 end
 workdir=fixdir(workdir);
 
-file_types = {'*.im', 'Cameca 50L IM file (*.im)'; ...
-        '*.im.zip','Compressed Cameca 50L IM file (*.im.zip)'; ...
-        '*.imp','Cameca IMS 1280 file (*.imp)'; ...
-        '*.mat','LANS-processed data (*.mat)'}; 
+file_types = { ...
+    '*.im',     '*.im (50L IM file)'; ...
+    '*.im.zip', '*.im.zip (Compressed 50L IM file)'; ...
+    '*.imp',    '*.imp (IMS 1280 file)'; ...
+    '*.mat',    '*.mat (LANS-processed data)'}; 
 
 % select file(s)
-if ismac
+if 0 && ismac
 
     % because of the bug in Matlab2024 on MacOS, selection of the file
     % extension does not work; thus, the following (see code after "else")
@@ -40,8 +41,8 @@ if ismac
         ft = '*.im;*.im.zip;*.imp';
     end
     fprintf(1,'%s\n', str1);
-    [FileName,newdir,newext] = uigetfile(ft, ...
-        str1, workdir, 'MultiSelect', onoff);
+    [FileName,newdir,newext] = uigetfile(ft, str1, workdir, 'MultiSelect', onoff);
+    %[FileName,newdir,newext] = uigetfile_macos(file_types, str1, workdir);
 
 else
 
@@ -59,32 +60,66 @@ else
     end
 
     if multiple==0
+
         str1 = 'Select *.IM, *.IM.zip or *.IMP file';
         fprintf(1,'%s\n', str1);
-        [FileName,newdir,newext] = uigetfile(ft, ...
-            str1, workdir, ...
-            'MultiSelect', 'off');
+
+        if ismac
+            [FileName,newdir,newext] = uigetfile_macos(ft, ...
+                str1, workdir, 'MultiSelect', 'off');
+        else
+            [FileName,newdir,newext] = uigetfile(ft, ...
+                str1, workdir, 'MultiSelect', 'off');
+        end
+
     elseif multiple==1
-        str1 = 'Select *.IM or *.IM.zip file (+Ctrl for multiple)';
-        fprintf(1,'%s\n', str1);
-        [FileName,newdir,newext] = uigetfile(ft, ...
-            str1, workdir, ...
-            'MultiSelect', 'on');
+
+        if ismac
+            str1 = 'Select multiple *.IM or *.IM.zip files';
+            fprintf(1,'%s\n', str1);
+            [FileName,newdir,newext] = uigetfile_macos(ft, ...
+                str1, workdir, 'MultiSelect', 'on');
+        else
+            str1 = 'Select *.IM or *.IM.zip file (+Ctrl for multiple)';
+            fprintf(1,'%s\n', str1);
+            [FileName,newdir,newext] = uigetfile(ft, ...
+                str1, workdir, 'MultiSelect', 'on');
+        end
+
     elseif multiple==2 % this is used when loading the accumulated data, without the need to have the original im data 
+        
         str1 = 'Select LANS preferences file';
         fprintf(1,'%s\n', str1);
-        [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS preferences file (*.mat)'}, ...
-            str1, workdir, ...
-            'MultiSelect', 'off');
+        
+        if ismac
+            [FileName,newdir,newext] = uigetfile_macos({'*.mat'}, ...
+                str1, workdir, ...
+                'MultiSelect', 'off');
+        else
+            [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS preferences file (*.mat)'}, ...
+                str1, workdir, ...
+                'MultiSelect', 'off');
+        end
+        
         [newdir, fname] = fileparts(newdir(1:end-1));
         newdir = [newdir filesep];
         FileName = [fname filesep FileName];
+
     elseif multiple==3 % this is used when loading the complete processed dataset, i.e., all planes
-        str1 = 'Select LANS-generated data file';
+
+        str1 = 'Select LANS-generated FULL PROCESSED data';
         fprintf(1,'%s\n', str1);
-        [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS processed file (*.mat)'}, ...
-            str1, workdir, ...
-            'MultiSelect', 'off');    
+        
+        if ismac
+            [FileName,newdir,newext] = uigetfile_macos({'*.mat'}, ...
+                str1, workdir, ...
+                'MultiSelect', 'off');
+        else
+            [FileName,newdir,newext] = uigetfile({'*.mat', 'LANS processed file (*.mat)'}, ...
+                str1, workdir, ...
+                'MultiSelect', 'off');
+        end
+
     end
 
 end

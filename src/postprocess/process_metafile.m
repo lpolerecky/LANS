@@ -212,7 +212,13 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 global MAT_EXT;
 
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile(['*' MAT_EXT],'Select ROIs file', s.base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos(['*' MAT_EXT],'Select ROIs file', s.base_dir);
+else
+    [FileName,newdir,newext] = uigetfile(['*' MAT_EXT],'Select ROIs file', s.base_dir);
+end
+
 if(FileName~=0)
     s.cellfile = FileName;
     update_processing_settings(s,handles);
@@ -248,12 +254,18 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile('*.txt','Select metafile settings', s.base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.txt','Select metafile settings', s.base_dir);
+else
+    [FileName,newdir,newext] = uigetfile('*.txt','Select metafile settings', s.base_dir);
+end
+
 metafile = [newdir, FileName];
 if(FileName~=0 & exist(metafile)==2)
     s.metafile = metafile;
     update_processing_settings(s,handles)
-end;
+end
 
 
 % --- Executes on button press in checkbox1.
@@ -604,23 +616,41 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile('*.dat','Select ROIs classification file (e.g. cells.dat)', s.base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.dat','Select ROIs classification file (e.g. ROIs.dat)', s.base_dir);
+else
+    [FileName,newdir,newext] = uigetfile('*.dat','Select ROIs classification file (e.g. ROIs.dat)', s.base_dir);
+end
+
 if(FileName~=0)
     s.classificationfile = FileName;
     update_processing_settings(s,handles);
-end;
+end
 
 function pushbutton11_Callback(hObject, eventdata, handles)
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile('*.mat','Select XY-alignment file (e.g. xyalign.mat)', s.base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.mat','Select XY-alignment file (e.g. xyalign.mat)', s.base_dir);
+else
+    [FileName,newdir,newext] = uigetfile('*.mat','Select XY-alignment file (e.g. xyalign.mat)', s.base_dir);
+end
+
 if(FileName~=0)
     s.xyalignfile = FileName;
     update_processing_settings(s,handles);
-end;
+end
 
 function pushbutton12_Callback(hObject, eventdata, handles)
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile('*.mat','Select Preferences file (e.g. prefs.mat)', s.base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.mat','Select Preferences file (e.g. prefs.mat)', s.base_dir);
+else
+    [FileName,newdir,newext] = uigetfile('*.mat','Select Preferences file (e.g. prefs.mat)', s.base_dir);
+end
+
 if(FileName~=0)
     s.prefsfile = FileName;
     update_processing_settings(s,handles);
@@ -847,7 +877,13 @@ function load_settings_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 s=get_processing_settings(handles);
-[FileName,newdir,newext] = uigetfile('*.mat','Select file with processing settings', s.base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.mat','Select file with processing settings', s.base_dir);
+else
+    [FileName,newdir,newext] = uigetfile('*.mat','Select file with processing settings', s.base_dir);
+end
+
 if(FileName~=0)
     processfile = [newdir, FileName];
     a=load(processfile);

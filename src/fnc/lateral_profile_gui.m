@@ -223,7 +223,16 @@ end
 def_file = [workdir 'polygon_xy.dat'];
 fprintf(1,'Select a file with polygon coordinates (default %s)\n',def_file);
 
-[FileName,newdir,~] = uigetfile('*.dat', 'Select *.DAT file', def_file);
+if ismac
+
+    [FileName,newdir,~] = uigetfile_macos('*.dat', 'Select *.DAT file', def_file);
+
+else
+
+    [FileName,newdir,~] = uigetfile('*.dat', 'Select *.DAT file', def_file);
+
+end
+
 if(FileName~=0)
     polygonfile = [newdir, FileName];
     fid=fopen(polygonfile,'r');

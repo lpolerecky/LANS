@@ -715,7 +715,11 @@ function auto_class_update_Callback(hObject,eventdata,handles)
 global CELLSFILE
 def_file = [handles.fdir CELLSFILE '.dat'];
 fprintf(1,'\n*** Select ROIs classification file (default %s)\n    Press cancel to unlink the ROI classification file.\n',def_file);
-[FileName,newdir,newext] = uigetfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);
+else
+    [FileName,newdir,newext] = uigetfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+end
 if(FileName~=0)
    cellfile = [newdir, FileName];
    handles.cellfile = cellfile;

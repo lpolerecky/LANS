@@ -32,7 +32,13 @@ base_dir=fixdir(base_dir);
 
 % specify the meta-file with the meta-instructions
 disp('Select file with the meta-instructions');
-[FileName,newdir,newext] = uigetfile({'*.txt';'*.meta';'*.dat'}, 'Select metafile', base_dir);
+
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos('*.txt', 'Select metafile', base_dir);
+else
+    [FileName,newdir,newext] = uigetfile('*.txt', 'Select metafile', base_dir);
+end
+
 if(FileName~=0)
     metafname = [newdir, FileName];
 else

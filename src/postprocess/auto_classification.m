@@ -141,7 +141,19 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 base_dir=my_get(handles.edit19,'string');
-[FileName,newdir,newext] = uigetfile({'*.dac';'*.dat'},'Select data file', base_dir);
+
+if ismac
+
+    [FileName,newdir,newext] = uigetfile_macos({'*.dac', '*.dac (LANS-generated)'; ...
+        '*.dat', '*.dat (LANS-generated)'}, ...
+        'Select data file', base_dir);
+
+else
+
+    [FileName,newdir,newext] = uigetfile({'*.dac';'*.dat'},'Select data file', base_dir);
+
+end
+
 if(FileName~=0)
     set(handles.edit2,'string',[newdir,FileName]);
     set(handles.edit19,'string',newdir);
@@ -200,11 +212,23 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 base_dir=my_get(handles.edit19,'string');
-[FileName,newdir,newext] = uigetfile({'*.dac';'*.dat'},'Select data file', base_dir);
+
+if ismac
+
+    [FileName,newdir,newext] = uigetfile_macos({'*.dac', '*.dac (LANS-generated)'; ...
+        '*.dat', '*.dat (LANS-generated)'}, ...
+        'Select data file', base_dir);
+
+else
+
+    [FileName,newdir,newext] = uigetfile({'*.dac';'*.dat'},'Select data file', base_dir);
+
+end
+
 if(FileName~=0)
     set(handles.edit4,'string',[newdir,FileName]);
     set(handles.edit19,'string',newdir);
-end;
+end
 
 
 function edit5_Callback(hObject, eventdata, handles)
@@ -259,11 +283,23 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 base_dir=my_get(handles.edit19,'string');
-[FileName,newdir,newext] = uigetfile({'*.dac';'*.dat'},'Select data file', base_dir);
+
+if ismac
+
+    [FileName,newdir,newext] = uigetfile_macos({'*.dac', '*.dac (LANS-generated)'; ...
+        '*.dat', '*.dat (LANS-generated)'}, ...
+        'Select data file', base_dir);
+
+else
+
+    [FileName,newdir,newext] = uigetfile({'*.dac';'*.dat'},'Select data file', base_dir);
+
+end
+
 if(FileName~=0)
     set(handles.edit6,'string',[newdir,FileName]);
     set(handles.edit19,'string',newdir);
-end;
+end
 
 
 function edit7_Callback(hObject, eventdata, handles)
@@ -525,13 +561,23 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 base_dir=my_get(handles.edit19,'string');
-[FileName,newdir,newext] = uigetfile('*.cls','Select classification conditions file', base_dir);
+
+if ismac
+
+    [FileName,newdir,newext] = uigetfile_macos('*.cls','Select classification conditions file', base_dir);
+
+else
+
+    [FileName,newdir,newext] = uigetfile('*.cls','Select classification conditions file', base_dir);
+
+end
+
 if(FileName~=0)
     clsname=[newdir,FileName];
     s=load_classification_conditions(clsname);
     update_classification_conditions(handles,s);
     set(handles.edit19,'string',newdir);
-end;
+end
 
 
 % --- Executes on button press in pushbutton5.

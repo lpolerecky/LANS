@@ -37,7 +37,19 @@ if(md)
     workdir=handles.p.fdir;
     workdir=fixdir(workdir);
     disp('Select file with the training cell');
-    [FileName,newdir,newext] = uigetfile('*.mat', 'Select *.MAT file with the training cell', workdir);
+
+    if ismac
+
+        [FileName,newdir,newext] = uigetfile_macos('*.mat', ...
+            'Select *.MAT file with the training cell', workdir);
+
+    else
+        
+        [FileName,newdir,newext] = uigetfile('*.mat', ...
+            'Select *.MAT file with the training cell', workdir);
+    
+    end
+    
     if(FileName~=0)
         imfile = [newdir, FileName];
         eval(['c=load(''',imfile,''');']);
@@ -70,7 +82,19 @@ if(md)
         tcell(ind)=ones(size(ind));    
         % save defined cell into a file
         disp('Select file where the training cell will be stored');
-        [FileName,newdir,newext] = uiputfile('*.mat', 'Select *.MAT file to store the training cell', workdir);
+
+        if macos
+        
+            [FileName,newdir,newext] = uigetfile_macos('*.mat', ...
+                'Select *.MAT file to store the training cell', workdir);
+        
+        else
+
+            [FileName,newdir,newext] = uiputfile('*.mat', ...
+                'Select *.MAT file to store the training cell', workdir);
+        
+        end
+
         if(FileName~=0)
             imfile = [newdir, FileName];
             eval(['save ',imfile,' tcell fe -v6']);

@@ -1,7 +1,22 @@
 function ext_im=define_external_image(p)
 ext_im=[];
 if isfield(p,'fdir')
-    [FileName,newdir,newext] = uigetfile({'*.mat';'*.bmp';'*.png';'*.tif'}, 'Define external image', p.fdir);
+
+    if ismac
+        file_types = { ...
+            '*.mat', '*.mat (LANS-generated)'; ...
+            '*.bmp', '*.bmp'; ...
+            '*.png', '*.png'; ...
+            '*.tif', '*.tif'};
+
+        [FileName,newdir,newext] = uigetfile_macos(file_types, ...
+            'Define external image', p.fdir);
+    else
+
+        [FileName,newdir,newext] = uigetfile({'*.mat';'*.bmp';'*.png';'*.tif'}, 'Define external image', p.fdir);
+    
+    end
+
     if newdir==0 % this means cancel was pressed
         fprintf(1,'*** Warning: No external image selected.\n');
     else

@@ -13,9 +13,9 @@ else
     for ii=1:length(p.special)
         if(strcmp(p.Mask,p.special{ii}))
             ps=p.special_scale{ii};
-        end;
-    end;        
-end;
+        end
+    end
+end
 
 global CELLSFILE MAT_EXT
 
@@ -34,23 +34,23 @@ if 0
     disp('4: remove by selecting undesired cells');
 
     method = input('Which method should be used? ');
-end;
+end
 
 if(method==1)
     Maskimg=drawing_ROIs_with_mouse(maskmass,CELLS,ps,50,p.fdir);
-end;
+end
 
 if(method==2)    
     Maskimg=add_cells_interactively(maskmass,CELLS,ps,50,p.fdir);
-end;
+end
 
 if(method==3)
     Maskimg = splitCells(maskmass,CELLS,ps,50,p.fdir);
-end;
+end
 
 if(method==4)
     Maskimg=remove_cells_interactively(maskmass,CELLS,ps,50,p.fdir);
-end;
+end
 
 
 if(method==5)
@@ -61,14 +61,18 @@ if(method==5)
     workdir=get(handles.edit2,'String');
     if(~strcmp(workdir(length(workdir)),delimiter))
         workdir=[workdir,delimiter];
-    end;
-    if(isdir(workdir))
+    end
+    if(isfolder(workdir))
         newdir=workdir;
     else
         newdir='';
-    end;
+    end
     disp('Select file with the ROI shape');
-    [FileName,newdir,newext] = uigetfile('*.mat', 'Select ROI shape', workdir);
+    if ismac
+        [FileName,newdir,newext] = uigetfile_macos('*.mat', 'Select ROI shape', workdir);
+    else
+        [FileName,newdir,newext] = uigetfile('*.mat', 'Select ROI shape', workdir);
+    end
     if(FileName~=0)
         imfile1 = [newdir, FileName];
         eval(['load ',imfile1]);
@@ -76,14 +80,18 @@ if(method==5)
         cello = B{1};
         % center cell outline
         cello = cello - ones(size(cello,1),1) * mean(cello,1);
-    end;
+    end
     disp('Select file with the ROI centers');
-    [FileName,newdir,newext] = uigetfile('*.mat', 'Select ROI centers', workdir);
+    if ismac
+        [FileName,newdir,newext] = uigetfile_macos('*.mat', 'Select ROI centers', workdir);
+    else
+        [FileName,newdir,newext] = uigetfile('*.mat', 'Select ROI centers', workdir);
+    end
     if(FileName~=0)
         imfile2 = [newdir, FileName];
         eval(['load ',imfile2]);
         % c was updated
-    end;
+    end
       
     fn=figure(50); 
     hold off; 

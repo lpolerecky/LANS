@@ -765,8 +765,24 @@ function load_external_image_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-[FileName,newdir,newext] = uigetfile({'*.mat';'*.bmp';'*.png';'*.xyz';'*.tif';'*.*'}, ...
+if ismac
+    
+    file_types = {'*.mat', '*.mat (LANS-generated)'; ...
+        '*.bmp', '*.bmp'; ...
+        '*.png', '*.png'; ...
+        '*.tif', '*.tif'; ...
+        '*.*',   '*.*'};
+
+    [FileName,newdir,newext] = uigetfile_macos(file_types, ...
+        'Select external image', handles.imagedir);
+
+else
+
+    [FileName,newdir,newext] = uigetfile({'*.mat';'*.bmp';'*.png';'*.xyz';'*.tif';'*.*'}, ...
     'Select external image', handles.imagedir);
+
+end
+
 handles.imagedir = newdir;
 handles.extimagefile = [newdir FileName];
 
@@ -876,7 +892,12 @@ function load_nanosims_image_Callback(hObject, eventdata, handles)
 
 global additional_settings;
 
-[FileName,newdir,newext] = uigetfile({'*.mat';'*.tif';'*.*'}, 'Select nanoSIMS image', handles.imagedir);
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos({'*.mat';'*.tif';'*.*'}, 'Select nanoSIMS image', handles.imagedir);
+else
+    [FileName,newdir,newext] = uigetfile({'*.mat';'*.tif';'*.*'}, 'Select nanoSIMS image', handles.imagedir);
+end
+
 handles.imagedir = newdir;
 handles.nanosimsimagefile = [newdir FileName];
 
@@ -930,7 +951,11 @@ function load_point_list_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-[FileName,newdir,newext] = uigetfile( {'*.mat';'*.dpl'} , 'Select point-list file', handles.imagedir);
+if ismac
+    [FileName,newdir,newext] = uigetfile_macos( {'*.mat';'*.dpl'} , 'Select point-list file', handles.imagedir);
+else
+    [FileName,newdir,newext] = uigetfile( {'*.mat';'*.dpl'} , 'Select point-list file', handles.imagedir);
+end
 
 fn = [newdir FileName];
 if newext>0

@@ -120,12 +120,22 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[FileName,newdir,newext] = uigetfile('*.chk_im', 'Select CHK_IM file', handles.workdir);
+
+if ismac
+
+    [FileName,newdir,newext] = uigetfile_macos('*.chk_im', 'Select CHK_IM file', handles.workdir);
+
+else
+
+    [FileName,newdir,newext] = uigetfile('*.chk_im', 'Select CHK_IM file', handles.workdir);
+
+end
+
 if(FileName~=0)
     %set(handles.text2,'String',newext);
     imfile = [newdir, FileName];
     set(handles.edit1,'String',imfile);
-end;
+end
 
 function edit2_Callback(hObject, eventdata, handles)
 % hObject    handle to edit2 (see GCBO)
