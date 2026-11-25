@@ -23,8 +23,8 @@ set(handles.checkbox100,'visible',v);
 for ii=1:length(handles.class_checkbox)
     s=sprintf('set(handles.checkbox%d,''visible'',''%s'');',handles.class_checkbox(ii),v);
     eval(s);
-end;
+end
 for ii=1:length(handles.treatment_checkbox)
     s=sprintf('set(handles.checkbox%d,''visible'',''%s'');',handles.treatment_checkbox(ii),v);
     eval(s);
-end;
+end

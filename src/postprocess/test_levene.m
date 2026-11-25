@@ -56,7 +56,7 @@ else
             % add no offset if number of data points is low (<=20)
             yoffset = zeros(size(xi));
         end        
-        plot(xsorted, i + yoffset,'+','MarkerEdgeColor',[0.2 0.85 0.2])
+        plot(xsorted, i + yoffset,'+','MarkerEdgeColor','b')
 
         % add quantiles
         q1=quantile(xi,[0.25 0.5 0.75]);
@@ -186,6 +186,17 @@ else
             
             global additional_settings;
             
+            if ismac
+                fig.color = get(handles.figure1, 'Color');
+                fig.colormode = get(handles.figure1, 'ColorMode');
+                fig.ppm = get(handles.figure1, 'PaperPositionMode');
+                set(handles.figure1, 'Color', 'none')
+                set(handles.figure1, 'ColorMode', 'auto');
+                fig.pos = get(handles.figure1, 'Position');
+                set(handles.figure1,'Position', [fig.pos(1:3) fig.pos(4)*2]);
+                set(handles.figure1, 'PaperPositionMode', 'auto');
+            end
+
             print_figure(handles.figure1,a,additional_settings.print_factors(5));
             %fprintf(1,'EPS output generated in %s\n',a);
             mepstopdf(a,'epstopdf',1,1);
@@ -193,8 +204,15 @@ else
             % set all objects back to visible
             set_stats_objects_visibility(handles,'on');
             
-        end;      
-        
-    end;
+            if ismac
+                set(handles.figure1, 'Color', fig.color);
+                set(handles.figure1, 'ColorMode', fig.colormode);                
+                set(handles.figure1, 'PaperPositionMode', fig.ppm);
+                set(handles.figure1,'Position', fig.pos);
+            end
 
-end;
+        end
+        
+    end
+
+end

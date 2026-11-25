@@ -181,7 +181,7 @@ if ~ask_for_confirmation
     choice = 'Apply';
 else
     
-    f40=figure(40);
+    f40=my_figure(40);
     N=3;
     ind1 = round(size(movingRegistered2,1)/2);
     ind2 = round(size(movingRegistered2,2)/2);

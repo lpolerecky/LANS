@@ -716,7 +716,7 @@ global CELLSFILE
 def_file = [handles.fdir CELLSFILE '.dat'];
 fprintf(1,'\n*** Select ROIs classification file (default %s)\n    Press cancel to unlink the ROI classification file.\n',def_file);
 if ismac
-    [FileName,newdir,newext] = uigetfile_macos('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);
+    [FileName,newdir,newext] = uigetfile_macos('*.dat',['Select ROIs classification file'], def_file);
 else
     [FileName,newdir,newext] = uigetfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
 end
@@ -1574,8 +1574,9 @@ function copy_ROI_Callback(hObject, eventdata, handles)
 CELLS = handles.maskimg;
 l3=CELLS;
 disp('*** Interactive copy of a ROI.');
-disp(' - Left-click        = select ROI;');
-disp(' - Right-click       = confirm ROI selection');
+disp(' - Left-click             = select ROI;');
+disp(' - Right-click (lnx/win)  = confirm ROI selection');
+disp(' - control+-click (macos) = confirm ROI selection');
 
 % define cell center and outline
 m=1;
@@ -1668,9 +1669,10 @@ else
     cid = [];
 end
 disp('*** Interactive removal of a ROI or a pixel in a ROI.');
-disp(' - Left-click        = select ROI (pixel);');
-disp(' - Right-click       = remove selected ROI (pixel);');
-disp(' - Esc               = cancel action;');
+disp(' - Left-click            = select ROI (pixel);');
+disp(' - Right-click (lnx/win) = remove selected ROI (pixel);');
+disp(' - Control-click (macos) = remove selected ROI (pixel);');
+disp(' - Esc                   = cancel action;');
 
 set(gcf, 'pointer', 'hand');
 

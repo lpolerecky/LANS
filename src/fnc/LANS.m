@@ -1905,7 +1905,7 @@ if p.find_alignments && ~p.planes_aligned
         else
             xyplanes=p.images{1};
         end
-        f40=figure(40); 
+        f40=my_figure(40); 
         set(f40, 'ToolBar', 'none'); 
         subplot(1,1,1);
         plot(xyplanes, p.xyalign(xyplanes,1:2), 'x-');
@@ -2487,10 +2487,16 @@ else
     newdir='';
 end
 
-def_file = [workdir 'prefs'];
-fprintf(1,'Specify file name to store the preferences (default %s.mat)\n',def_file);
+def_file = [workdir 'prefs.mat'];
+fprintf(1,'Specify file name to store the preferences (default: %s)\n',def_file);
 
-[FileName,newdir,newext] = uiputfile('*.mat', 'Select *.MAT file', def_file);
+%if ismac
+%    [FileName,newdir,newext] = uigetfile_macos('*.mat', ...
+%        'Select file to store preferencs', def_file);
+%else
+    [FileName,newdir,newext] = uiputfile('*.mat', 'Select *.MAT file', def_file);
+%end
+
 if(FileName~=0)
     imfile = [newdir, FileName];
     save_settings(handles,imfile);

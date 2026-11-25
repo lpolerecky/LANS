@@ -236,7 +236,7 @@ else
 
 
     % show final stacks to check that the alignment went well
-    f40=figure(40);
+    f40=my_figure(40);
     N=3;
     ind1 = round(size(im2,1)/2);
     ind2 = round(size(im2,2)/2);

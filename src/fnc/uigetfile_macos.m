@@ -21,6 +21,8 @@ setappdata(0, 'uipickfiles_default', [b,c]); % Just the filename + extension
 
 if isfile(def_file)
     prompt = sprintf('%s (default: %s)',title, [b,c]);
+else
+    prompt = title;
 end
 if isfolder(def_file)
     prompt = title;

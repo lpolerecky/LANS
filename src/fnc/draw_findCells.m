@@ -83,17 +83,17 @@ if(md)
         % save defined cell into a file
         disp('Select file where the training cell will be stored');
 
-        if macos
-        
-            [FileName,newdir,newext] = uigetfile_macos('*.mat', ...
-                'Select *.MAT file to store the training cell', workdir);
-        
-        else
+        %if macos
+        % 
+        %    [FileName,newdir,newext] = uigetfile_macos('*.mat', ...
+        %        'Select *.MAT file to store the training cell', workdir);
+        % 
+        %else
 
             [FileName,newdir,newext] = uiputfile('*.mat', ...
                 'Select *.MAT file to store the training cell', workdir);
         
-        end
+        %end
 
         if(FileName~=0)
             imfile = [newdir, FileName];

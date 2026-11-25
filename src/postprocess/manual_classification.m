@@ -344,7 +344,13 @@ if hObject == handles.pushbutton6
     def_file = [base_dir CELLSFILE];
     fprintf(1,'\n*** Select ROIs classification file (default %s.dat)\n',def_file);
     
-    [FileName,newdir,newext] = uiputfile('*.dat',['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+    %if ismac
+    %    [FileName,newdir,newext] = uigetfile_macos('*.dat',...
+    %        ['Select ROIs classification file'], [def_file '.dat']);    
+    %else        
+        [FileName,newdir,newext] = uiputfile('*.dat',...
+            ['Select ROIs classification file (e.g. ' CELLSFILE '.dat)'], def_file);    
+    %end
 
     if(FileName~=0)
         cellfile = [newdir, FileName];
