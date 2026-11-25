@@ -1,8 +1,10 @@
 function test_kw(x,g,r,cls,tt,metafile,ax,compare,handles,ef)
 % use Kruskal-Wallis test to test for differences in medians (note that if
 % the Levene's test fails to show that variances are
-% homogeneous, this is the prefered test to compare the data)
-defFontSize=10;
+% homogeneous, this is the preferred test to compare the data)
+
+global additional_settings;
+defFontSize=additional_settings.defFontSize;
 
 % test can be done only when there are multiple measurements for each group
 if length(g)==length(unique(g))
@@ -32,7 +34,7 @@ else
             [c,m,h,gnames] = multcompare(stats,'display','on');
         else    
             [c,m,h,gnames] = multcompare(stats,'display','off');
-        end;
+        end
 
         % get cell ranking and min/max boundaries of the ranks
         [sdm,gnamess,ranking,minmaxband]=get_sdm(mm,meanci,sem,c,gnames);
@@ -145,15 +147,15 @@ else
                 for ii=1:length(gnamess)
                     if strcmp(compare,'ROI') | strcmp(compare,'treat')
                         fprintf(fid,'%s\t\t%.5f\t\t(%.5f %.5f)\t\t%.5f\t\t[%d %d]\n', gnamess{ii},ranking(ii,:));
-                    end;
+                    end
                     if strcmp(compare,'class')
                         if isempty(str2num(gnamess{ii}))
                             fprintf(fid,'%c\t\t%.5f\t\t(%.5f %.5f)\t\t%.5f\t\t[%d %d]\n', gnamess{ii},ranking(ii,:));
                         else
                             fprintf(fid,'%c\t\t%.5f\t\t(%.5f %.5f)\t\t%.5f\t\t[%d %d]\n', str2num(gnamess{ii}),ranking(ii,:));
-                        end;
-                    end;
-                end;    
+                        end
+                    end
+                end  
                 fprintf(fid,'------------------------------------------------------------------------\n');
 
                 ranking_table_explanation(fid,'MEDIAN',compare,[1 1]);
@@ -177,7 +179,16 @@ else
                 % set all objects except axes1 as invisible before printing
                 set_stats_objects_visibility(handles,'off');
 
-                global additional_settings;
+                if ismac
+                    fig.color = get(handles.figure1, 'Color');
+                    fig.colormode = get(handles.figure1, 'ColorMode');
+                    fig.ppm = get(handles.figure1, 'PaperPositionMode');
+                    set(handles.figure1, 'Color', 'none')
+                    set(handles.figure1, 'ColorMode', 'auto');
+                    fig.pos = get(handles.figure1, 'Position');
+                    set(handles.figure1,'Position', [fig.pos(1:3) fig.pos(4)*2]);
+                    set(handles.figure1, 'PaperPositionMode', 'auto');
+                end
                 
                 print_figure(handles.figure1,a,additional_settings.print_factors(5));
                 %fprintf(1,'EPS output generated in %s\n',a);
@@ -185,6 +196,14 @@ else
 
                 % set all objects back to visible
                 set_stats_objects_visibility(handles,'on');
+
+                if ismac
+                    set(handles.figure1, 'Color', fig.color);
+                    set(handles.figure1, 'ColorMode', fig.colormode);                
+                    set(handles.figure1, 'PaperPositionMode', fig.ppm);
+                    set(handles.figure1,'Position', fig.pos);
+                end
+
             end
             
         end

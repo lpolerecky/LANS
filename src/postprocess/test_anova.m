@@ -3,7 +3,8 @@ function test_anova(x,g,r,cls,tt,metafile,ax,compare,handles,ef)
 % the Levene's test fails to show that variances are
 % homogeneous, these results should not be used for interpretation)
 
-defFontSize=10;
+global additional_settings;
+defFontSize=additional_settings.defFontSize;
 
 % test can be done only when there are multiple measurements for each group
 if length(g)==length(unique(g))
@@ -48,7 +49,7 @@ else
             [c,m,h,gnames] = multcompare(stats,'display','on');
         else    
             [c,m,h,gnames] = multcompare(stats,'display','off');
-        end;
+        end
 
         % get cell ranking and min/max boundaries of the ranks
         [sdm,gnamess,ranking,minmaxband]=get_sdm(mm,meanci,sem,c,gnames);
@@ -68,7 +69,7 @@ else
             set(handles.axes1,'xlim',xs);
             ys=str2num(get(handles.edit2,'String'));
             set(handles.axes1,'ylim',ys);
-        end;
+        end
 
         if p>0.05
             title(sprintf('Means do not significantly differ (ANOVA, p=%.2e)',p),...
@@ -76,9 +77,9 @@ else
         else
             title(sprintf('Means significantly differ (ANOVA, p=%.2e)',p),...
 				'Fontsize',defFontSize,'fontweight','normal');
-        end;
+        end
         
-    end;
+    end
 
     % print text output to a default filename a, if export flag ef==1
     if 1 & ef
@@ -95,12 +96,12 @@ else
                 % default filename
                 PathName = [filepath delimiter];
                 FileName = [filename ext];
-            end;
+            end
         else
             % use this when uiputfile doesn't crash
             fprintf(1,'Warning: this is where Matlab can crash. test_anova.m: 74\n');
             [FileName,PathName] = uiputfile('*.txt','Save statistical test as',a);
-        end;
+        end
         
         if length(PathName)>0 % if cancel was not pressed
             
@@ -128,11 +129,11 @@ else
             for ii=1:length(mm)
                 if strcmp(compare,'ROI') | strcmp(compare,'treat')
                     fprintf(fid,'%.4e\t\t%.4e\t\t%s\t\t%d\t\t%c\t\t%d\n',mm(ii),ss(ii),gn{ii},nn(ii),mc(ii),mt(ii));
-                end;
+                end
                 if strcmp(compare,'class')
                     fprintf(fid,'%.4e\t\t%.4e\t\t%c\t\t%d\t\t%c\t\t%d\n',mm(ii),ss(ii),str2num(gn{ii}),nn(ii),mc(ii),mt(ii));
-                end;    
-            end;
+                end
+            end
             fprintf(fid,'------------------------------------------------------------------------\n');
 
             if ~isnan(p) % p is NaN when there is only one datapoint
@@ -147,12 +148,12 @@ else
                     compares = [compare 'es'];
                 else
                     compares = [compare 's'];
-                end;
+                end
                 if p>0.05
                     fprintf(fid,'Means DO NOT significantly differ amongst %s (ANOVA, p=%.2e).\n',compares,p);            
                 else
                     fprintf(fid,'Means significantly differ amongst %s (ANOVA, p=%.2e).\n',compares,p);
-                end;
+                end
 
                 % print ranking results
                 fprintf(fid,'\nRanking based of multiple comparison of the means:\n');
@@ -162,19 +163,19 @@ else
                 for ii=1:length(gnamess)
                     if strcmp(compare,'ROI') | strcmp(compare,'treat')
                         fprintf(fid,'%s\t\t%.5f\t\t(%.5f %.5f)\t\t%.5f\t\t[%d %d]\n', gnamess{ii},ranking(ii,:));
-                    end;
+                    end
                     if strcmp(compare,'class')
                         if isempty(str2num(gnamess{ii}))
                             fprintf(fid,'%c\t\t%.5f\t\t(%.5f %.5f)\t\t%.5f\t\t[%d %d]\n', gnamess{ii},ranking(ii,:));
                         else
                             fprintf(fid,'%c\t\t%.5f\t\t(%.5f %.5f)\t\t%.5f\t\t[%d %d]\n', str2num(gnamess{ii}),ranking(ii,:));
-                        end;
-                    end;
-                end;    
+                        end
+                    end
+                end
                 fprintf(fid,'------------------------------------------------------------------------\n');
 
                 ranking_table_explanation(fid,'MEAN',compare,[1 1]);
-            end;
+            end
 
             % append also the actual data, for completeness
             fprintf(fid, '*********\nALL DATA:\ncls\ttmnt\t%s\n',r);
@@ -198,8 +199,17 @@ else
 
                 % set all objects except axes1 as invisible before printing
                 set_stats_objects_visibility(handles,'off');
-                
-                global additional_settings;
+
+                if ismac
+                    fig.color = get(handles.figure1, 'Color');
+                    fig.colormode = get(handles.figure1, 'ColorMode');
+                    fig.ppm = get(handles.figure1, 'PaperPositionMode');
+                    set(handles.figure1, 'Color', 'none')
+                    set(handles.figure1, 'ColorMode', 'auto');
+                    fig.pos = get(handles.figure1, 'Position');
+                    set(handles.figure1,'Position', [fig.pos(1:3) fig.pos(4)*2]);
+                    set(handles.figure1, 'PaperPositionMode', 'auto');
+                end
 
                 print_figure(handles.figure1,a,additional_settings.print_factors(5));
                 %fprintf(1,'EPS output generated in %s\n',a);
@@ -207,6 +217,13 @@ else
 
                 % set all objects back to visible
                 set_stats_objects_visibility(handles,'on');
+
+                if ismac
+                    set(handles.figure1, 'Color', fig.color);
+                    set(handles.figure1, 'ColorMode', fig.colormode);                
+                    set(handles.figure1, 'PaperPositionMode', fig.ppm);
+                    set(handles.figure1,'Position', fig.pos);
+                end
 
             end
             

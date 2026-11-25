@@ -1,6 +1,9 @@
 function test_levene(x,g,r,cls,tt,metafile,ax,compare,handles,ef)
 % test for variance homogeneity
-defFontSize=10;
+
+global additional_settings;
+
+defFontSize=additional_settings.defFontSize;
 
 % test can be done only when there are multiple measurements for each group
 if length(g)==length(unique(g))
@@ -90,7 +93,7 @@ else
         set(handles.axes1,'xlim',xs);
         ys=str2num(get(handles.edit2,'String'));
         set(handles.axes1,'ylim',ys);
-    end;
+    end
     
     if p<0.05
         title(sprintf('Variances are not homogeneous (LeveneQuadratic; p=%.2e)',p),...
@@ -98,7 +101,7 @@ else
     else
         title(sprintf('Variances are homogeneous (LeveneQuadratic; p=%.2e)',p),...
 			'Fontsize',defFontSize,'fontweight','normal');
-    end;
+    end
 
     % print text output to a default filename a, if export flag ef==1
     if ef
@@ -115,12 +118,12 @@ else
                 % default filename
                 PathName = [filepath delimiter];
                 FileName = [filename ext];
-            end;
+            end
         else
             % use this when uiputfile doesn't crash
             fprintf(1,'Warning: this is where Matlab can crash. test_levene.m: 61\n');
             [FileName,PathName] = uiputfile('*.txt','Save statistical test as',a);
-        end;
+        end
                 
         if length(PathName)>0 % if cancel was not pressed
             
@@ -133,13 +136,13 @@ else
 
             if strcmp(compare,'ROI')
                 fprintf(fid,'\nAnalysis of %s in ROIs from classes "%s":\n',r, char(unique(cls))');
-            end;
+            end
             if strcmp(compare,'class')
                 fprintf(fid,'\nAnalysis of %s averaged over ROIs from classes "%s":\n',r, char(unique(cls)));
-            end;
+            end
             if strcmp(compare,'treat')
                 fprintf(fid,'\nAnalysis of %s averaged over ROIs from class "%s":\n',r, char(unique(cls)));
-            end;
+            end
 
             fprintf(fid,'------------------------------------------------------------------------\n');
             fprintf(fid,'mean\t\tstd_devi\t\t%s\t\tN\t\tc\t\tt\n',compare);
@@ -147,15 +150,15 @@ else
             for ii=1:length(mm)
                 if strcmp(compare,'ROI') | strcmp(compare,'treat')
                     fprintf(fid,'%.4e\t\t%.4e\t\t%s\t\t%d\t\t%c\t\t%d\n',mm(ii),ss(ii),gn{ii},nn(ii),mc(ii),mt(ii));
-                end;
+                end
                 if strcmp(compare,'class')
                     if isempty(str2num(gn{ii}))
                         fprintf(fid,'%.4e\t\t%.4e\t\t%c\t\t%d\t\t%c\t\t%d\n',mm(ii),ss(ii),gn{ii},nn(ii),mc(ii),mt(ii));
                     else
                         fprintf(fid,'%.4e\t\t%.4e\t\t%c\t\t%d\t\t%c\t\t%d\n',mm(ii),ss(ii),str2num(gn{ii}),nn(ii),mc(ii),mt(ii));
-                    end;
-                end;                                
-            end;
+                    end
+                end                          
+            end
             fprintf(fid,'------------------------------------------------------------------------\n');
             fprintf(fid,'LeveneQuadratic test of variance homogeneity: p = %.2e\n',p);
             if p<0.05
@@ -166,7 +169,7 @@ else
                 fprintf(fid,'Variances are homogeneous.\nMeans can be compared using ANOVA.\n');
                 title(sprintf('Variances are homogeneous (LeveneQuadratic; p=%.2e)',p),...
 					'Fontsize',defFontSize,'fontweight','normal');
-            end;
+            end
 
             % append also the actual data, for completeness
             fprintf(fid, '*********\nALL DATA:\ncls\ttmnt\t%s\n',r);
@@ -182,9 +185,7 @@ else
             a = [filepath delimiter 'eps' delimiter filename '.eps'];
             
             % set all objects except axes1 as invisible before printing
-            set_stats_objects_visibility(handles,'off');
-            
-            global additional_settings;
+            set_stats_objects_visibility(handles,'off');            
             
             if ismac
                 fig.color = get(handles.figure1, 'Color');
